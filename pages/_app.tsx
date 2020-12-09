@@ -18,7 +18,7 @@ export default function MyApp( { Component, pageProps }: AppProps ) {
 		}
 	}, [] );
 
-	const title = pageProps.title ?? 'Health Portal';
+	const title = pageProps.title ? `${ pageProps.title } - Health Portal` : 'Health Portal';
 
 	return (
 		<>
