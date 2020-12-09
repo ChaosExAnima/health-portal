@@ -1,10 +1,9 @@
-import { TypographyProps } from '@material-ui/core';
-
 export type NavigationProps = {
 	title: string;
 }
 
-export type NavItemLinkProps = TypographyProps<'a', { component: 'a' }> & {
+export type NavItemLinkProps = {
+	name: string;
 	href: string;
-	children?: React.ReactNode;
+	icon: React.ReactNode;
 }

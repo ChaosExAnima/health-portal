@@ -7,13 +7,13 @@ import Navigation from 'components/navigation';
 
 import theme from 'theme';
 
-export default function MyApp( props ) {
-	const { Component, pageProps } = props;
+import type { AppProps } from 'next/app';
 
+export default function MyApp( { Component, pageProps }: AppProps ) {
 	React.useEffect( () => {
 		// Remove the server-side injected CSS.
 		const jssStyles = document.querySelector( '#jss-server-side' );
-		if ( jssStyles ) {
+		if ( jssStyles && jssStyles.parentElement ) {
 			jssStyles.parentElement.removeChild( jssStyles );
 		}
 	}, [] );

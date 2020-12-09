@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { AppBar, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, ListSubheader, makeStyles, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Drawer, IconButton, List, ListSubheader, makeStyles, Toolbar, Typography } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/menu';
-import HomeIcon from '@material-ui/icons/home';
+
+import navigation from 'pages/navigation';
+import NavItemLink from './nav-item-link';
 
 import type { NavigationProps } from './index.d';
 
@@ -15,8 +17,8 @@ export default function Navigation( { title }: NavigationProps ) {
 	const classes = useStyles();
 	const [ isDrawerOpen, openDrawer ] = useState( false );
 
-	const toggleDrawer = ( event ) => {
-		if ( event.type === 'keydown' && ( event.key === 'Tab' || event.key === 'Shift' ) ) {
+	const toggleDrawer = ( event: React.MouseEvent | React.KeyboardEvent ) => {
+		if ( event instanceof KeyboardEvent && event.type === 'keydown' && ( event.key === 'Tab' || event.key === 'Shift' ) ) {
 			return;
 		}
 		openDrawer( ! isDrawerOpen );
@@ -49,12 +51,7 @@ export default function Navigation( { title }: NavigationProps ) {
 							</ListSubheader>
 						}
 					>
-						<ListItem button>
-							<ListItemIcon>
-								<HomeIcon />
-							</ListItemIcon>
-							<ListItemText primary="Hello!" />
-						</ListItem>
+						{ navigation.map( ( navItem ) => <NavItemLink { ...navItem } key={ navItem.href } /> ) }
 					</List>
 				</div>
 			</Drawer>
