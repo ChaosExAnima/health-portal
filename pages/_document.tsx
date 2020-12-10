@@ -8,8 +8,8 @@ import Document, {
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import theme from 'config/theme';
 
-export default class MyDocument extends Document {
-	render() {
+export default class HealthPortal extends Document {
+	render(): React.ReactElement {
 		return (
 			<Html lang="en">
 				<Head>
@@ -31,7 +31,7 @@ export default class MyDocument extends Document {
 
 // `getInitialProps` belongs to `_document` (instead of `_app`),
 // it's compatible with server-side generation (SSG).
-MyDocument.getInitialProps = async ( ctx ) => {
+HealthPortal.getInitialProps = async ( ctx ) => {
 	// Resolution order
 	//
 	// On the server:

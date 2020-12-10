@@ -8,7 +8,7 @@ import theme from 'config/theme';
 
 import type { AppProps } from 'next/app';
 
-export default function MyApp( { Component, pageProps }: AppProps ) {
+const App: React.FC<AppProps> = ( { Component, pageProps } ) => {
 	useEffect( () => {
 		// Remove the server-side injected CSS.
 		const jssStyles = document.querySelector( '#jss-server-side' );
@@ -33,4 +33,6 @@ export default function MyApp( { Component, pageProps }: AppProps ) {
 			</ThemeProvider>
 		</>
 	);
-}
+};
+
+export default App;

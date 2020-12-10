@@ -30,7 +30,7 @@ const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	},
 } ) );
 
-export default function Home( { welcomeMessage, totalSpent, totalCovered, totalClaims }: HomeProps ) {
+const Home: React.FC<HomeProps> = ( { welcomeMessage, totalSpent, totalCovered, totalClaims } ) => {
 	const classes = useStyles();
 	const buttonProps = {
 		size: 'large',
@@ -71,7 +71,7 @@ export default function Home( { welcomeMessage, totalSpent, totalCovered, totalC
 			</Paper>
 		</Container>
 	);
-}
+};
 
 export async function getServerSideProps(): Promise<{ props: HomeProps }> {
 	const welcomeMessages = [
@@ -89,3 +89,5 @@ export async function getServerSideProps(): Promise<{ props: HomeProps }> {
 		},
 	};
 }
+
+export default Home;
