@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AppBar, Drawer, IconButton, List, ListSubheader, makeStyles, Toolbar, Typography } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/menu';
 
-import navigation from 'pages/navigation';
+import navigation from 'config/navigation';
 import NavItemLink from './nav-item-link';
 
 import type { NavigationProps } from './index.d';
@@ -45,6 +45,7 @@ export default function Navigation( { title }: NavigationProps ) {
 				>
 					<List
 						aria-labelledby="drawer-header"
+						component="nav"
 						subheader={
 							<ListSubheader component="div" id="drawer-header">
 								Welcome!

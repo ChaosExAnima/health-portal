@@ -5,7 +5,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import Navigation from 'components/navigation';
 
-import theme from 'theme';
+import theme from 'config/theme';
 
 import type { AppProps } from 'next/app';
 
