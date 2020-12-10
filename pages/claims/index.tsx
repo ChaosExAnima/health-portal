@@ -97,7 +97,8 @@ const Claims: React.FC<ClaimsProps> = ( { rows, totalClaims, currentPage } ) => 
 						) ) }
 					</TableBody>
 					<TablePagination
-						rowsPerPage={ 100 }
+						rowsPerPage={ 20 }
+						rowsPerPageOptions={ [ 20 ] }
 						count={ totalClaims }
 						page={ currentPage }
 						onChangePage={ ( event, page ) => router.push( `/claims/page/${ page }` ) }

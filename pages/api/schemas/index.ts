@@ -1,13 +1,44 @@
 import { gql } from 'apollo-server-micro';
 
 export const typeDefs = gql`
-    type  User {
-        id: ID
-        login: String
-        avatar_url: String
-    }
+type Provider {
+	id: ID!
+	name: String!
+	location: String
+}
 
-    type  Query {
-        getUsers: [User]
-        getUser(name: String!): User!
-    }`;
+enum ClaimType {
+	DENTAL
+	OUTOFNETWORK
+	INNETWORK
+	PHARMACY
+}
+
+enum ClaimStatus {
+	PENDING
+	APPROVED
+	DENIED
+	DELETED
+}
+
+type Claim {
+	id: ID!
+	claim: String!
+	date: String!
+	provider: Provider
+	type: ClaimType
+	billed: Float
+	cost: Float
+	status: ClaimStatus!
+}
+
+type ClaimResponse {
+	claims: [Claim]!
+	totalCount: Int!
+	offset: Int!
+	limit: Int!
+}
+
+type Query {
+	getClaims(offset: Int): ClaimResponse!
+}`;
