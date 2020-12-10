@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { IconButton, createStyles, fade, makeStyles, Theme, InputBase, Drawer, TextField, Popper, PopperProps, CircularProgress } from '@material-ui/core';
+import {
+	createStyles,
+	Drawer,
+	fade,
+	makeStyles,
+	IconButton,
+	InputBase,
+	Popper,
+	PopperProps,
+	CircularProgress,
+	TextField,
+	Theme,
+} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import { Autocomplete } from '@material-ui/lab';
 

@@ -1,13 +1,17 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Container from '@material-ui/core/Container';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import PhoneIcon from '@material-ui/icons/Phone';
-import Paper from '@material-ui/core/Paper';
+import {
+	Box,
+	Button,
+	Container,
+	Grid,
+	Paper,
+	Theme,
+	Typography,
+	createStyles,
+	makeStyles,
+} from '@material-ui/core';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import Link from 'next/link';
+import PhoneIcon from '@material-ui/icons/Phone';
 
 import InfoRow from 'components/info-row';
 import numberFormat from 'lib/number-format';

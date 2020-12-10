@@ -1,16 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Head from 'next/head';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Head from 'next/head';
 import { ThemeProvider } from '@material-ui/core/styles';
-import Navigation from 'components/navigation';
+import { useEffect } from 'react';
 
+import Navigation from 'components/navigation';
 import theme from 'config/theme';
 
 import type { AppProps } from 'next/app';
 
 export default function MyApp( { Component, pageProps }: AppProps ) {
-	React.useEffect( () => {
+	useEffect( () => {
 		// Remove the server-side injected CSS.
 		const jssStyles = document.querySelector( '#jss-server-side' );
 		if ( jssStyles && jssStyles.parentElement ) {
@@ -35,8 +34,3 @@ export default function MyApp( { Component, pageProps }: AppProps ) {
 		</>
 	);
 }
-
-MyApp.propTypes = {
-	Component: PropTypes.elementType.isRequired,
-	pageProps: PropTypes.object.isRequired,
-};

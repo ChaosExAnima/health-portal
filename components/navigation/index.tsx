@@ -1,9 +1,18 @@
-import { AppBar, Container, Toolbar, Typography, useMediaQuery, useTheme } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import {
+	AppBar,
+	Container,
+	Theme,
+	Toolbar,
+	Typography,
+	createStyles,
+	makeStyles,
+	useMediaQuery,
+	useTheme,
+} from '@material-ui/core';
 
 import SearchBar, { SearchOption } from 'components/search-bar';
-import navigation from 'config/navigation';
 import NavItem from './nav-item';
+import navigation from 'config/navigation';
 
 const useStyles = makeStyles( ( theme: Theme ) =>
 	createStyles( {
@@ -39,7 +48,7 @@ const placeholderData: SearchOption[] = [
 	},
 ];
 
-export default function Navigation( { title }: NavigationProps ) {
+const Navigation: React.FC<NavigationProps> = ( { title } ) => {
 	const classes = useStyles();
 	const { breakpoints } = useTheme();
 	const isXSmall = useMediaQuery( breakpoints.only( 'xs' ) );
@@ -59,4 +68,6 @@ export default function Navigation( { title }: NavigationProps ) {
 			</Container>
 		</AppBar>
 	);
-}
+};
+
+export default Navigation;
