@@ -29,7 +29,7 @@ export default function MyApp( { Component, pageProps }: AppProps ) {
 			<ThemeProvider theme={ theme } >
 				{ /* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */ }
 				<CssBaseline />
-				<Navigation title={ title } />
+				<Navigation title={ pageProps.title } />
 				<Component { ...pageProps } />
 			</ThemeProvider>
 		</>

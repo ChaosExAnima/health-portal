@@ -13,6 +13,7 @@ import InfoRow from 'components/info-row';
 import numberFormat from 'lib/number-format';
 
 type HomeProps = {
+	title: string;
 	welcomeMessage: string;
 	totalSpent: number;
 	totalCovered: number;
@@ -76,6 +77,7 @@ export async function getServerSideProps(): Promise<{ props: HomeProps }> {
 	];
 	return {
 		props: {
+			title: 'Home',
 			welcomeMessage: welcomeMessages[ Math.floor( Math.random() * welcomeMessages.length ) ],
 			totalSpent: 2555,
 			totalCovered: 54312,

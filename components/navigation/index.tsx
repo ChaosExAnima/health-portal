@@ -1,61 +1,62 @@
-import { useState } from 'react';
-import { AppBar, Drawer, IconButton, List, ListSubheader, makeStyles, Toolbar, Typography } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/menu';
+import { AppBar, Container, Toolbar, Typography, useMediaQuery, useTheme } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
+import SearchBar, { SearchOption } from 'components/search-bar';
 import navigation from 'config/navigation';
-import NavItemLink from './nav-item-link';
+import NavItem from './nav-item';
 
-import type { NavigationProps } from './index.d';
+const useStyles = makeStyles( ( theme: Theme ) =>
+	createStyles( {
+		title: {
+			flexGrow: 1,
+			display: 'none',
+			[ theme.breakpoints.up( 'sm' ) ]: {
+				display: 'block',
+			},
+		},
+		toolbar: {
+			flexGrow: 1,
+			justifyContent: 'center',
+			[ theme.breakpoints.up( 'sm' ) ]: {
+				justifyContent: 'right',
+			},
+		},
+	} )
+);
 
-const useStyles = makeStyles( {
-	list: {
-		width: 250,
+type NavigationProps = {
+	title: string;
+}
+
+const placeholderData: SearchOption[] = [
+	{
+		title: 'Claim 1',
+		href: '/claim/1',
 	},
-} );
+	{
+		title: 'Call on 1/2/20',
+		href: '/claim/1/2/20',
+	},
+];
 
 export default function Navigation( { title }: NavigationProps ) {
 	const classes = useStyles();
-	const [ isDrawerOpen, openDrawer ] = useState( false );
-
-	const toggleDrawer = ( event: React.MouseEvent | React.KeyboardEvent ) => {
-		if ( event instanceof KeyboardEvent && event.type === 'keydown' && ( event.key === 'Tab' || event.key === 'Shift' ) ) {
-			return;
-		}
-		openDrawer( ! isDrawerOpen );
-	};
+	const { breakpoints } = useTheme();
+	const isXSmall = useMediaQuery( breakpoints.only( 'xs' ) );
 
 	return (
 		<AppBar position="static">
-			<Toolbar>
-				<IconButton edge="start" color="inherit" aria-label="menu" onClick={ toggleDrawer }>
-					<MenuIcon />
-				</IconButton>
-				{ title && (
-					<Typography variant="h6">
-						{ title }
-					</Typography>
-				) }
-			</Toolbar>
-			<Drawer open={ isDrawerOpen } onClose={ toggleDrawer }>
-				<div
-					className={ classes.list }
-					role="presentation"
-					onClick={ toggleDrawer }
-					onKeyDown={ toggleDrawer }
-				>
-					<List
-						aria-labelledby="drawer-header"
-						component="nav"
-						subheader={
-							<ListSubheader component="div" id="drawer-header">
-								Welcome!
-							</ListSubheader>
-						}
-					>
-						{ navigation.map( ( navItem ) => <NavItemLink { ...navItem } key={ navItem.href } /> ) }
-					</List>
-				</div>
-			</Drawer>
+			<Container maxWidth="md">
+				<Toolbar className={ classes.toolbar }>
+					{ title && (
+						<Typography variant="h6" className={ classes.title }>
+							{ title }
+						</Typography>
+					) }
+					<SearchBar options={ placeholderData } minimized={ isXSmall } />
+					{ navigation.map( ( navItem ) => <NavItem { ...navItem } key={ navItem.href } /> ) }
+				</Toolbar>
+			</Container>
 		</AppBar>
 	);
 }
