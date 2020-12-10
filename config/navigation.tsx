@@ -2,6 +2,7 @@ import HomeIcon from '@material-ui/icons/home';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import PhoneIcon from '@material-ui/icons/Phone';
 import GavelIcon from '@material-ui/icons/Gavel';
+import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
 
 type NavigationItem = {
 	href: string;
@@ -29,6 +30,11 @@ const navigation: NavigationItem[] = [
 		href: '/claims',
 		name: 'Claims',
 		icon: <ReceiptIcon />,
+	},
+	{
+		href: '/providers',
+		name: 'Providers',
+		icon: <PermContactCalendarIcon />,
 	},
 ];
 export default navigation;

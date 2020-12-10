@@ -35,6 +35,7 @@ const useStyles = makeStyles( ( theme: Theme ) =>
 
 type NavigationProps = {
 	title: string;
+	maxWidth?: 'md' | 'lg';
 }
 
 const placeholderData: SearchOption[] = [
@@ -48,14 +49,14 @@ const placeholderData: SearchOption[] = [
 	},
 ];
 
-const Navigation: React.FC<NavigationProps> = ( { title } ) => {
+const Navigation: React.FC<NavigationProps> = ( { title, maxWidth = 'md' } ) => {
 	const classes = useStyles();
 	const { breakpoints } = useTheme();
 	const isXSmall = useMediaQuery( breakpoints.only( 'xs' ) );
 
 	return (
 		<AppBar position="static">
-			<Container maxWidth="md">
+			<Container maxWidth={ maxWidth }>
 				<Toolbar className={ classes.toolbar }>
 					{ title && (
 						<Typography variant="h6" className={ classes.title }>
