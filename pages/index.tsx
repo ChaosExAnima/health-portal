@@ -7,7 +7,6 @@ import Button from '@material-ui/core/Button';
 import PhoneIcon from '@material-ui/icons/Phone';
 import Paper from '@material-ui/core/Paper';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import Tooltip from '@material-ui/core/Tooltip';
 import Link from 'next/link';
 
 import InfoRow from 'components/info-row';
