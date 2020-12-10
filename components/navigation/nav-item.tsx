@@ -8,7 +8,7 @@ type NavItemLinkProps = {
 	icon: React.ReactNode;
 }
 
-const NavItem = ( { name, icon, href }: NavItemLinkProps ) => {
+const NavItem: React.FC<NavItemLinkProps> = ( { name, icon, href } ) => {
 	const { pathname } = useRouter();
 	let active = false;
 	if ( href === '/' ) {
