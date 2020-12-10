@@ -16,8 +16,9 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import InfoRow from 'components/info-row';
 import numberFormat from 'lib/number-format';
 
-type HomeProps = {
-	title: string;
+import type { PageProps } from 'global-types';
+
+type HomeProps = PageProps & {
 	welcomeMessage: string;
 	totalSpent: number;
 	totalCovered: number;
