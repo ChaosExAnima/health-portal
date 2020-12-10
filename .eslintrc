@@ -2,17 +2,15 @@
 	"root": true,
 	"parser": "@typescript-eslint/parser",
 	"extends": [
-		// "plugin:@typescript-eslint/recommended",
-		// "plugin:react/recommended",
-		// "plugin:prettier/recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:react/recommended",
 		"plugin:@wordpress/eslint-plugin/esnext",
 		"plugin:@wordpress/eslint-plugin/jsdoc",
-		"plugin:@wordpress/eslint-plugin/react",
+		"plugin:@wordpress/eslint-plugin/react"
 	],
 	"plugins": [
 		"@typescript-eslint",
-		"react",
-		// "prettier"
+		"react"
 	],
 	"env": {
 		"browser": true,
