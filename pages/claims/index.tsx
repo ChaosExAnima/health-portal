@@ -13,6 +13,7 @@ import {
 	TableBody,
 	TablePagination,
 	LinearProgress,
+	TableFooter,
 } from '@material-ui/core';
 import Link from 'next/link';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
@@ -20,6 +21,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { useRouter } from 'next/router';
 import { useQuery, gql } from '@apollo/client';
 
+import Footer from 'components/footer';
 import numberFormat from 'lib/number-format';
 import dateFormat from 'lib/date-format';
 import { claimType, claimStatus } from 'lib/strings';
@@ -75,41 +77,47 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentP
 	const router = useRouter();
 	return (
 		<Container maxWidth="lg">
-			<TableContainer component={ Paper }>
-				<Table>
-					<TableHead>
-						<TableRow>
-							<TableCell>Service Date</TableCell>
-							<TableCell>Claim #</TableCell>
-							<TableCell>Provider</TableCell>
-							<TableCell>Type</TableCell>
-							<TableCell align="right">Billed</TableCell>
-							<TableCell align="right">Your Cost</TableCell>
-							<TableCell>Status</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{ claims.map( ( { id, date, claim, provider, type, billed, cost, status }: ClaimRow ) => (
-							<TableRow key={ id }>
-								<TableCell>{ dateFormat( Number.parseInt( date ) ) }</TableCell>
-								<TableCell>{ claim }</TableCell>
-								<TableCell>{ provider.name }</TableCell>
-								<TableCell>{ claimType( type ) }</TableCell>
-								<TableCell align="right">{ numberFormat( billed, true ) }</TableCell>
-								<TableCell align="right">{ numberFormat( cost, true ) }</TableCell>
-								<TableCell>{ claimStatus( status ) }</TableCell>
+			<Paper>
+				<TableContainer>
+					<Table stickyHeader>
+						<TableHead>
+							<TableRow>
+								<TableCell>Service Date</TableCell>
+								<TableCell>Claim #</TableCell>
+								<TableCell>Provider</TableCell>
+								<TableCell>Type</TableCell>
+								<TableCell align="right">Billed</TableCell>
+								<TableCell align="right">Your Cost</TableCell>
+								<TableCell>Status</TableCell>
 							</TableRow>
-						) ) }
-					</TableBody>
-					<TablePagination
-						rowsPerPage={ 20 }
-						rowsPerPageOptions={ [ 20 ] }
-						count={ totalCount }
-						page={ currentPage }
-						onChangePage={ ( event, page ) => router.push( `/claims/page/${ page + 1 }` ) }
-					/>
-				</Table>
-			</TableContainer>
+						</TableHead>
+						<TableBody>
+							{ claims.map( ( { id, date, claim, provider, type, billed, cost, status }: ClaimRow ) => (
+								<TableRow key={ id }>
+									<TableCell>{ dateFormat( Number.parseInt( date ) ) }</TableCell>
+									<TableCell>{ claim }</TableCell>
+									<TableCell>{ provider.name }</TableCell>
+									<TableCell>{ claimType( type ) }</TableCell>
+									<TableCell align="right">{ numberFormat( billed, true ) }</TableCell>
+									<TableCell align="right">{ numberFormat( cost, true ) }</TableCell>
+									<TableCell>{ claimStatus( status ) }</TableCell>
+								</TableRow>
+							) ) }
+						</TableBody>
+						<TableFooter>
+							<TableRow>
+								<TablePagination
+									rowsPerPage={ 20 }
+									rowsPerPageOptions={ [ 20 ] }
+									count={ totalCount }
+									page={ currentPage }
+									onChangePage={ ( event, page ) => router.push( `/claims/page/${ page + 1 }` ) }
+								/>
+							</TableRow>
+						</TableFooter>
+					</Table>
+				</TableContainer>
+			</Paper>
 		</Container>
 	);
 };
