@@ -12,22 +12,28 @@ import {
 	TableRow,
 	TableBody,
 	TablePagination,
+	LinearProgress,
 } from '@material-ui/core';
 import Link from 'next/link';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import AddIcon from '@material-ui/icons/Add';
+import { useRouter } from 'next/router';
+import { useQuery, gql } from '@apollo/client';
 
 import numberFormat from 'lib/number-format';
 import dateFormat from 'lib/date-format';
+import { claimType, claimStatus } from 'lib/strings';
 
 import type { ClaimTypes, PageProps } from 'global-types';
-import { useRouter } from 'next/router';
 
 type ClaimRow = {
 	id: number;
 	claim: string;
-	date: number;
-	provider: string;
+	date: string;
+	provider: {
+		id: string;
+		name: string;
+	};
 	type: ClaimTypes;
 	billed: number;
 	cost: number;
@@ -35,13 +41,81 @@ type ClaimRow = {
 };
 
 export type ClaimsProps = PageProps & {
-	rows: ClaimRow[],
-	totalClaims: number;
 	currentPage: number;
 };
 
-const Claims: React.FC<ClaimsProps> = ( { rows, totalClaims, currentPage } ) => {
+type ClaimsTableProps = {
+	claims: ClaimRow[];
+	totalCount: number;
+	currentPage: number;
+};
+
+const CLAIMS_QUERY = gql`
+	query Claims($offset: Int!) {
+		getClaims(offset: $offset) {
+			totalCount
+			claims {
+				id
+				claim
+				date
+				provider {
+					id
+					name
+				}
+				type
+				billed
+				cost
+				status
+			}
+		}
+	}
+`;
+
+const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentPage } ) => {
 	const router = useRouter();
+	return (
+		<Container maxWidth="lg">
+			<TableContainer component={ Paper }>
+				<Table>
+					<TableHead>
+						<TableRow>
+							<TableCell>Service Date</TableCell>
+							<TableCell>Claim #</TableCell>
+							<TableCell>Provider</TableCell>
+							<TableCell>Type</TableCell>
+							<TableCell align="right">Billed</TableCell>
+							<TableCell align="right">Your Cost</TableCell>
+							<TableCell>Status</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{ claims.map( ( { id, date, claim, provider, type, billed, cost, status }: ClaimRow ) => (
+							<TableRow key={ id }>
+								<TableCell>{ dateFormat( Number.parseInt( date ) ) }</TableCell>
+								<TableCell>{ claim }</TableCell>
+								<TableCell>{ provider.name }</TableCell>
+								<TableCell>{ claimType( type ) }</TableCell>
+								<TableCell align="right">{ numberFormat( billed, true ) }</TableCell>
+								<TableCell align="right">{ numberFormat( cost, true ) }</TableCell>
+								<TableCell>{ claimStatus( status ) }</TableCell>
+							</TableRow>
+						) ) }
+					</TableBody>
+					<TablePagination
+						rowsPerPage={ 20 }
+						rowsPerPageOptions={ [ 20 ] }
+						count={ totalCount }
+						page={ currentPage }
+						onChangePage={ ( event, page ) => router.push( `/claims/page/${ page + 1 }` ) }
+					/>
+				</Table>
+			</TableContainer>
+		</Container>
+	);
+};
+
+const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
+	const { loading, data } = useQuery( CLAIMS_QUERY, { variables: { offset: currentPage * 20 } } );
 
 	return <>
 		<Container maxWidth="md">
@@ -68,44 +142,13 @@ const Claims: React.FC<ClaimsProps> = ( { rows, totalClaims, currentPage } ) => 
 					</Grid>
 				</Grid>
 			</Box>
+			{ loading && <Box my={ 4 }><LinearProgress /></Box> }
 		</Container>
-		<Container maxWidth="lg">
-			<TableContainer component={ Paper }>
-				<Table>
-					<TableHead>
-						<TableRow>
-							<TableCell>Service Date</TableCell>
-							<TableCell>Claim #</TableCell>
-							<TableCell>Provider</TableCell>
-							<TableCell>Type</TableCell>
-							<TableCell align="right">Billed</TableCell>
-							<TableCell align="right">Your Cost</TableCell>
-							<TableCell>Status</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{ rows.map( ( { id, date, claim, provider, type, billed, cost, status } ) => (
-							<TableRow key={ id }>
-								<TableCell>{ dateFormat( date ) }</TableCell>
-								<TableCell>{ claim }</TableCell>
-								<TableCell>{ provider }</TableCell>
-								<TableCell>{ type }</TableCell>
-								<TableCell align="right">{ numberFormat( billed, true ) }</TableCell>
-								<TableCell align="right">{ numberFormat( cost, true ) }</TableCell>
-								<TableCell>{ status }</TableCell>
-							</TableRow>
-						) ) }
-					</TableBody>
-					<TablePagination
-						rowsPerPage={ 20 }
-						rowsPerPageOptions={ [ 20 ] }
-						count={ totalClaims }
-						page={ currentPage }
-						onChangePage={ ( event, page ) => router.push( `/claims/page/${ page }` ) }
-					/>
-				</Table>
-			</TableContainer>
-		</Container>
+		{ data && <ClaimsTable
+			totalCount={ data.getClaims.totalCount }
+			claims={ data.getClaims.claims }
+			currentPage={ currentPage }
+		/> }
 	</>;
 };
 
@@ -113,30 +156,7 @@ export async function getStaticProps(): Promise<{ props: ClaimsProps }> {
 	return {
 		props: {
 			title: 'Claims',
-			totalClaims: 1043,
-			currentPage: 1,
-			rows: [
-				{
-					id: 1,
-					claim: '202933847338490',
-					date: new Date( 2020, 1, 23 ).getTime(),
-					provider: 'Dr. Jane Smith',
-					type: 'in network',
-					billed: 500,
-					cost: 15,
-					status: 'approved',
-				},
-				{
-					id: 2,
-					claim: '2020336DV3604',
-					date: new Date( 2020, 4, 34 ).getTime(),
-					provider: 'Dr. Jane Smith',
-					type: 'in network',
-					billed: 340,
-					cost: 10.55,
-					status: 'pending',
-				},
-			],
+			currentPage: 0,
 		},
 	};
 }

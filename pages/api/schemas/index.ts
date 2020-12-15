@@ -4,6 +4,7 @@ export const typeDefs = gql`
 type Provider {
 	id: ID!
 	name: String!
+	slug: String
 	location: String
 }
 
