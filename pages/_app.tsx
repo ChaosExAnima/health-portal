@@ -39,7 +39,7 @@ const App: React.FC<AppProps> = ( { Component, pageProps } ) => {
 				<ApolloProvider client={ client }>
 					{ /* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */ }
 					<CssBaseline />
-					<Navigation title={ pageProps.title } />
+					<Navigation title="Health Portal ⚕️" />
 					<Component { ...pageProps } />
 				</ApolloProvider>
 			</ThemeProvider>

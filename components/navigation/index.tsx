@@ -19,6 +19,8 @@ const useStyles = makeStyles( ( theme: Theme ) =>
 		title: {
 			flexGrow: 1,
 			display: 'none',
+			color: 'transparent',
+			textShadow: '0 0 white',
 			[ theme.breakpoints.up( 'sm' ) ]: {
 				display: 'block',
 			},
