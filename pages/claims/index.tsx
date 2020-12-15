@@ -149,6 +149,7 @@ const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
 			claims={ data.getClaims.claims }
 			currentPage={ currentPage }
 		/> }
+		<Footer />
 	</>;
 };
 

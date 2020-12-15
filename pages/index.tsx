@@ -14,6 +14,7 @@ import Link from 'next/link';
 import PhoneIcon from '@material-ui/icons/Phone';
 
 import InfoRow from 'components/info-row';
+import Footer from 'components/footer';
 import numberFormat from 'lib/number-format';
 
 import type { PageProps } from 'global-types';
@@ -39,38 +40,41 @@ const Home: React.FC<HomeProps> = ( { welcomeMessage, totalSpent, totalCovered, 
 	} as const;
 
 	return (
-		<Container maxWidth="md">
-			<Box my={ 4 }>
-				<Typography variant="h3" component="h1">
-					{ welcomeMessage }
-				</Typography>
-			</Box>
-			<Box my={ 4 }>
-				<Grid container spacing={ 4 }>
-					<Grid item>
-						<Link href="/calls/new">
-							<Button color="primary" startIcon={ <PhoneIcon /> } { ...buttonProps }>
-								New Call
-							</Button>
-						</Link>
+		<>
+			<Container maxWidth="md">
+				<Box my={ 4 }>
+					<Typography variant="h3" component="h1">
+						{ welcomeMessage }
+					</Typography>
+				</Box>
+				<Box my={ 4 }>
+					<Grid container spacing={ 4 }>
+						<Grid item>
+							<Link href="/calls/new">
+								<Button color="primary" startIcon={ <PhoneIcon /> } { ...buttonProps }>
+									New Call
+								</Button>
+							</Link>
+						</Grid>
+						<Grid item>
+							<Link href="/claims/upload">
+								<Button color="secondary" startIcon={ <CloudUploadIcon /> } { ...buttonProps }>
+									Upload claims
+								</Button>
+							</Link>
+						</Grid>
 					</Grid>
-					<Grid item>
-						<Link href="/claims/upload">
-							<Button color="secondary" startIcon={ <CloudUploadIcon /> } { ...buttonProps }>
-								Upload claims
-							</Button>
-						</Link>
+				</Box>
+				<Paper elevation={ 2 } className={ classes.info }>
+					<Grid container spacing={ 4 } direction="column">
+						<InfoRow info="You&lsquo;ve spent" value={ numberFormat( totalSpent, true ) } />
+						<InfoRow info="Your insurance paid" value={ numberFormat( totalCovered, true ) } />
+						<InfoRow href="/claims" info="Over these claims" value={ numberFormat( totalClaims ) } />
 					</Grid>
-				</Grid>
-			</Box>
-			<Paper elevation={ 2 } className={ classes.info }>
-				<Grid container spacing={ 4 } direction="column">
-					<InfoRow info="You&lsquo;ve spent" value={ numberFormat( totalSpent, true ) } />
-					<InfoRow info="Your insurance paid" value={ numberFormat( totalCovered, true ) } />
-					<InfoRow href="/claims" info="Over these claims" value={ numberFormat( totalClaims ) } />
-				</Grid>
-			</Paper>
-		</Container>
+				</Paper>
+			</Container>
+			<Footer />
+		</>
 	);
 };
 
