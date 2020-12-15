@@ -11,6 +11,7 @@ import {
 } from '@material-ui/core';
 
 import SearchBar, { SearchOption } from 'components/search-bar';
+import Link from 'components/link';
 import NavItem from './nav-item';
 import navigation from 'config/navigation';
 
@@ -62,7 +63,9 @@ const Navigation: React.FC<NavigationProps> = ( { title, maxWidth = 'md' } ) => 
 				<Toolbar className={ classes.toolbar }>
 					{ title && (
 						<Typography variant="h6" className={ classes.title }>
-							{ title }
+							<Link href="/" color="inherit" underline="none">
+								{ title }
+							</Link>
 						</Typography>
 					) }
 					<SearchBar options={ placeholderData } minimized={ isXSmall } />

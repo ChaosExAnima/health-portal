@@ -97,6 +97,7 @@ const SearchBar: React.FC<SearchBarProps> = ( { minimized = false, inputId = 'se
 				freeSolo
 				options={ options }
 				clearOnEscape
+				getOptionLabel={ ( { title } ) => title }
 
 				// Popper
 				PopperComponent={ PopperComponent }
