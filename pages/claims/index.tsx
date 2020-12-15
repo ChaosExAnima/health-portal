@@ -79,7 +79,7 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentP
 		<Container maxWidth="lg">
 			<Paper>
 				<TableContainer>
-					<Table stickyHeader>
+					<Table>
 						<TableHead>
 							<TableRow>
 								<TableCell>Service Date</TableCell>
@@ -93,15 +93,17 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentP
 						</TableHead>
 						<TableBody>
 							{ claims.map( ( { id, date, claim, provider, type, billed, cost, status }: ClaimRow ) => (
-								<TableRow key={ id }>
-									<TableCell>{ dateFormat( Number.parseInt( date ) ) }</TableCell>
-									<TableCell>{ claim }</TableCell>
-									<TableCell>{ provider.name }</TableCell>
-									<TableCell>{ claimType( type ) }</TableCell>
-									<TableCell align="right">{ numberFormat( billed, true ) }</TableCell>
-									<TableCell align="right">{ numberFormat( cost, true ) }</TableCell>
-									<TableCell>{ claimStatus( status ) }</TableCell>
-								</TableRow>
+								<Link key={ id } href={ `/claims/${ claim }` }>
+									<TableRow>
+										<TableCell>{ dateFormat( Number.parseInt( date ) ) }</TableCell>
+										<TableCell>{ claim }</TableCell>
+										<TableCell>{ provider.name }</TableCell>
+										<TableCell>{ claimType( type ) }</TableCell>
+										<TableCell align="right">{ numberFormat( billed, true ) }</TableCell>
+										<TableCell align="right">{ numberFormat( cost, true ) }</TableCell>
+										<TableCell>{ claimStatus( status ) }</TableCell>
+									</TableRow>
+								</Link>
 							) ) }
 						</TableBody>
 						<TableFooter>
