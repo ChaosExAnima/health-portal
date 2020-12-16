@@ -14,10 +14,20 @@ import {
 	TablePagination,
 	LinearProgress,
 	TableFooter,
+	Toolbar,
+	Select,
+	MenuItem,
+	FormControl,
+	InputLabel,
+	makeStyles,
+	Theme,
+	createStyles,
+	TextField,
 } from '@material-ui/core';
 import Link from 'next/link';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import AddIcon from '@material-ui/icons/Add';
+import FilterListIcon from '@material-ui/icons/FilterList';
 import { useRouter } from 'next/router';
 import { useQuery, gql } from '@apollo/client';
 import dayjs from 'dayjs';
@@ -73,11 +83,77 @@ const CLAIMS_QUERY = gql`
 	}
 `;
 
+const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
+	formControl: {
+		margin: theme.spacing( 1 ),
+		minWidth: 120,
+	},
+	filterHeader: {
+		marginRight: theme.spacing( 6 ),
+	},
+} ) );
+
+const ClaimsTableHeader: React.FC = () => {
+	const classes = useStyles();
+	const today = dayjs();
+	const monthStart = dayjs().startOf( 'month' );
+	return (
+		<Toolbar>
+			<Typography variant="h5" component="p" className={ classes.filterHeader }>
+				Filter
+				<FilterListIcon />
+			</Typography>
+			<TextField
+				id="claims-range-start"
+				label="Service Start Date"
+				type="date"
+				defaultValue={ monthStart.format( 'YYYY-MM-DD' ) }
+				className={ classes.formControl }
+				InputLabelProps={ {
+					shrink: true,
+				} }
+			/>
+			<TextField
+				id="claims-range-end"
+				label="Service Start Date"
+				type="date"
+				defaultValue={ today.format( 'YYYY-MM-DD' ) }
+				className={ classes.formControl }
+				InputLabelProps={ {
+					shrink: true,
+				} }
+			/>
+			<FormControl className={ classes.formControl }>
+				<InputLabel id="claims-type-label">Type</InputLabel>
+				<Select labelId="claims-type-label" autoWidth defaultValue="all">
+					<MenuItem value="all">All</MenuItem>
+					<MenuItem value="medical">Medical</MenuItem>
+					<MenuItem value="pharmacy">Pharmacy</MenuItem>
+					<MenuItem value="dental">Dental</MenuItem>
+					<MenuItem value="other">Other</MenuItem>
+				</Select>
+			</FormControl>
+			<FormControl className={ classes.formControl }>
+				<InputLabel id="claims-status-label">Status</InputLabel>
+				<Select labelId="claims-status-label" autoWidth defaultValue="all">
+					<MenuItem value="all">All</MenuItem>
+					<MenuItem value="paid">Paid</MenuItem>
+					<MenuItem value="approved">Approved</MenuItem>
+					<MenuItem value="pending">Pending</MenuItem>
+					<MenuItem value="denied">Denied</MenuItem>
+					<MenuItem value="deleted">Deleted</MenuItem>
+				</Select>
+			</FormControl>
+		</Toolbar>
+	);
+};
+
 const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentPage } ) => {
 	const router = useRouter();
 	return (
 		<Container maxWidth="lg">
 			<Paper>
+				<ClaimsTableHeader />
 				<TableContainer>
 					<Table>
 						<TableHead>
