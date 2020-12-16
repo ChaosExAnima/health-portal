@@ -20,10 +20,10 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import AddIcon from '@material-ui/icons/Add';
 import { useRouter } from 'next/router';
 import { useQuery, gql } from '@apollo/client';
+import dayjs from 'dayjs';
 
 import Footer from 'components/footer';
 import numberFormat from 'lib/number-format';
-import dateFormat from 'lib/date-format';
 import { claimType, claimStatus } from 'lib/strings';
 
 import type { ClaimTypes, PageProps } from 'global-types';
@@ -95,7 +95,7 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentP
 							{ claims.map( ( { id, date, claim, provider, type, billed, cost, status }: ClaimRow ) => (
 								<Link key={ id } href={ `/claims/${ claim }` }>
 									<TableRow>
-										<TableCell>{ dateFormat( Number.parseInt( date ) ) }</TableCell>
+										<TableCell>{ dayjs( Number.parseInt( date ) ).format( 'd/m/YYYY' ) }</TableCell>
 										<TableCell>{ claim }</TableCell>
 										<TableCell>{ provider.name }</TableCell>
 										<TableCell>{ claimType( type ) }</TableCell>
