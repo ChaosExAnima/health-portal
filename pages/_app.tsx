@@ -2,16 +2,13 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Head from 'next/head';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { useEffect } from 'react';
+import { ApolloProvider } from '@apollo/client';
 
 import Navigation from 'components/navigation';
 import theme from 'config/theme';
+import { getClient } from 'lib/apollo';
 
 import type { AppProps } from 'next/app';
-import {
-	ApolloClient,
-	ApolloProvider,
-	InMemoryCache,
-} from '@apollo/client';
 
 const App: React.FC<AppProps> = ( { Component, pageProps } ) => {
 	useEffect( () => {
@@ -24,10 +21,7 @@ const App: React.FC<AppProps> = ( { Component, pageProps } ) => {
 
 	const title = pageProps.title ? `${ pageProps.title } - Health Portal` : 'Health Portal';
 
-	const client = new ApolloClient( {
-		uri: 'http://localhost:3000/api/graphql',
-		cache: new InMemoryCache(),
-	} );
+	const client = getClient();
 
 	return (
 		<>

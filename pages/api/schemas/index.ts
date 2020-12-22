@@ -30,6 +30,7 @@ type Claim {
 	type: ClaimType
 	billed: Float
 	cost: Float
+	owed: Float
 	status: ClaimStatus!
 }
 
@@ -41,5 +42,6 @@ type ClaimResponse {
 }
 
 type Query {
-	getClaims(offset: Int): ClaimResponse!
+	getClaims(offset: Int, limit: Int): ClaimResponse!
+	claim(claim: String!): Claim!
 }`;

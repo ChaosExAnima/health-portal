@@ -36,21 +36,7 @@ import Footer from 'components/footer';
 import numberFormat from 'lib/number-format';
 import { claimType, claimStatus } from 'lib/strings';
 
-import type { ClaimTypes, PageProps } from 'global-types';
-
-type ClaimRow = {
-	id: number;
-	claim: string;
-	date: string;
-	provider: {
-		id: string;
-		name: string;
-	};
-	type: ClaimTypes;
-	billed: number;
-	cost: number;
-	status: 'approved' | 'pending' | 'denied' | 'deleted';
-};
+import type { ClaimRow, PageProps } from 'global-types';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;

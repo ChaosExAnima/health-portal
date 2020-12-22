@@ -11,11 +11,12 @@ const mocks = {
 		claim: casual.card_number(),
 		billed: casual.integer( 50, 50000 ),
 		cost: casual.integer( 0, 50 ),
+		owed: casual.integer( 0, 50 ),
 		date: casual.date( 'x' ),
 	} ),
-	ClaimResponse: ( parent: never, args: { offset?: number } ) => ( {
+	ClaimResponse: ( parent: never, args: { offset?: number, limit?: number } ) => ( {
 		totalCount: 240,
-		claims: () => new MockList( args.offset && args.offset > 220 ? Math.max( 240 - args.offset, 0 ) : 20 ),
+		claims: () => new MockList( Math.min( 240, args.limit || 20 ) ),
 	} ),
 };
 
