@@ -32,6 +32,7 @@ import { useRouter } from 'next/router';
 import { useQuery, gql } from '@apollo/client';
 import dayjs from 'dayjs';
 
+import TextLink from 'components/link';
 import Footer from 'components/footer';
 import ProviderLink from 'components/provider-link';
 import numberFormat from 'lib/number-format';
@@ -156,17 +157,17 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentP
 						</TableHead>
 						<TableBody>
 							{ claims.map( ( { id, date, claim, provider, type, billed, cost, status }: ClaimRow ) => (
-								<Link key={ id } href={ `/claims/${ claim }` }>
-									<TableRow>
-										<TableCell>{ date }</TableCell>
-										<TableCell>{ claim }</TableCell>
-										<TableCell><ProviderLink provider={ provider } /></TableCell>
-										<TableCell>{ claimType( type ) }</TableCell>
-										<TableCell align="right">{ numberFormat( billed, true ) }</TableCell>
-										<TableCell align="right">{ numberFormat( cost, true ) }</TableCell>
-										<TableCell>{ claimStatus( status ) }</TableCell>
-									</TableRow>
-								</Link>
+								<TableRow key={ id }>
+									<TableCell>{ date }</TableCell>
+									<TableCell>
+										<TextLink href={ `/claims/${ claim }` } color="inherit">{ claim }</TextLink>
+									</TableCell>
+									<TableCell><ProviderLink color="inherit" provider={ provider } /></TableCell>
+									<TableCell>{ claimType( type ) }</TableCell>
+									<TableCell align="right">{ numberFormat( billed, true ) }</TableCell>
+									<TableCell align="right">{ numberFormat( cost, true ) }</TableCell>
+									<TableCell>{ claimStatus( status ) }</TableCell>
+								</TableRow>
 							) ) }
 						</TableBody>
 						<TableFooter>
