@@ -1,4 +1,5 @@
 import {
+	Table,
 	TableBody,
 	TableCell,
 	TableContainer,
@@ -19,20 +20,22 @@ const HistoryTable: React.FC = () => {
 				History
 			</Typography>
 			<TableContainer>
-				<TableHead>
-					<TableRow>
-						<TableCell>Date</TableCell>
-						<TableCell>Event</TableCell>
-					</TableRow>
-				</TableHead>
-				<TableBody>
-					{ events.map( ( event, index ) => (
-						<TableRow key={ index }>
-							<TableCell>{ event.date }</TableCell>
-							<TableCell>{ event.name }</TableCell>
+				<Table>
+					<TableHead>
+						<TableRow>
+							<TableCell width="100">Date</TableCell>
+							<TableCell>Event</TableCell>
 						</TableRow>
-					) ) }
-				</TableBody>
+					</TableHead>
+					<TableBody>
+						{ events.map( ( event, index ) => (
+							<TableRow key={ index }>
+								<TableCell>{ event.date }</TableCell>
+								<TableCell>{ event.name }</TableCell>
+							</TableRow>
+						) ) }
+					</TableBody>
+				</Table>
 			</TableContainer>
 		</>
 	);

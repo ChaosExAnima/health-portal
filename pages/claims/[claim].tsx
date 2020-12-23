@@ -12,14 +12,14 @@ import {
 	Typography,
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
-import ConnectionIcon from '@material-ui/icons/Link';
-import PaymentIcon from '@material-ui/icons/Payment';
+import AddIcon from '@material-ui/icons/AddCircleOutline';
 
 import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
 import { staticPathsNoData } from 'lib/static-helpers';
 import { getClient } from 'lib/apollo';
 import numberFormat from 'lib/number-format';
+import { claimStatus } from 'lib/strings';
 
 import type { ClaimRow, PageProps } from 'global-types';
 import type { GetStaticPaths, GetStaticProps } from 'next';
@@ -53,19 +53,16 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
 				</Typography>
 				<Grid container spacing={ 2 } className={ classes.actionButtons }>
 					<Grid item>
+						<Button color="primary" endIcon={ <AddIcon /> }>Add Event</Button>
+					</Grid>
+					<Grid item>
 						<Button color="primary" endIcon={ <EditIcon /> }>Edit</Button>
-					</Grid>
-					<Grid item>
-						<Button color="primary" endIcon={ <ConnectionIcon /> }>Add connection</Button>
-					</Grid>
-					<Grid item>
-						<Button color="primary" endIcon={ <PaymentIcon /> }>Add payment</Button>
 					</Grid>
 				</Grid>
 			</Box>
 			<Box my={ 4 }>
 				<Grid component={ Paper } container className={ classes.detailsContainer } spacing={ 2 }>
-					<DetailsRow name="Status" detail={ claim.status } />
+					<DetailsRow name="Status" detail={ claimStatus( claim.status ) } />
 					<DetailsRow name="Date of service" detail={ dayjs( Number.parseInt( claim.date ) ).format( 'd/m/YYYY' ) } />
 					<DetailsRow name="Provider" detail={
 						<>
