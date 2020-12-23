@@ -8,8 +8,9 @@ import {
 	Typography,
 } from '@material-ui/core';
 
-import type { Event } from 'global-types';
 import EventIcon from './event-icon';
+
+import type { Event } from 'global-types';
 
 type HistoryTableProps = {
 	events: Event[];

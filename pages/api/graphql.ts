@@ -5,8 +5,8 @@ import { resolvers } from './resolvers';
 
 const mocks = {
 	Slug: () => casual.array_of_words( casual.integer( 2, 4 ) ).join( '-' ),
-	Date: () => casual.date( 'MM/DD/YYYY' ),
-	DateTime: () => casual.date( 'MM/DD/YYYY HH:SS' ),
+	Date: () => casual.date( 'M/D/YYYY' ),
+	DateTime: () => casual.date( 'M/D/YYYY HH:SS' ),
 	Provider: () => ( {
 		name: casual.name,
 		slug: casual.string,

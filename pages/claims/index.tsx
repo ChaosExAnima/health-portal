@@ -33,6 +33,7 @@ import { useQuery, gql } from '@apollo/client';
 import dayjs from 'dayjs';
 
 import Footer from 'components/footer';
+import ProviderLink from 'components/provider-link';
 import numberFormat from 'lib/number-format';
 import { claimType, claimStatus } from 'lib/strings';
 
@@ -157,9 +158,9 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentP
 							{ claims.map( ( { id, date, claim, provider, type, billed, cost, status }: ClaimRow ) => (
 								<Link key={ id } href={ `/claims/${ claim }` }>
 									<TableRow>
-										<TableCell>{ dayjs( Number.parseInt( date ) ).format( 'd/m/YYYY' ) }</TableCell>
+										<TableCell>{ date }</TableCell>
 										<TableCell>{ claim }</TableCell>
-										<TableCell>{ provider.name }</TableCell>
+										<TableCell><ProviderLink provider={ provider } /></TableCell>
 										<TableCell>{ claimType( type ) }</TableCell>
 										<TableCell align="right">{ numberFormat( billed, true ) }</TableCell>
 										<TableCell align="right">{ numberFormat( cost, true ) }</TableCell>

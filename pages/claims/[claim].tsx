@@ -1,5 +1,4 @@
 import { gql, useQuery } from '@apollo/client';
-import dayjs from 'dayjs';
 import {
 	Box,
 	Button,
@@ -86,7 +85,7 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
 			<Box my={ 4 }>
 				<Grid component={ Paper } container className={ classes.detailsContainer } spacing={ 2 }>
 					<DetailsRow name="Status" detail={ claimStatus( claim.status ) } />
-					<DetailsRow name="Date of service" detail={ dayjs( Number.parseInt( claim.date ) ).format( 'd/m/YYYY' ) } />
+					<DetailsRow name="Date of service" detail={ claim.date } />
 					<DetailsRow name="Provider" detail={
 						<>
 							<ProviderLink provider={ claim.provider } />
