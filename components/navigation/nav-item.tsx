@@ -1,26 +1,43 @@
-import { IconButton } from '@material-ui/core';
-import { useRouter } from 'next/router';
+import {
+	createStyles,
+	IconButton,
+	makeStyles,
+	Theme,
+	Tooltip,
+} from '@material-ui/core';
 import Link from 'next/link';
 
 type NavItemLinkProps = {
 	name: string;
 	href: string;
 	icon: React.ReactNode;
+	path: string;
 }
 
-const NavItem: React.FC<NavItemLinkProps> = ( { name, icon, href } ) => {
-	const { pathname } = useRouter();
+const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
+	inactive: {
+		color: theme.palette.primary.light,
+		'&:hover': {
+			color: 'inherit',
+		},
+	},
+} ) );
+
+const NavItem: React.FC<NavItemLinkProps> = ( { name, icon, href, path } ) => {
+	const classes = useStyles();
 	let active = false;
 	if ( href === '/' ) {
-		active = pathname === '/';
-	} else if ( pathname.includes( href ) ) {
+		active = path === '/';
+	} else if ( path.includes( href ) ) {
 		active = true;
 	}
 	return (
 		<Link href={ href }>
-			<IconButton aria-label={ name } disabled={ active }>
-				{ icon }
-			</IconButton>
+			<Tooltip title={ name }>
+				<IconButton aria-label={ name } className={ active ? '' : classes.inactive }>
+					{ icon }
+				</IconButton>
+			</Tooltip>
 		</Link>
 	);
 };

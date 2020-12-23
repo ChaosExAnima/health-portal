@@ -14,6 +14,7 @@ import SearchBar, { SearchOption } from 'components/search-bar';
 import Link from 'components/link';
 import NavItem from './nav-item';
 import navigation from 'config/navigation';
+import { useRouter } from 'next/router';
 
 const useStyles = makeStyles( ( theme: Theme ) =>
 	createStyles( {
@@ -56,6 +57,7 @@ const Navigation: React.FC<NavigationProps> = ( { title, maxWidth = 'md' } ) => 
 	const classes = useStyles();
 	const { breakpoints } = useTheme();
 	const isXSmall = useMediaQuery( breakpoints.only( 'xs' ) );
+	const { pathname } = useRouter();
 
 	return (
 		<AppBar position="static">
@@ -69,7 +71,7 @@ const Navigation: React.FC<NavigationProps> = ( { title, maxWidth = 'md' } ) => 
 						</Typography>
 					) }
 					<SearchBar options={ placeholderData } minimized={ isXSmall } />
-					{ navigation.map( ( navItem ) => <NavItem { ...navItem } key={ navItem.href } /> ) }
+					{ navigation.map( ( navItem ) => <NavItem { ...navItem } key={ navItem.href } path={ pathname } /> ) }
 				</Toolbar>
 			</Container>
 		</AppBar>

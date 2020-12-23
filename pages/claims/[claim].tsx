@@ -1,6 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import {
 	Box,
+	Breadcrumbs,
 	Button,
 	Container,
 	createStyles,
@@ -22,6 +23,7 @@ import { claimStatus } from 'lib/strings';
 
 import type { ClaimRow, PageProps } from 'global-types';
 import type { GetStaticPaths, GetStaticProps } from 'next';
+import Link from 'components/link';
 
 const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	actionButtons: {
@@ -39,7 +41,7 @@ type ClaimPageProps = PageProps & {
 	claim: ClaimRow;
 };
 
-const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
+const ClaimPage: React.FC<ClaimPageProps> = ( { title, claim } ) => {
 	const HISTORY_QUERY = gql`
 		query ClaimHistory( $id: String! ) {
 			claim(claim: $id) {
@@ -69,6 +71,12 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
 	}
 	return (
 		<Container maxWidth="md">
+			<Box my={ 2 }>
+				<Breadcrumbs aria-label="breadcrumb">
+					<Link color="inherit" href="/claims">Claims</Link>
+					<Typography color="textPrimary">{ title }</Typography>
+				</Breadcrumbs>
+			</Box>
 			<Box my={ 4 }>
 				<Typography variant="h4" component="h1">
 					Claim # { claim.claim }
