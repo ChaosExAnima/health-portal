@@ -1,26 +1,41 @@
 import casual from 'casual';
 import { ApolloServer, MockList } from 'apollo-server-micro';
 import { typeDefs } from './schemas';
+import { resolvers } from './resolvers';
 
 const mocks = {
+	Slug: () => casual.array_of_words( casual.integer( 2, 4 ) ).join( '-' ),
+	Date: () => casual.date( 'MM/DD/YYYY' ),
+	DateTime: () => casual.date( 'MM/DD/YYYY HH:SS' ),
 	Provider: () => ( {
 		name: casual.name,
-		location: casual._address,
+		slug: casual.string,
 	} ),
 	Claim: () => ( {
 		claim: casual.card_number(),
 		billed: casual.integer( 50, 50000 ),
 		cost: casual.integer( 0, 50 ),
 		owed: casual.integer( 0, 50 ),
-		date: casual.date( 'x' ),
+		history: () => new MockList( [ 0, 10 ] ),
 	} ),
 	ClaimResponse: ( parent: never, args: { offset?: number, limit?: number } ) => ( {
 		totalCount: 240,
 		claims: () => new MockList( Math.min( 240, args.limit || 20 ) ),
 	} ),
+	Call: () => ( {
+		notes: casual.sentence,
+	} ),
+	Dated: () => ( {
+	} ),
+	Dispute: () => ( {
+		slug: casual.string,
+	} ),
+	Event: () => ( {
+		description: casual.sentence,
+	} ),
 };
 
-const apolloServer = new ApolloServer( { typeDefs, mocks } );
+const apolloServer = new ApolloServer( { typeDefs, mocks, resolvers } );
 
 export const config = {
 	api: {
