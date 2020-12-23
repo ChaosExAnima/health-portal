@@ -17,6 +17,7 @@ export type ClaimTypes = 'dental' | 'in network' | 'out of network' | 'pharmacy'
 
 export type ClaimRow = DBRow & {
 	claim: string;
+	slug: string;
 	date: string;
 	provider: Provider;
 	type: ClaimTypes;
@@ -28,6 +29,7 @@ export type ClaimRow = DBRow & {
 
 export type Call = DBRow & {
 	provider: Provider;
+	slug: string;
 	date: string;
 	notes: string;
 };
@@ -38,13 +40,12 @@ export type Dispute = DBRow & {
 	date: string;
 }
 
-export type EventType = 'payment' | 'call' | 'appeal' | 'note';
+type EventLink = Call | Dispute | ClaimRow;
 
 export type Event = DBRow & {
-	type: EventType;
 	date: string;
 	description: string;
-	link?: Call | Dispute | ClaimRow;
+	link?: EventLink & { __typename: string };
 	provider?: Provider;
 	icon?: React.ReactNode;
 };

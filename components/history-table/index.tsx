@@ -17,6 +17,7 @@ type HistoryTableProps = {
 };
 
 const HistoryTable: React.FC<HistoryTableProps> = ( { events } ) => {
+	// TODO: Move GQL query to here and combine with parent query with fragment.
 	return (
 		<>
 			<Typography variant="h5" component="h2">
@@ -35,7 +36,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ( { events } ) => {
 						{ events.map( ( event, index ) => (
 							<TableRow key={ index }>
 								<TableCell>{ event.date }</TableCell>
-								<TableCell><EventIcon type={ event.type } /></TableCell>
+								<TableCell><EventIcon type={ event.link?.__typename } slug={ event.link?.slug } /></TableCell>
 								<TableCell>{ event.description }</TableCell>
 							</TableRow>
 						) ) }

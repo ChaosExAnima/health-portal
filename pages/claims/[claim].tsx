@@ -50,6 +50,7 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { title, claim } ) => {
 					description
 					type
 					link {
+						__typename
 						... on Dispute {
 							slug
 						}
