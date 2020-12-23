@@ -88,7 +88,7 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
 					<DetailsRow name="Date of service" detail={ claim.date } />
 					<DetailsRow name="Provider" detail={
 						<>
-							<ProviderLink provider={ claim.provider } />
+							<ProviderLink provider={ claim.provider } color="inherit" />
 							{/* TODO: Indicate whether provider is in network or not */}
 						</>
 					} />
