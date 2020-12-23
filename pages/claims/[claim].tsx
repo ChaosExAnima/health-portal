@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import dayjs from 'dayjs';
 import {
 	Box,
@@ -41,7 +41,30 @@ type ClaimPageProps = PageProps & {
 };
 
 const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
+	const HISTORY_QUERY = gql`
+		query ClaimHistory( $id: String! ) {
+			claim(claim: $id) {
+				history {
+					date
+					description
+					type
+					link {
+						... on Dispute {
+							slug
+						}
+						... on Claim {
+							slug
+						}
+						... on Call {
+							slug
+						}
+					}
+				}
+			}
+		}
+	`;
 	const classes = useStyles();
+	const { data, loading } = useQuery( HISTORY_QUERY, { variables: { id: claim?.id } } );
 	if ( ! claim ) {
 		return null;
 	}
@@ -77,7 +100,8 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
 				</Grid>
 			</Box>
 			<Box my={ 4 }>
-				<HistoryTable />
+				{ loading && 'Loading!' }
+				{ data && <HistoryTable events={ data.claim.history } /> }
 			</Box>
 		</Container>
 	);

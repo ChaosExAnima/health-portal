@@ -7,13 +7,15 @@ import {
 	TableRow,
 	Typography,
 } from '@material-ui/core';
-import dayjs from 'dayjs';
 
-const HistoryTable: React.FC = () => {
-	const events = [
-		{ date: dayjs( '1/1/2020' ).format( 'D/M/YYYY' ), name: 'Foo bar' },
-	];
+import type { Event } from 'global-types';
+import EventIcon from './event-icon';
 
+type HistoryTableProps = {
+	events: Event[];
+};
+
+const HistoryTable: React.FC<HistoryTableProps> = ( { events } ) => {
 	return (
 		<>
 			<Typography variant="h5" component="h2">
@@ -24,6 +26,7 @@ const HistoryTable: React.FC = () => {
 					<TableHead>
 						<TableRow>
 							<TableCell width="100">Date</TableCell>
+							<TableCell width="50">Type</TableCell>
 							<TableCell>Event</TableCell>
 						</TableRow>
 					</TableHead>
@@ -31,7 +34,8 @@ const HistoryTable: React.FC = () => {
 						{ events.map( ( event, index ) => (
 							<TableRow key={ index }>
 								<TableCell>{ event.date }</TableCell>
-								<TableCell>{ event.name }</TableCell>
+								<TableCell><EventIcon type={ event.type } /></TableCell>
+								<TableCell>{ event.description }</TableCell>
 							</TableRow>
 						) ) }
 					</TableBody>

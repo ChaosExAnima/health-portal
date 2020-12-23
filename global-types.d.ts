@@ -38,11 +38,13 @@ export type Dispute = DBRow & {
 	date: string;
 }
 
+export type EventType = 'payment' | 'call' | 'appeal' | 'note';
+
 export type Event = DBRow & {
-	type: 'payment' | 'call' | 'appeal' | 'update';
+	type: EventType;
 	date: string;
 	description: string;
-	event?: Call | Dispute;
+	link?: Call | Dispute | ClaimRow;
 	provider?: Provider;
 	icon?: React.ReactNode;
 };
