@@ -1,6 +1,5 @@
 import {
 	Box,
-	Button,
 	Container,
 	Grid,
 	Paper,
@@ -9,15 +8,15 @@ import {
 	createStyles,
 	makeStyles,
 } from '@material-ui/core';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import Link from 'next/link';
-import PhoneIcon from '@material-ui/icons/Phone';
+import UploadIcon from '@material-ui/icons/CloudUpload';
+import CallIcon from '@material-ui/icons/Phone';
 
 import InfoRow from 'components/info-row';
 import Footer from 'components/footer';
 import numberFormat from 'lib/number-format';
 
 import type { PageProps } from 'global-types';
+import ButtonLink from 'components/button-link';
 
 type HomeProps = PageProps & {
 	welcomeMessage: string;
@@ -26,45 +25,38 @@ type HomeProps = PageProps & {
 	totalClaims: number;
 };
 
-const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
+const useStyles = makeStyles( ( { spacing }: Theme ) => createStyles( {
+	actionButtons: {
+		marginTop: spacing( 1 ),
+	},
 	info: {
-		padding: theme.spacing( 3 ),
+		padding: spacing( 3 ),
 	},
 } ) );
 
 const Home: React.FC<HomeProps> = ( { welcomeMessage, totalSpent, totalCovered, totalClaims } ) => {
 	const classes = useStyles();
-	const buttonProps = {
-		size: 'large',
-		mx: 3,
-	} as const;
 
 	return (
-		<Container maxWidth="md">
+		<Container maxWidth="md" component="main">
 			<Box my={ 4 }>
-				<Typography variant="h3" component="h1">
+				<Typography variant="h4" component="h1">
 					{ welcomeMessage }
 				</Typography>
-			</Box>
-			<Box my={ 4 }>
-				<Grid container spacing={ 4 }>
+				<Grid container spacing={ 4 } className={ classes.actionButtons }>
 					<Grid item>
-						<Link href="/calls/new">
-							<Button color="primary" startIcon={ <PhoneIcon /> } { ...buttonProps }>
-								New Call
-							</Button>
-						</Link>
+						<ButtonLink href="/calls/new" color="primary" startIcon={ <CallIcon /> } size="large">
+							New call
+						</ButtonLink>
 					</Grid>
 					<Grid item>
-						<Link href="/claims/upload">
-							<Button color="secondary" startIcon={ <CloudUploadIcon /> } { ...buttonProps }>
-								Upload claims
-							</Button>
-						</Link>
+						<ButtonLink href="/claims/upload" color="secondary" startIcon={ <UploadIcon /> } size="large">
+							Upload claims
+						</ButtonLink>
 					</Grid>
 				</Grid>
 			</Box>
-			<Paper elevation={ 2 } className={ classes.info }>
+			<Paper elevation={ 2 } className={ classes.info } component="section">
 				<Grid container spacing={ 4 } direction="column">
 					<InfoRow info="You&lsquo;ve spent" value={ numberFormat( totalSpent, true ) } />
 					<InfoRow info="Your insurance paid" value={ numberFormat( totalCovered, true ) } />
@@ -77,6 +69,7 @@ const Home: React.FC<HomeProps> = ( { welcomeMessage, totalSpent, totalCovered, 
 };
 
 export async function getServerSideProps(): Promise<{ props: HomeProps }> {
+	// TODO: Move this to GraphQL.
 	const welcomeMessages = [
 		'Welcome to the health portal! 👋🏻',
 		'What are you dealing with today? 😐',
