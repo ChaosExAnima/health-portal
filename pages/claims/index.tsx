@@ -26,48 +26,27 @@ import UploadIcon from '@material-ui/icons/CloudUpload';
 import AddIcon from '@material-ui/icons/Add';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { useRouter } from 'next/router';
-import { useQuery, gql } from '@apollo/client';
 import dayjs from 'dayjs';
 
+import { useClaimsIndexQuery, Claim } from './queries.graphql';
+import Header, { ActionItem } from 'components/header';
 import TextLink from 'components/link';
 import Footer from 'components/footer';
 import ProviderLink from 'components/provider-link';
 import numberFormat from 'lib/number-format';
 import { claimType, claimStatus } from 'lib/strings';
 
-import type { ClaimRow, PageProps } from 'global-types';
-import Header, { ActionItem } from 'components/header';
+import type { PageProps } from 'global-types';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;
 };
 
 type ClaimsTableProps = {
-	claims: ClaimRow[];
+	claims: Claim[];
 	totalCount: number;
 	currentPage: number;
 };
-
-const CLAIMS_QUERY = gql`
-	query Claims($offset: Int!) {
-		getClaims(offset: $offset) {
-			totalCount
-			claims {
-				id
-				claim
-				date
-				provider {
-					id
-					name
-				}
-				type
-				billed
-				cost
-				status
-			}
-		}
-	}
-`;
 
 const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	formControl: {
@@ -154,16 +133,16 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentP
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{ claims.map( ( { id, date, claim, provider, type, billed, cost, status }: ClaimRow ) => (
+							{ claims.map( ( { id, date, claim, provider, type, billed, cost, status }: Claim ) => (
 								<TableRow key={ id }>
 									<TableCell>{ date }</TableCell>
 									<TableCell>
 										<TextLink href={ `/claims/${ claim }` } color="inherit">{ claim }</TextLink>
 									</TableCell>
 									<TableCell><ProviderLink color="inherit" provider={ provider } /></TableCell>
-									<TableCell>{ claimType( type ) }</TableCell>
-									<TableCell align="right">{ numberFormat( billed, true ) }</TableCell>
-									<TableCell align="right">{ numberFormat( cost, true ) }</TableCell>
+									<TableCell>{ claimType( type || '' ) }</TableCell>
+									<TableCell align="right">{ numberFormat( billed || 0, true ) }</TableCell>
+									<TableCell align="right">{ numberFormat( cost || 0, true ) }</TableCell>
 									<TableCell>{ claimStatus( status ) }</TableCell>
 								</TableRow>
 							) ) }
@@ -187,7 +166,7 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentP
 };
 
 const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
-	const { loading, data } = useQuery( CLAIMS_QUERY, { variables: { offset: currentPage * 20 } } );
+	const { loading, data } = useClaimsIndexQuery( { variables: { offset: currentPage * 20 } } );
 
 	const headerActions = [
 		{
@@ -210,7 +189,7 @@ const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
 		</Container>
 		{ data && <ClaimsTable
 			totalCount={ data.getClaims.totalCount }
-			claims={ data.getClaims.claims }
+			claims={ data.getClaims.claims as Claim[] }
 			currentPage={ currentPage }
 		/> }
 		<Container maxWidth="md"><Footer /></Container>

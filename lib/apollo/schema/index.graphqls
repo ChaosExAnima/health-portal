@@ -1,0 +1,30 @@
+# import Claim from './types.graphqls'
+# import Upload from './scalars.graphqls'
+
+type ClaimResponse {
+	claims: [Claim]!
+	totalCount: Int!
+	offset: Int!
+	limit: Int!
+}
+
+type Query {
+	getClaims(offset: Int, limit: Int): ClaimResponse!
+	claim(claim: String!): Claim!
+}
+
+interface MutationResponse {
+	code: String!
+	success: Boolean!
+}
+
+type UploadClaimsResponse implements MutationResponse {
+	code: String!
+	success: Boolean!
+	claimsProcessed: Int
+	errors: [String]
+}
+
+type Mutation {
+	uploadClaims( file: Upload! ): UploadClaimsResponse!
+}

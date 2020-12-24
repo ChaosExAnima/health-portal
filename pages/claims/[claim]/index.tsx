@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client';
 import {
 	Box,
 	Breadcrumbs,
@@ -14,17 +13,25 @@ import {
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/AddCircleOutline';
 
+import {
+	Claim,
+	ClaimDocument,
+	ClaimQuery,
+	ClaimsSlugsDocument,
+	ClaimsSlugsQuery,
+	useClaimHistoryQuery,
+} from '../queries.graphql';
 import ButtonLink from 'components/button-link';
 import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
 import Link from 'components/link';
 import { staticPathsNoData } from 'lib/static-helpers';
-import { getClient } from 'lib/apollo';
+import { createApolloClient } from 'lib/apollo';
 import numberFormat from 'lib/number-format';
 import { claimStatus } from 'lib/strings';
 
 import type { GetStaticPaths, GetStaticProps } from 'next';
-import type { ClaimRow, PageProps } from 'global-types';
+import type { PageProps } from 'global-types';
 
 const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	actionButtons: {
@@ -39,35 +46,12 @@ const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 } ) );
 
 export type ClaimPageProps = PageProps & {
-	claim: ClaimRow;
+	claim: Claim;
 };
 
 const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
-	const HISTORY_QUERY = gql`
-		query ClaimHistory( $id: String! ) {
-			claim(claim: $id) {
-				history {
-					date
-					description
-					type
-					link {
-						__typename
-						... on Dispute {
-							slug
-						}
-						... on Claim {
-							slug
-						}
-						... on Call {
-							slug
-						}
-					}
-				}
-			}
-		}
-	`;
 	const classes = useStyles();
-	const { data, loading } = useQuery( HISTORY_QUERY, { variables: { id: claim?.id } } );
+	const { data, loading } = useClaimHistoryQuery( { variables: { id: claim?.id } } );
 	if ( ! claim ) {
 		return null;
 	}
@@ -102,15 +86,15 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
 							{/* TODO: Indicate whether provider is in network or not */}
 						</>
 					} />
-					<DetailsRow name="Amount billed" detail={ numberFormat( claim.billed, true ) } />
-					<DetailsRow name="You owe" detail={ numberFormat( claim.cost, true ) } />
+					<DetailsRow name="Amount billed" detail={ numberFormat( claim.billed || 0, true ) } />
+					<DetailsRow name="You owe" detail={ numberFormat( claim.cost || 0, true ) } />
 					{/* TODO: Indicate if this has been paid, with ability to add a payment */}
-					<DetailsRow name="You are owed" detail={ numberFormat( claim.owed, true ) } />
+					<DetailsRow name="You are owed" detail={ numberFormat( claim.owed || 0, true ) } />
 				</Grid>
 			</Box>
 			<Box my={ 4 }>
 				{ loading && 'Loading!' }
-				{ data && <HistoryTable events={ data.claim.history } /> }
+				{ data?.claim?.history && <HistoryTable events={ data.claim.history } /> }
 			</Box>
 		</Container>
 	);
@@ -135,63 +119,20 @@ const DetailsRow: React.FC<{ name: React.ReactNode, detail: React.ReactNode }> =
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-	const CLAIM_SLUG_QUERY = gql`
-		query {
-			getClaims( limit: 10000 ) {
-				claims {
-					claim
-				}
-			}
-		}
-	`;
-
-	type ClaimsSlugQuery = {
-		getClaims: {
-			claims: ClaimRow[];
-		}
-	};
-
-	const client = getClient();
-	const { data } = await client.query<ClaimsSlugQuery>( { query: CLAIM_SLUG_QUERY } );
+	const client = await createApolloClient();
+	const { data } = await client.query<ClaimsSlugsQuery>( { query: ClaimsSlugsDocument } );
 	return staticPathsNoData( data ) || {
-		paths: ( data as ClaimsSlugQuery ).getClaims.claims.map( ( { claim } ) => `/claims/${ claim }` ),
+		paths: data.getClaims.claims.map( ( claim ) => claim && `/claims/${ claim.claim }` ).filter( Boolean ) as string[],
 		fallback: true,
 	};
 };
 
 export const getStaticProps: GetStaticProps<ClaimPageProps> = async () => {
-	const CLAIM_QUERY = gql`
-		query Claim( $id: String! ) {
-			claim(claim: $id) {
-				id
-				claim
-				slug
-				date
-				provider {
-					id
-					name
-				}
-				type
-				billed
-				cost
-				owed
-				status
-			}
-		}
-	`;
-
-	type ClaimQuery = {
-		claim: ClaimRow;
-	};
-	type ClaimQueryVariables = {
-		id: string;
-	};
-
-	const client = getClient();
-	const { data } = await client.query<ClaimQuery, ClaimQueryVariables>( { query: CLAIM_QUERY, variables: { id: '12345' } } );
+	const client = await createApolloClient();
+	const { data } = await client.query<ClaimQuery>( { query: ClaimDocument } );
 	return {
 		props: {
-			title: `Claim # ${ data.claim.claim }`,
+			title: data.claim.claim ? `Claim # ${ data.claim.claim }` : 'Claim',
 			claim: data.claim,
 		},
 	};

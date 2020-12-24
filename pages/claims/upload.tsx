@@ -11,9 +11,10 @@ import {
 } from '@material-ui/core';
 import { useDropzone } from 'react-dropzone';
 import { useMemo } from 'react';
-import { gql, useMutation } from '@apollo/client';
-
+import { useMutation } from '@apollo/client';
 import { Alert } from '@material-ui/lab';
+
+import { UploadClaims } from './queries.gql';
 import Link from 'components/link';
 import ButtonLink from 'components/button-link';
 
@@ -66,16 +67,6 @@ const useStyles = makeStyles( ( { palette, shape, spacing }: Theme ) => createSt
 	},
 } ) );
 
-const UPLOAD_CLAIMS = gql`
-	mutation UploadClaims( $file: Upload! ) {
-		uploadClaims( file: $file ) {
-			success
-			claimsProcessed
-			errors
-		}
-	}
-`;
-
 type UploadData = {
 	uploadClaims: {
 		success: boolean;
@@ -85,7 +76,7 @@ type UploadData = {
 };
 
 const ClaimUploadPage: React.FC<ClaimUploadPageProps> = () => {
-	const [ uploadClaims, { data, loading, error } ] = useMutation<UploadData>( UPLOAD_CLAIMS );
+	const [ uploadClaims, { data, loading, error } ] = useMutation<UploadData>( UploadClaims );
 	const {
 		getRootProps,
 		getInputProps,

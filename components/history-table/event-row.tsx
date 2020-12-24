@@ -5,9 +5,9 @@ import {
 
 import EventIcon from './event-icon';
 import OptionalLink from 'components/optional-link';
-import { slugToPath } from 'lib/apollo';
+import { slugToPath } from 'lib/apollo/utils';
 
-import type { Event } from 'global-types';
+import type { Event } from 'pages/claims/queries.graphql';
 
 type EventRowProps = Event;
 

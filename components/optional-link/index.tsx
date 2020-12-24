@@ -1,7 +1,8 @@
 import Link, { LinkProps } from 'components/link';
-import type { Optional } from 'global-types';
 
-const OptionalLink: React.FC<Optional<LinkProps, 'href'>> = ( { children, href, ...props } ) => {
+type OptionalLinkProps = Omit<LinkProps, 'href'> & { href?: string | null };
+
+const OptionalLink: React.FC<OptionalLinkProps> = ( { children, href, ...props } ) => {
 	return href
 		? <Link href={ href } {...props}>{ children }</Link>
 		: <>{ children }</>;

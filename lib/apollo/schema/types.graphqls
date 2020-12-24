@@ -1,11 +1,7 @@
-import { gql } from 'apollo-server-micro';
+# import Date from './scalars.graphqls'
+# import DateTime from './scalars.graphqls'
+# import Slug from './scalars.graphqls'
 
-export const typeDefs = gql`
-union EventLink = Claim | Dispute | Call
-
-scalar Date
-scalar DateTime
-scalar Slug
 
 enum ClaimType {
 	DENTAL
@@ -27,11 +23,6 @@ enum EventType {
 	APPEAL
 	UPDATE
 	NOTE
-}
-
-interface MutationResponse {
-	code: String!
-	success: Boolean!
 }
 
 type Provider {
@@ -76,6 +67,8 @@ type Dispute {
 	history: [Event!]
 }
 
+union EventLink = Claim | Dispute | Call
+
 type Event {
 	id: ID!
 	type: EventType!
@@ -83,26 +76,3 @@ type Event {
 	description: String
 	link: EventLink
 }
-
-type ClaimResponse {
-	claims: [Claim]!
-	totalCount: Int!
-	offset: Int!
-	limit: Int!
-}
-
-type UploadClaimsResponse implements MutationResponse {
-	code: String!
-	success: Boolean!
-	claimsProcessed: Int
-	errors: [String]
-}
-
-type Query {
-	getClaims(offset: Int, limit: Int): ClaimResponse!
-	claim(claim: String!): Claim!
-}
-
-type Mutation {
-	uploadClaims( file: Upload! ): UploadClaimsResponse!
-}`;

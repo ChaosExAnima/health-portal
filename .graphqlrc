@@ -1,0 +1,4 @@
+{
+	"schema": [ "schema.gql", "${SCHEMA_ENDPOINT:'http://localhost:3000/api/graphql'}" ],
+	"documents": [ "pages/**/*.{gql,tsx}", "components/**/*.{gql,tsx}" ]
+}

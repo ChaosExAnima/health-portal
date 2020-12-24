@@ -6,11 +6,11 @@ import { ApolloProvider } from '@apollo/client';
 
 import Navigation from 'components/navigation';
 import theme from 'config/theme';
-import { getClient } from 'lib/apollo';
+import { createApolloClient } from 'lib/apollo';
 
 import type { AppProps } from 'next/app';
 
-const App: React.FC<AppProps> = ( { Component, pageProps } ) => {
+const App: React.FC<AppProps> = async ( { Component, pageProps } ) => {
 	useEffect( () => {
 		// Remove the server-side injected CSS.
 		const jssStyles = document.querySelector( '#jss-server-side' );
@@ -21,7 +21,7 @@ const App: React.FC<AppProps> = ( { Component, pageProps } ) => {
 
 	const title = pageProps.title ? `${ pageProps.title } - Health Portal` : 'Health Portal';
 
-	const client = getClient();
+	const client = await createApolloClient();
 
 	return (
 		<>

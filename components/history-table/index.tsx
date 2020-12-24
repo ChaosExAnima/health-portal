@@ -7,9 +7,8 @@ import {
 	TableRow,
 	Typography,
 } from '@material-ui/core';
+import { Event } from 'pages/claims/queries.graphql';
 import EventRow from './event-row';
-
-import type { Event } from 'global-types';
 
 type HistoryTableProps = {
 	events: Event[];
@@ -32,7 +31,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ( { events } ) => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{ events.map( ( event ) => <EventRow key={ event.id } { ...event } /> ) }
+						{ events.map( ( event: Event ) => <EventRow key={ event.id } { ...event } /> ) }
 					</TableBody>
 				</Table>
 			</TableContainer>

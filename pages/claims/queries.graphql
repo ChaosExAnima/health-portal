@@ -1,0 +1,80 @@
+query ClaimsIndex($offset: Int!) {
+	getClaims(offset: $offset) {
+		totalCount
+		claims {
+			id
+			claim
+			date
+			provider {
+				id
+				name
+				slug
+			}
+			type
+			billed
+			cost
+			status
+		}
+	}
+}
+
+query ClaimsSlugs{
+	getClaims( limit: 10000 ) {
+		claims {
+			claim
+		}
+	}
+}
+
+query Claim( $id: String! ) {
+	claim(claim: $id) {
+		id
+		claim
+		slug
+		date
+		provider {
+			id
+			name
+			slug
+		}
+		type
+		billed
+		cost
+		owed
+		status
+	}
+}
+
+query ClaimHistory( $id: String! ) {
+	claim(claim: $id) {
+		history {
+			id
+			date
+			description
+			type
+			link {
+				__typename
+				... on Dispute {
+					id
+					slug
+				}
+				... on Claim {
+					id
+					slug
+				}
+				... on Call {
+					id
+					slug
+				}
+			}
+		}
+	}
+}
+
+mutation UploadClaims( $file: Upload! ) {
+	uploadClaims( file: $file ) {
+		success
+		claimsProcessed
+		errors
+	}
+}
