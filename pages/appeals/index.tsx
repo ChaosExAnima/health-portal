@@ -1,25 +1,23 @@
-import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import { Paper } from '@material-ui/core';
+import { Box, Container } from '@material-ui/core';
 
-export default function Claims() {
+import type { PageProps } from 'global-types';
+
+const AppealsPage: React.FC<PageProps> = () => {
 	return (
-		<Container maxWidth="lg">
+		<Container maxWidth="md">
 			<Box my={ 4 }>
-				<Typography variant="h4" component="h1" gutterBottom>
-					Claims
-				</Typography>
+				Hello
 			</Box>
-			<Paper>Paper?</Paper>
 		</Container>
 	);
-}
+};
 
-export async function getStaticProps() {
+export async function getStaticProps(): Promise<{ props: PageProps }> {
 	return {
 		props: {
-			title: 'Claims',
+			title: 'Appeals',
 		},
 	};
 }
+
+export default AppealsPage;

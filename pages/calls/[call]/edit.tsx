@@ -2,7 +2,7 @@ import { Box, Container } from '@material-ui/core';
 
 import type { PageProps } from 'global-types';
 
-const CallsPage: React.FC<PageProps> = () => {
+const CallEditPage: React.FC<PageProps> = () => {
 	return (
 		<Container maxWidth="md">
 			<Box my={ 4 }>
@@ -15,9 +15,9 @@ const CallsPage: React.FC<PageProps> = () => {
 export async function getStaticProps(): Promise<{ props: PageProps }> {
 	return {
 		props: {
-			title: 'Calls',
+			title: 'Editing call on 1/1/2020',
 		},
 	};
 }
 
-export default CallsPage;
+export default CallEditPage;
