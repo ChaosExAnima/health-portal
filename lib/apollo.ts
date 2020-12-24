@@ -9,6 +9,9 @@ export const getClient = (): ApolloClient<NormalizedCacheObject> => new ApolloCl
 	cache: new InMemoryCache(),
 } );
 
+export const slugToPath = ( link: { __typename: string; slug: string } | undefined ): string | undefined =>
+	link && typeToPath( link.__typename, link.slug );
+
 export const typeToPath = ( type: string, slug: string ): string => {
 	switch ( type ) {
 		case 'Call':

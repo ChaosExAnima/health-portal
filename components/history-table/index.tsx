@@ -7,8 +7,7 @@ import {
 	TableRow,
 	Typography,
 } from '@material-ui/core';
-
-import EventIcon from './event-icon';
+import EventRow from './event-row';
 
 import type { Event } from 'global-types';
 
@@ -33,13 +32,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ( { events } ) => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{ events.map( ( event, index ) => (
-							<TableRow key={ index }>
-								<TableCell>{ event.date }</TableCell>
-								<TableCell><EventIcon type={ event.link?.__typename } slug={ event.link?.slug } /></TableCell>
-								<TableCell>{ event.description }</TableCell>
-							</TableRow>
-						) ) }
+						{ events.map( ( event ) => <EventRow key={ event.id } { ...event } /> ) }
 					</TableBody>
 				</Table>
 			</TableContainer>

@@ -1,3 +1,5 @@
+export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>;
+
 export type NextURL = URL | string;
 
 export type PageProps = {
@@ -8,7 +10,7 @@ type DBRow = {
 	id: number;
 }
 
-export type Provider = string | DBRow & {
+export type Provider = DBRow & {
 	slug: string;
 	name: string;
 };

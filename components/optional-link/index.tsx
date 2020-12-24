@@ -1,15 +1,9 @@
-import NextLink from 'next/link';
-import MuiLink from '@material-ui/core/Link';
+import Link, { LinkProps } from 'components/link';
+import type { Optional } from 'global-types';
 
-import type { NextURL } from 'global-types';
-
-const OptionalLink: React.FC<{ href?: NextURL }> = ( { children, href } ) => {
+const OptionalLink: React.FC<Optional<LinkProps, 'href'>> = ( { children, href, ...props } ) => {
 	return href
-		? <NextLink href={ href }>
-			<MuiLink underline="none" color="inherit">
-				{ children }
-			</MuiLink>
-		</NextLink>
+		? <Link href={ href } {...props}>{ children }</Link>
 		: <>{ children }</>;
 };
 
