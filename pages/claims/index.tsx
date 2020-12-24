@@ -23,6 +23,7 @@ import {
 	Theme,
 	createStyles,
 	TextField,
+	Tooltip,
 } from '@material-ui/core';
 import Link from 'next/link';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
@@ -203,14 +204,18 @@ const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
 					<Grid item>
 						<Link href="/claims/upload">
 							<Fab color="primary" aria-label="Upload Claims">
-								<CloudUploadIcon />
+								<Tooltip title="Upload claims">
+									<CloudUploadIcon />
+								</Tooltip>
 							</Fab>
 						</Link>
 					</Grid>
 					<Grid item>
 						<Link href="/claims/new">
 							<Fab color="secondary" aria-label="Add Claim">
-								<AddIcon />
+								<Tooltip title="New claim">
+									<AddIcon />
+								</Tooltip>
 							</Fab>
 						</Link>
 					</Grid>
