@@ -13,8 +13,8 @@ import {
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/AddCircleOutline';
-import NextLink from 'next/link';
 
+import ButtonLink from 'components/button-link';
 import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
 import Link from 'components/link';
@@ -88,9 +88,7 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
 						<Button color="primary" startIcon={ <AddIcon /> }>Add Event</Button>
 					</Grid>
 					<Grid item>
-						<NextLink href={ `/claims/${ claim.slug }/edit` }>
-							<Button color="primary" startIcon={ <EditIcon /> }>Edit</Button>
-						</NextLink>
+						<ButtonLink href={ `/claims/${ claim.slug }/edit` } color="primary" startIcon={ <EditIcon /> }>Edit</ButtonLink>
 					</Grid>
 				</Grid>
 			</Box>
