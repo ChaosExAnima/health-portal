@@ -17,11 +17,6 @@ const navigation: NavigationItem[] = [
 		icon: <HomeIcon />,
 	},
 	{
-		href: '/appeals',
-		name: 'Appeals',
-		icon: <GavelIcon />,
-	},
-	{
 		href: '/calls',
 		name: 'Calls',
 		icon: <PhoneIcon />,
@@ -30,6 +25,11 @@ const navigation: NavigationItem[] = [
 		href: '/claims',
 		name: 'Claims',
 		icon: <ReceiptIcon />,
+	},
+	{
+		href: '/appeals',
+		name: 'Appeals',
+		icon: <GavelIcon />,
 	},
 	{
 		href: '/providers',
