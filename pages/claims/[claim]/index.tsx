@@ -42,7 +42,7 @@ export type ClaimPageProps = PageProps & {
 	claim: ClaimRow;
 };
 
-const ClaimPage: React.FC<ClaimPageProps> = ( { title, claim } ) => {
+const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
 	const HISTORY_QUERY = gql`
 		query ClaimHistory( $id: String! ) {
 			claim(claim: $id) {

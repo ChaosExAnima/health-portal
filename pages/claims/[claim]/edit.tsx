@@ -42,7 +42,7 @@ const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	},
 } ) );
 
-const ClaimPageEdit: React.FC<ClaimPageProps> = ( { title, claim } ) => {
+const ClaimPageEdit: React.FC<ClaimPageProps> = ( { claim } ) => {
 	const classes = useStyles();
 
 	if ( ! claim ) {
