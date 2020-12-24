@@ -1,8 +1,6 @@
 import {
 	Container,
 	Box,
-	Grid,
-	Fab,
 	Typography,
 	Table,
 	TableContainer,
@@ -23,10 +21,8 @@ import {
 	Theme,
 	createStyles,
 	TextField,
-	Tooltip,
 } from '@material-ui/core';
-import Link from 'next/link';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import UploadIcon from '@material-ui/icons/CloudUpload';
 import AddIcon from '@material-ui/icons/Add';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { useRouter } from 'next/router';
@@ -40,6 +36,7 @@ import numberFormat from 'lib/number-format';
 import { claimType, claimStatus } from 'lib/strings';
 
 import type { ClaimRow, PageProps } from 'global-types';
+import Header, { ActionItem } from 'components/header';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;
@@ -192,35 +189,23 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentP
 const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
 	const { loading, data } = useQuery( CLAIMS_QUERY, { variables: { offset: currentPage * 20 } } );
 
+	const headerActions = [
+		{
+			href: '/claims/upload',
+			action: 'Upload claims',
+			icon: <UploadIcon />,
+		},
+		{
+			href: '/claims/new',
+			action: 'New claim',
+			icon: <AddIcon />,
+			color: 'secondary',
+		},
+	] as ActionItem[];
+
 	return <>
 		<Container maxWidth="md">
-			<Box my={ 4 }>
-				<Grid container spacing={ 4 }>
-					<Grid item>
-						<Typography variant="h4" component="h1">
-							Claims
-						</Typography>
-					</Grid>
-					<Grid item>
-						<Link href="/claims/upload">
-							<Fab color="primary" aria-label="Upload Claims">
-								<Tooltip title="Upload claims">
-									<CloudUploadIcon />
-								</Tooltip>
-							</Fab>
-						</Link>
-					</Grid>
-					<Grid item>
-						<Link href="/claims/new">
-							<Fab color="secondary" aria-label="Add Claim">
-								<Tooltip title="New claim">
-									<AddIcon />
-								</Tooltip>
-							</Fab>
-						</Link>
-					</Grid>
-				</Grid>
-			</Box>
+			<Header title="Claims" actions={ headerActions } />
 			{ loading && <Box my={ 4 }><LinearProgress /></Box> }
 		</Container>
 		{ data && <ClaimsTable
