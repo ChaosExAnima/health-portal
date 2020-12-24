@@ -8,12 +8,10 @@ import {
 
 import OptionalLink from 'components/optional-link';
 
-import type { NextURL } from 'global-types';
-
 type InfoRowProps = {
 	info: React.ReactNode;
 	value: React.ReactNode;
-	href?: NextURL;
+	href?: string;
 }
 
 const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
