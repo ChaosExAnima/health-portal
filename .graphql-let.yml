@@ -1,0 +1,8 @@
+schema:
+  - lib/apollo/schema/*.graphqls
+schemaEntrypoint: lib/apollo/schema/index.graphqls
+documents: "**/*.graphql"
+plugins:
+  - typescript
+  - typescript-operations
+  - typescript-react-apollo

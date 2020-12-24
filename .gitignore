@@ -34,3 +34,7 @@ yarn-error.log*
 
 # VSCode
 /.vscode
+
+# Graphql
+*.graphql.d.ts
+*.graphql.d.ts
