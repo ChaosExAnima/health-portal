@@ -56,6 +56,7 @@ const Home: React.FC<HomeProps> = ( { welcomeMessage, totalSpent, totalCovered, 
 					</Grid>
 				</Grid>
 			</Box>
+			{/* TODO: Unify design for info boxes. */}
 			<Paper elevation={ 2 } className={ classes.info } component="section">
 				<Grid container spacing={ 4 } direction="column">
 					<InfoRow info="You&lsquo;ve spent" value={ numberFormat( totalSpent, true ) } />
