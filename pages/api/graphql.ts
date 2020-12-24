@@ -33,6 +33,21 @@ const mocks = {
 	Event: () => ( {
 		description: casual.sentence,
 	} ),
+	UploadClaimsResponse: () => (
+		casual.coin_flip
+			? {
+				code: '200',
+				success: true,
+				claimsProcessed: casual.integer( 100, 200 ),
+				errors: undefined,
+			}
+			: {
+				code: 'missing-headers',
+				success: false,
+				claimsProcessed: undefined,
+				errors: [ casual.sentence ],
+			}
+	),
 };
 
 const apolloServer = new ApolloServer( { typeDefs, mocks, resolvers } );

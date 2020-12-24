@@ -29,6 +29,11 @@ enum EventType {
 	NOTE
 }
 
+interface MutationResponse {
+	code: String!
+	success: Boolean!
+}
+
 type Provider {
 	id: ID!
 	name: String!
@@ -86,7 +91,18 @@ type ClaimResponse {
 	limit: Int!
 }
 
+type UploadClaimsResponse implements MutationResponse {
+	code: String!
+	success: Boolean!
+	claimsProcessed: Int
+	errors: [String]
+}
+
 type Query {
 	getClaims(offset: Int, limit: Int): ClaimResponse!
 	claim(claim: String!): Claim!
+}
+
+type Mutation {
+	uploadClaims( file: Upload! ): UploadClaimsResponse!
 }`;

@@ -8,7 +8,8 @@
 	],
 	"plugins": [
 		"@typescript-eslint",
-		"react"
+		"react",
+		"mui-unused-classes"
 	],
 	"env": {
 		"browser": true,
