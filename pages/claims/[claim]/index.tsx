@@ -13,17 +13,18 @@ import {
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/AddCircleOutline';
+import NextLink from 'next/link';
 
 import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
+import Link from 'components/link';
 import { staticPathsNoData } from 'lib/static-helpers';
 import { getClient } from 'lib/apollo';
 import numberFormat from 'lib/number-format';
 import { claimStatus } from 'lib/strings';
 
-import type { ClaimRow, PageProps } from 'global-types';
 import type { GetStaticPaths, GetStaticProps } from 'next';
-import Link from 'components/link';
+import type { ClaimRow, PageProps } from 'global-types';
 
 const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	actionButtons: {
@@ -37,7 +38,7 @@ const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	},
 } ) );
 
-type ClaimPageProps = PageProps & {
+export type ClaimPageProps = PageProps & {
 	claim: ClaimRow;
 };
 
@@ -75,7 +76,7 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { title, claim } ) => {
 			<Box my={ 2 }>
 				<Breadcrumbs aria-label="breadcrumb">
 					<Link color="inherit" href="/claims">Claims</Link>
-					<Typography color="textPrimary">{ title }</Typography>
+					<Typography color="textPrimary">{ claim.claim }</Typography>
 				</Breadcrumbs>
 			</Box>
 			<Box my={ 4 }>
@@ -84,10 +85,12 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { title, claim } ) => {
 				</Typography>
 				<Grid container spacing={ 2 } className={ classes.actionButtons }>
 					<Grid item>
-						<Button color="primary" endIcon={ <AddIcon /> }>Add Event</Button>
+						<Button color="primary" startIcon={ <AddIcon /> }>Add Event</Button>
 					</Grid>
 					<Grid item>
-						<Button color="primary" endIcon={ <EditIcon /> }>Edit</Button>
+						<NextLink href={ `/claims/${ claim.slug }/edit` }>
+							<Button color="primary" startIcon={ <EditIcon /> }>Edit</Button>
+						</NextLink>
 					</Grid>
 				</Grid>
 			</Box>
@@ -164,6 +167,7 @@ export const getStaticProps: GetStaticProps<ClaimPageProps> = async () => {
 			claim(claim: $id) {
 				id
 				claim
+				slug
 				date
 				provider {
 					id
