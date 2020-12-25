@@ -2,18 +2,10 @@ import {
 	ApolloClient,
 	InMemoryCache,
 	NormalizedCacheObject,
+	HttpLink,
 } from '@apollo/client';
-import { join } from 'path';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { loadFilesSync } from '@graphql-tools/load-files';
-import { mergeTypeDefs } from '@graphql-tools/merge';
-import { addMocksToSchema } from '@graphql-tools/mock';
-
-import mocks from './schema/mocks';
-import { isSSR } from 'lib/static-helpers';
 
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { GraphQLSchema } from 'graphql';
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
@@ -22,25 +14,17 @@ export type ResolverContext = {
 	res?: ServerResponse;
 };
 
-export function makeSchema(): GraphQLSchema {
-	const loadedFiles = loadFilesSync( join( process.cwd(), 'lib/apollo/schema/*.graphqls' ) );
-	const typeDefs = mergeTypeDefs( loadedFiles );
-	const schema = makeExecutableSchema( {
-		typeDefs,
-	} );
-
-	return addMocksToSchema( { schema, mocks } );
-}
-
-export async function createApolloClient( context?: ResolverContext ): Promise<ApolloClient<NormalizedCacheObject>> {
+export function createApolloClient( context?: ResolverContext ): ApolloClient<NormalizedCacheObject> {
 	let link;
 
-	if ( isSSR() ) {
-		const { SchemaLink } = await import( '@apollo/client/link/schema' );
+	if ( typeof window === 'undefined' ) {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const { SchemaLink } = require( '@apollo/client/link/schema' );
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const { makeSchema } = require( './schema' );
 		const schema = makeSchema();
 		link = new SchemaLink( { context, schema } );
 	} else {
-		const { HttpLink } = await import( '@apollo/client/link/http' );
 		link = new HttpLink( {
 			uri: '/api/graphql',
 			credentials: 'same-origin',
@@ -48,22 +32,22 @@ export async function createApolloClient( context?: ResolverContext ): Promise<A
 	}
 
 	return new ApolloClient( {
-		ssrMode: isSSR(),
+		ssrMode: typeof window === 'undefined',
 		link,
 		cache: new InMemoryCache(),
 	} );
 }
 
-export async function initializeApollo(
+export function initializeApollo(
 	initialState: NormalizedCacheObject | null = null,
 	context?: ResolverContext
-): Promise<ApolloClient<NormalizedCacheObject>> {
-	const _apolloClient = apolloClient ?? await createApolloClient( context );
+): ApolloClient<NormalizedCacheObject> {
+	const _apolloClient = apolloClient ?? createApolloClient( context );
 	if ( initialState ) {
 		_apolloClient.cache.restore( initialState );
 	}
 
-	if ( isSSR() ) {
+	if ( typeof window === 'undefined' ) {
 		return _apolloClient;
 	}
 	if ( ! apolloClient ) {

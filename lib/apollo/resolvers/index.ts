@@ -8,3 +8,4 @@
 // };
 
 // export default { Query, Mutation };
+export {};

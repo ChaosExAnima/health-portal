@@ -1,8 +1,10 @@
 import { ApolloServer } from 'apollo-server-micro';
 
-import { makeSchema } from 'lib/apollo';
+import { makeSchema } from 'lib/apollo/schema';
 
-const apolloServer = new ApolloServer( { schema: makeSchema() } );
+const schema = makeSchema();
+
+const apolloServer = new ApolloServer( { schema } );
 
 export const config = {
 	api: {

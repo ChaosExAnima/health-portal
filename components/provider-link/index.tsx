@@ -1,5 +1,5 @@
 import Link, { LinkProps } from 'components/link';
-import type { Provider } from 'global-types';
+import { Provider } from 'lib/apollo/schema/index.graphqls';
 
 const ProviderLink: React.FC<Omit<LinkProps, 'href'> & { provider: Provider }> = ( { provider, ...props } ) => (
 	<Link { ...props } href={ `/providers/${ provider.id }` }>{ provider.name }</Link>

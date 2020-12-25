@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import { join } from 'path';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { loadFilesSync } from '@graphql-tools/load-files';
+import { mergeTypeDefs } from '@graphql-tools/merge';
+import { addMocksToSchema } from '@graphql-tools/mock';
+import type { GraphQLSchema } from 'graphql';
 import casual from 'casual';
 import { MockList } from 'apollo-server-micro';
 
@@ -49,4 +54,12 @@ const mocks = {
 	),
 };
 
-export default mocks;
+export function makeSchema(): GraphQLSchema {
+	const loadedFiles = loadFilesSync( join( process.cwd(), 'lib/apollo/schema/*.graphqls' ) );
+	const typeDefs = mergeTypeDefs( loadedFiles );
+	const schema = makeExecutableSchema( {
+		typeDefs,
+	} );
+
+	return addMocksToSchema( { schema, mocks } );
+}

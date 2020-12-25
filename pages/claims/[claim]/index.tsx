@@ -26,12 +26,13 @@ import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
 import Link from 'components/link';
 import { staticPathsNoData } from 'lib/static-helpers';
-import { createApolloClient } from 'lib/apollo';
+// import { createApolloClient } from 'lib/apollo';
 import numberFormat from 'lib/number-format';
 import { claimStatus } from 'lib/strings';
 
 import type { GetStaticPaths, GetStaticProps } from 'next';
 import type { PageProps } from 'global-types';
+import { initializeApollo } from 'lib/apollo';
 
 const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	actionButtons: {
@@ -119,7 +120,7 @@ const DetailsRow: React.FC<{ name: React.ReactNode, detail: React.ReactNode }> =
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-	const client = await createApolloClient();
+	const client = initializeApollo();
 	const { data } = await client.query<ClaimsSlugsQuery>( { query: ClaimsSlugsDocument } );
 	return staticPathsNoData( data ) || {
 		paths: data.getClaims.claims.map( ( claim ) => claim && `/claims/${ claim.claim }` ).filter( Boolean ) as string[],
@@ -128,7 +129,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps<ClaimPageProps> = async () => {
-	const client = await createApolloClient();
+	const client = initializeApollo();
 	const { data } = await client.query<ClaimQuery>( { query: ClaimDocument } );
 	return {
 		props: {
