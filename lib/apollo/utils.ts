@@ -12,8 +12,8 @@ export function typeToPath( type?: string, slug?: string | null ): string {
 			return `/calls/${ slug }`;
 		case 'Claim':
 			return `/claims/${ slug }`;
-		case 'Dispute':
-			return `/disputes/${ slug }`;
+		case 'Appeal':
+			return `/appeals/${ slug }`;
 		case 'Provider':
 			return `/providers/${ slug }`;
 		default:

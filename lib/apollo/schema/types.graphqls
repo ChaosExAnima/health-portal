@@ -25,6 +25,12 @@ enum EventType {
 	NOTE
 }
 
+enum AppealStatus {
+	NEW
+	PENDING
+	CLOSED
+}
+
 type Provider {
 	id: ID!
 	name: String!
@@ -61,8 +67,12 @@ type Call {
 type Appeal {
 	id: ID!
 	slug: Slug!
+	name: String!
+	status: AppealStatus!
 	provider: Provider!
+	related: [Appeal!]
 	claims: [Claim!]
+	calls: [Call!]
 	date: Date!
 	history: [Event!]
 }
