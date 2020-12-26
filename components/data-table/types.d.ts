@@ -35,6 +35,6 @@ export type DataTableFormatter = ( arg0: unknown ) => string;
 export type DataTableColumn = TableCellProps & {
 	name: string;
 	key: string;
-	format?: 'date' | 'currency' | DataTableFormatter;
+	format?: 'date' | 'datetime' | 'currency' | DataTableFormatter;
 	link?: boolean;
 }

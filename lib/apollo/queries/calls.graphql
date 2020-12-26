@@ -4,6 +4,13 @@ query CallsIndex($offset: Int!) {
 		calls {
 			id
 			slug
+			date
+			rep
+			provider {
+				__typename
+				name
+				slug
+			}
 		}
 	}
 }

@@ -1,21 +1,69 @@
-import { Box, Container } from '@material-ui/core';
+import { Container } from '@material-ui/core';
+import React from 'react';
 
-import type { PageProps } from 'global-types';
+import DataTable, { DataTableColumn, DataTableFilter } from 'components/data-table';
+import Footer from 'components/footer';
+import Header from 'components/header';
 
-const CallsPage: React.FC<PageProps> = () => {
+import type { PaginatedPageProps } from 'global-types';
+import { useCallsIndexQuery } from 'lib/apollo/queries/calls.graphql';
+
+const CallsPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
+	const { data, loading } = useCallsIndexQuery( { variables: { offset: 0 } } );
+
+	const filters: DataTableFilter[] = [
+		{
+			key: 'provider',
+			label: 'Provider',
+			type: 'select',
+			values: {},
+		},
+	];
+	const columns: DataTableColumn[] = [
+		{
+			key: 'date',
+			format: 'datetime',
+			link: true,
+			name: 'Date',
+			align: 'right',
+			width: 200,
+		},
+		{
+			key: 'rep',
+			link: true,
+			name: 'Representative',
+			width: 200,
+		},
+		{
+			key: 'provider',
+			name: 'Provider',
+		},
+	];
+
 	return (
-		<Container maxWidth="md">
-			<Box my={ 4 }>
-				Hello
-			</Box>
-		</Container>
+		<>
+			<Container maxWidth="md">
+				<Header title="Calls" actions={ [] } />
+			</Container>
+			<DataTable
+				basePath="/calls"
+				columns={ columns }
+				currentPage={ currentPage }
+				filters={ filters }
+				loading={ loading }
+				rows={ data?.getCalls.calls }
+				totalCount={ data?.getCalls.totalCount }
+			/>
+			<Footer wrap />
+		</>
 	);
 };
 
-export async function getStaticProps(): Promise<{ props: PageProps }> {
+export async function getStaticProps(): Promise<{ props: PaginatedPageProps }> {
 	return {
 		props: {
 			title: 'Calls',
+			currentPage: 0,
 		},
 	};
 }

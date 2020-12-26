@@ -33,8 +33,7 @@ const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 
 const DataTableFilters: React.FC<DataTableFiltersProps> = ( { columns, filters } ) => {
 	const classes = useStyles();
-	const hasDates = useMemo( () => columns.reduce( ( prev, column ) => prev || column.format === 'date', false ), columns );
-
+	const hasDates = useMemo( () => columns.reduce( ( prev, { format } ) => prev || format === 'date' || format === 'datetime', false ), columns );
 	const filterComponents: React.ReactNode[] = [];
 
 	if ( hasDates ) {

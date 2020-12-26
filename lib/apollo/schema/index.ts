@@ -28,6 +28,7 @@ const mocks = {
 	} ),
 	Call: () => ( {
 		notes: casual.sentence,
+		rep: casual.first_name,
 	} ),
 	Dated: () => ( {
 	} ),
