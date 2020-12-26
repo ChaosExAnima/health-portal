@@ -18,6 +18,7 @@
 	"rules": {
 		"react/react-in-jsx-scope": "error",
 		"react/prop-types": "off",
+		"no-unused-vars": "off",
 		"object-curly-newline": ["error", {
 			"ImportDeclaration": { "multiline": true, "minProperties": 3 }
 		 }]
