@@ -16,6 +16,12 @@ type DataTableFilterSelect = DataTableFilterBase & {
 
 export type DataTableFilter = DataTableFilterSelect;
 
+export type DataTableRowLink = {
+	__typename: string;
+	slug: string;
+	name: string | React.ReactNode;
+};
+
 export type DataTableRowData = {
 	__typename?: string;
 	id: string;

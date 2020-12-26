@@ -1,3 +1,7 @@
+export function capitalize( word: string ): string {
+	return ( word.substr( 0, 1 ).toUpperCase() ) + ( word.substr( 1 ).toLowerCase() );
+}
+
 export function claimType( type: string ): string {
 	const types: Record<string, string> = {
 		DENTAL: 'Dental',

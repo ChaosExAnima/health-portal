@@ -3,6 +3,7 @@ query ClaimsIndex($offset: Int!) {
 		totalCount
 		claims {
 			id
+			slug
 			claim
 			date
 			provider {

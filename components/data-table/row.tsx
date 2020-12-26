@@ -8,6 +8,8 @@ import { toInt, toString } from 'lib/casting';
 import numberFormat from 'lib/number-format';
 
 import { DataTableColumn, DataTableRowData } from './types';
+import Link from 'components/link';
+import { isLinkObject } from './utils';
 
 type DataTableRowProps = {
 	rowData: DataTableRowData;
@@ -15,7 +17,7 @@ type DataTableRowProps = {
 };
 
 type DataTableCellProps = DataTableColumn & {
-	value: React.ReactNode | number | string;
+	value: React.ReactNode | number | string | Record<string, unknown>;
 	slug?: string;
 	__typename?: string;
 }
@@ -29,6 +31,15 @@ const DataTableCell: React.FC<DataTableCellProps> = ( { value, link, slug, __typ
 			text = dayjs( toString( value ) ).format( 'YYYY/MM/DD' );
 		} else if ( typeof format === 'function' ) {
 			text = format( value );
+		}
+	}
+	if ( ! React.isValidElement( value ) && typeof value === 'object' && value ) {
+		if ( isLinkObject( value ) ) {
+			text = (
+				<Link color="inherit" href={ typeToPath( value.__typename, value.slug ) }>
+					{ value.name }
+				</Link>
+			);
 		}
 	}
 	return (

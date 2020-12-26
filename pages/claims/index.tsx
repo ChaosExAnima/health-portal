@@ -1,174 +1,23 @@
-import {
-	Container,
-	Box,
-	Typography,
-	Table,
-	TableContainer,
-	Paper,
-	TableHead,
-	TableCell,
-	TableRow,
-	TableBody,
-	TablePagination,
-	LinearProgress,
-	TableFooter,
-	Toolbar,
-	Select,
-	MenuItem,
-	FormControl,
-	InputLabel,
-	makeStyles,
-	Theme,
-	createStyles,
-	TextField,
-} from '@material-ui/core';
+import { Container } from '@material-ui/core';
 import UploadIcon from '@material-ui/icons/CloudUpload';
 import AddIcon from '@material-ui/icons/Add';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import { useRouter } from 'next/router';
-import dayjs from 'dayjs';
 
 import Header, { ActionItem } from 'components/header';
-import TextLink from 'components/link';
 import Footer from 'components/footer';
-import ProviderLink from 'components/provider-link';
-import { useClaimsIndexQuery, Claim } from 'lib/apollo/queries/claims.graphql';
-import numberFormat from 'lib/number-format';
-import { claimType, claimStatus } from 'lib/strings';
+import { useClaimsIndexQuery } from 'lib/apollo/queries/claims.graphql';
 
 import type { PageProps } from 'global-types';
+import DataTable, { DataTableColumn, DataTableFilter } from 'components/data-table';
+import { capitalize, claimType } from 'lib/strings';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;
 };
 
-type ClaimsTableProps = {
-	claims: Claim[];
-	totalCount: number;
-	currentPage: number;
-};
-
-const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
-	formControl: {
-		margin: theme.spacing( 1 ),
-		minWidth: 120,
-	},
-	filterHeader: {
-		marginRight: theme.spacing( 6 ),
-	},
-} ) );
-
-const ClaimsTableHeader: React.FC = () => {
-	const classes = useStyles();
-	const today = dayjs();
-	const monthStart = dayjs().startOf( 'month' );
-	return (
-		<Toolbar>
-			<Typography variant="h5" component="p" className={ classes.filterHeader }>
-				Filter
-				<FilterListIcon />
-			</Typography>
-			<TextField
-				id="claims-range-start"
-				label="Service Start Date"
-				type="date"
-				defaultValue={ monthStart.format( 'YYYY-MM-DD' ) }
-				className={ classes.formControl }
-				InputLabelProps={ {
-					shrink: true,
-				} }
-			/>
-			<TextField
-				id="claims-range-end"
-				label="Service Start Date"
-				type="date"
-				defaultValue={ today.format( 'YYYY-MM-DD' ) }
-				className={ classes.formControl }
-				InputLabelProps={ {
-					shrink: true,
-				} }
-			/>
-			<FormControl className={ classes.formControl }>
-				<InputLabel id="claims-type-label">Type</InputLabel>
-				<Select labelId="claims-type-label" autoWidth defaultValue="all">
-					<MenuItem value="all">All</MenuItem>
-					<MenuItem value="medical">Medical</MenuItem>
-					<MenuItem value="pharmacy">Pharmacy</MenuItem>
-					<MenuItem value="dental">Dental</MenuItem>
-					<MenuItem value="other">Other</MenuItem>
-				</Select>
-			</FormControl>
-			<FormControl className={ classes.formControl }>
-				<InputLabel id="claims-status-label">Status</InputLabel>
-				<Select labelId="claims-status-label" autoWidth defaultValue="all">
-					<MenuItem value="all">All</MenuItem>
-					<MenuItem value="paid">Paid</MenuItem>
-					<MenuItem value="approved">Approved</MenuItem>
-					<MenuItem value="pending">Pending</MenuItem>
-					<MenuItem value="denied">Denied</MenuItem>
-					<MenuItem value="deleted">Deleted</MenuItem>
-				</Select>
-			</FormControl>
-		</Toolbar>
-	);
-};
-
-const ClaimsTable: React.FC<ClaimsTableProps> = ( { claims, totalCount, currentPage } ) => {
-	const router = useRouter();
-	return (
-		<Container maxWidth="lg">
-			<Paper>
-				<ClaimsTableHeader />
-				<TableContainer>
-					<Table>
-						<TableHead>
-							<TableRow>
-								<TableCell>Service Date</TableCell>
-								<TableCell>Claim #</TableCell>
-								<TableCell>Provider</TableCell>
-								<TableCell>Type</TableCell>
-								<TableCell align="right">Billed</TableCell>
-								<TableCell align="right">Your Cost</TableCell>
-								<TableCell>Status</TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{ claims.map( ( { id, date, claim, provider, type, billed, cost, status }: Claim ) => (
-								<TableRow key={ id }>
-									<TableCell>{ date }</TableCell>
-									<TableCell>
-										<TextLink href={ `/claims/${ claim }` } color="inherit">{ claim }</TextLink>
-									</TableCell>
-									<TableCell><ProviderLink color="inherit" provider={ provider } /></TableCell>
-									<TableCell>{ claimType( type || '' ) }</TableCell>
-									<TableCell align="right">{ numberFormat( billed || 0, true ) }</TableCell>
-									<TableCell align="right">{ numberFormat( cost || 0, true ) }</TableCell>
-									<TableCell>{ claimStatus( status ) }</TableCell>
-								</TableRow>
-							) ) }
-						</TableBody>
-						<TableFooter>
-							<TableRow>
-								<TablePagination
-									rowsPerPage={ 20 }
-									rowsPerPageOptions={ [ 20 ] }
-									count={ totalCount }
-									page={ currentPage }
-									onChangePage={ ( event, page ) => router.push( `/claims/page/${ page + 1 }` ) }
-								/>
-							</TableRow>
-						</TableFooter>
-					</Table>
-				</TableContainer>
-			</Paper>
-		</Container>
-	);
-};
-
 const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
 	const { loading, data } = useClaimsIndexQuery( { variables: { offset: currentPage * 20 } } );
 
-	const headerActions = [
+	const headerActions: ActionItem[] = [
 		{
 			href: '/claims/upload',
 			action: 'Upload claims',
@@ -180,19 +29,85 @@ const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
 			icon: <AddIcon />,
 			color: 'secondary',
 		},
-	] as ActionItem[];
+	];
+	const filters: DataTableFilter[] = [
+		{
+			key: 'type',
+			label: 'Type',
+			type: 'select',
+			values: {
+				MEDICAL: 'Medical',
+				DENTAL: 'Dental',
+				PHARMACY: 'Pharmacy',
+				OTHER: 'Other',
+			},
+		},
+		{
+			key: 'status',
+			label: 'Status',
+			type: 'select',
+			values: {
+				PAID: 'Paid',
+				APPROVED: 'Approved',
+				PENDING: 'Pending',
+				DENIED: 'Denied',
+				DELETED: 'Deleted',
+			},
+		},
+	];
+	const columns: DataTableColumn[] = [
+		{
+			align: 'right',
+			key: 'date',
+			name: 'Service Date',
+			format: 'date',
+			width: 150,
+		},
+		{
+			key: 'claim',
+			name: 'Claim #',
+			link: true,
+		},
+		{
+			key: 'provider',
+			name: 'Provider',
+		},
+		{
+			key: 'type',
+			name: 'Type',
+			format: claimType,
+		},
+		{
+			key: 'billed',
+			name: 'Billed',
+			format: 'currency',
+		},
+		{
+			key: 'cost',
+			name: 'Cost',
+			format: 'currency',
+		},
+		{
+			key: 'status',
+			name: 'Status',
+			format: capitalize,
+		},
+	];
 
 	return <>
 		<Container maxWidth="md">
 			<Header title="Claims" actions={ headerActions } />
-			{ loading && <Box my={ 4 }><LinearProgress /></Box> }
 		</Container>
-		{ data && <ClaimsTable
-			totalCount={ data.getClaims.totalCount }
-			claims={ data.getClaims.claims as Claim[] }
+		<DataTable
+			basePath="/claims"
 			currentPage={ currentPage }
-		/> }
-		<Container maxWidth="md"><Footer /></Container>
+			totalCount={ data?.getClaims.totalCount }
+			columns={ columns }
+			rows={ data?.getClaims.claims }
+			filters={ filters }
+			loading={ loading }
+		/>
+		<Footer wrap />
 	</>;
 };
 

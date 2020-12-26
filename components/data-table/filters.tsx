@@ -43,7 +43,7 @@ const DataTableFilters: React.FC<DataTableFiltersProps> = ( { columns, filters }
 
 		filterComponents.push(
 			<TextField
-				id="claims-range-start"
+				id="range-start"
 				label="Service Start Date"
 				type="date"
 				defaultValue={ monthStart.format( 'YYYY-MM-DD' ) }
@@ -53,7 +53,7 @@ const DataTableFilters: React.FC<DataTableFiltersProps> = ( { columns, filters }
 				} }
 			/>,
 			<TextField
-				id="claims-range-end"
+				id="range-end"
 				label="Service Start Date"
 				type="date"
 				defaultValue={ today.format( 'YYYY-MM-DD' ) }
@@ -69,8 +69,8 @@ const DataTableFilters: React.FC<DataTableFiltersProps> = ( { columns, filters }
 		if ( filter.type === 'select' ) {
 			filterComponents.push(
 				<FormControl className={ classes.formControl }>
-					<InputLabel id="claims-status-label">{ filter.label }</InputLabel>
-					<Select labelId="claims-status-label" autoWidth defaultValue={ filter.default || 'all' }>
+					<InputLabel id={ `${ filter.key }-label` }>{ filter.label }</InputLabel>
+					<Select labelId={ `${ filter.key }-label` } autoWidth defaultValue={ filter.default || 'all' }>
 						{ ! filter.noAll && <MenuItem value="all">All</MenuItem> }
 						{ Object.entries( filter.values ).map( ( [ key, value ] ) => (
 							<MenuItem value={ key } key={ key }>{ value }</MenuItem>
