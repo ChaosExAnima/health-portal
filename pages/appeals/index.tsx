@@ -1,7 +1,7 @@
 import { Container } from '@material-ui/core';
 import React from 'react';
 
-import Header from 'components/header';
+import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
 import DataTable, { DataTableColumn, DataTableFilter } from 'components/data-table';
 import { useAppealsIndexQuery } from 'lib/apollo/queries/appeals.graphql';
@@ -11,6 +11,13 @@ import type { PaginatedPageProps } from 'global-types';
 const AppealsPage: React.FC<PaginatedPageProps> = ( { title, currentPage } ) => {
 	const { data, loading } = useAppealsIndexQuery( { variables: { offset: 0 } } );
 
+	const actions: ActionItem[] = [
+		{
+			href: '/appeals/new',
+			action: 'New appeal',
+			icon: 'add',
+		},
+	];
 	const filters: DataTableFilter[] = [
 		{
 			key: 'status',
@@ -51,7 +58,7 @@ const AppealsPage: React.FC<PaginatedPageProps> = ( { title, currentPage } ) => 
 	return (
 		<>
 			<Container maxWidth="md">
-				<Header title={ title } actions={ [] } />
+				<Header title={ title } actions={ actions } />
 			</Container>
 			<DataTable
 				basePath="/appeals"

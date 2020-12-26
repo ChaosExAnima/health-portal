@@ -1,6 +1,5 @@
 import { Container } from '@material-ui/core';
 import UploadIcon from '@material-ui/icons/CloudUpload';
-import AddIcon from '@material-ui/icons/Add';
 
 import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
@@ -17,7 +16,7 @@ export type ClaimsProps = PageProps & {
 const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
 	const { loading, data } = useClaimsIndexQuery( { variables: { offset: currentPage * 20 } } );
 
-	const headerActions: ActionItem[] = [
+	const actions: ActionItem[] = [
 		{
 			href: '/claims/upload',
 			action: 'Upload claims',
@@ -26,7 +25,7 @@ const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
 		{
 			href: '/claims/new',
 			action: 'New claim',
-			icon: <AddIcon />,
+			icon: 'add',
 			color: 'secondary',
 		},
 	];
@@ -96,7 +95,7 @@ const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
 
 	return <>
 		<Container maxWidth="md">
-			<Header title="Claims" actions={ headerActions } />
+			<Header title="Claims" actions={ actions } />
 		</Container>
 		<DataTable
 			basePath="/claims"

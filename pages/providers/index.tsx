@@ -1,7 +1,8 @@
 import React from 'react';
 import { Container, Link } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 
-import Header from 'components/header';
+import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
 import DataTable, { DataTableColumn } from 'components/data-table';
 import { useProvidersIndexQuery } from 'lib/apollo/queries/providers.graphql';
@@ -12,6 +13,13 @@ import type { PaginatedPageProps } from 'global-types';
 const ProvidersPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 	const { data, loading } = useProvidersIndexQuery( { variables: { offset: 0 } } );
 
+	const actions: ActionItem[] = [
+		{
+			href: '/providers/new',
+			action: 'New provider',
+			icon: 'add',
+		},
+	];
 	const columns: DataTableColumn[] = [
 		{
 			key: 'name',
@@ -28,7 +36,7 @@ const ProvidersPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 	return (
 		<>
 			<Container maxWidth="md">
-				<Header title="Providers" actions={ [] } />
+				<Header title="Providers" actions={ actions } />
 			</Container>
 			<DataTable
 				basePath="/providers"

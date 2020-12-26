@@ -3,7 +3,7 @@ import React from 'react';
 
 import DataTable, { DataTableColumn, DataTableFilter } from 'components/data-table';
 import Footer from 'components/footer';
-import Header from 'components/header';
+import Header, { ActionItem } from 'components/header';
 
 import type { PaginatedPageProps } from 'global-types';
 import { useCallsIndexQuery } from 'lib/apollo/queries/calls.graphql';
@@ -11,6 +11,13 @@ import { useCallsIndexQuery } from 'lib/apollo/queries/calls.graphql';
 const CallsPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 	const { data, loading } = useCallsIndexQuery( { variables: { offset: 0 } } );
 
+	const actions: ActionItem[] = [
+		{
+			href: '/calls/new',
+			action: 'New call',
+			icon: 'add',
+		},
+	];
 	const filters: DataTableFilter[] = [
 		{
 			key: 'provider',
@@ -43,7 +50,7 @@ const CallsPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 	return (
 		<>
 			<Container maxWidth="md">
-				<Header title="Calls" actions={ [] } />
+				<Header title="Calls" actions={ actions } />
 			</Container>
 			<DataTable
 				basePath="/calls"

@@ -5,18 +5,29 @@ import {
 	Tooltip,
 	Typography,
 } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 import Link from 'next/link';
+import React from 'react';
+
+type ActionItemIcon = 'add' | React.ReactElement;
 
 export type ActionItem = {
 	href: string;
 	action: string;
-	icon: React.ReactElement;
+	icon: ActionItemIcon;
 	color?: 'primary' | 'secondary';
 };
 
 type HeaderProps = {
 	title: string;
 	actions: ActionItem[];
+};
+
+const ActionIcon: React.FC<{ icon: ActionItemIcon }> = ( { icon } ) => {
+	if ( icon === 'add' ) {
+		return <AddIcon />;
+	}
+	return icon;
 };
 
 const Header: React.FC<HeaderProps> = ( { actions, title } ) => (
@@ -32,7 +43,7 @@ const Header: React.FC<HeaderProps> = ( { actions, title } ) => (
 					<Link href={ href }>
 						<Fab color={ color } aria-label={ action }>
 							<Tooltip title={ action }>
-								{ icon }
+								<ActionIcon icon={ icon } />
 							</Tooltip>
 						</Fab>
 					</Link>
