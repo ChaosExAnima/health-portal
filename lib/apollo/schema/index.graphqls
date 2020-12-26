@@ -1,16 +1,30 @@
 # import Claim from './types.graphqls'
+# import Event from './types.graphqls'
 # import Upload from './scalars.graphqls'
 
-type ClaimResponse {
-	claims: [Claim]!
+interface PaginatedQuery {
 	totalCount: Int!
 	offset: Int!
 	limit: Int!
 }
 
+type ClaimResponse implements PaginatedQuery {
+	claims: [Claim!]!
+	totalCount: Int!
+	offset: Int!
+	limit: Int!
+}
+
+enum Type {
+	CLAIM
+	APPEAL
+	PROVIDER
+}
+
 type Query {
 	getClaims(offset: Int, limit: Int): ClaimResponse!
 	claim(claim: String!): Claim!
+	history( type: Type!, id: ID!, offset: Int, limit: Int ): [Event!]
 }
 
 interface MutationResponse {

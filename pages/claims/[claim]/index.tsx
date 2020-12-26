@@ -17,22 +17,21 @@ import {
 	Claim,
 	ClaimDocument,
 	ClaimQuery,
+	ClaimQueryVariables,
 	ClaimsSlugsDocument,
 	ClaimsSlugsQuery,
-	useClaimHistoryQuery,
 } from '../queries.graphql';
 import ButtonLink from 'components/button-link';
 import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
 import Link from 'components/link';
+import { initializeApollo } from 'lib/apollo';
 import { staticPathsNoData } from 'lib/static-helpers';
-// import { createApolloClient } from 'lib/apollo';
 import numberFormat from 'lib/number-format';
 import { claimStatus } from 'lib/strings';
 
 import type { GetStaticPaths, GetStaticProps } from 'next';
 import type { PageProps } from 'global-types';
-import { initializeApollo } from 'lib/apollo';
 
 const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	actionButtons: {
@@ -52,7 +51,6 @@ export type ClaimPageProps = PageProps & {
 
 const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
 	const classes = useStyles();
-	const { data, loading } = useClaimHistoryQuery( { variables: { id: claim?.id } } );
 	if ( ! claim ) {
 		return null;
 	}
@@ -94,8 +92,7 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
 				</Grid>
 			</Box>
 			<Box my={ 4 }>
-				{ loading && 'Loading!' }
-				{ data?.claim?.history && <HistoryTable events={ data.claim.history } /> }
+				<HistoryTable type="claim" id={ claim.id } />
 			</Box>
 		</Container>
 	);
@@ -130,7 +127,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<ClaimPageProps> = async () => {
 	const client = initializeApollo();
-	const { data } = await client.query<ClaimQuery>( { query: ClaimDocument } );
+	const { data } = await client.query<ClaimQuery, ClaimQueryVariables>( { query: ClaimDocument, variables: { id: '123456' } } );
 	return {
 		props: {
 			title: data.claim.claim ? `Claim # ${ data.claim.claim }` : 'Claim',

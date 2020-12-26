@@ -4,6 +4,7 @@ import {
 	NormalizedCacheObject,
 	HttpLink,
 } from '@apollo/client';
+import { offsetLimitPagination } from '@apollo/client/utilities';
 
 import type { IncomingMessage, ServerResponse } from 'http';
 
@@ -31,10 +32,20 @@ export function createApolloClient( context?: ResolverContext ): ApolloClient<No
 		} );
 	}
 
+	const cache = new InMemoryCache( {
+		typePolicies: {
+			Query: {
+				fields: {
+					history: offsetLimitPagination( [ 'type', 'id' ] ),
+				},
+			},
+		},
+	} );
+
 	return new ApolloClient( {
 		ssrMode: typeof window === 'undefined',
 		link,
-		cache: new InMemoryCache(),
+		cache,
 	} );
 }
 

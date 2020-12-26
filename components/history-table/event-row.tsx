@@ -7,9 +7,14 @@ import EventIcon from './event-icon';
 import OptionalLink from 'components/optional-link';
 import { slugToPath } from 'lib/apollo/utils';
 
-import type { Event } from 'pages/claims/queries.graphql';
+import type { Event } from './query.graphql';
 
-type EventRowProps = Event;
+type EventRowProps = Omit<Event, 'link'> & {
+	link?: {
+		__typename: string;
+		slug: string;
+	} | null;
+};
 
 const EventRow: React.FC<EventRowProps> = ( { link, date, description } ) => (
 	<TableRow>

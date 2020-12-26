@@ -1,0 +1,23 @@
+query History( $type: Type!, $id: ID!, $offset: Int ) {
+	history( type: $type, id: $id, offset: $offset, limit: 20 ) {
+		id
+		date
+		description
+		type
+		link {
+			__typename
+			... on Dispute {
+				id
+				slug
+			}
+			... on Claim {
+				id
+				slug
+			}
+			... on Call {
+				id
+				slug
+			}
+		}
+	}
+}

@@ -45,32 +45,6 @@ query Claim( $id: String! ) {
 	}
 }
 
-query ClaimHistory( $id: String! ) {
-	claim(claim: $id) {
-		history {
-			id
-			date
-			description
-			type
-			link {
-				__typename
-				... on Dispute {
-					id
-					slug
-				}
-				... on Claim {
-					id
-					slug
-				}
-				... on Call {
-					id
-					slug
-				}
-			}
-		}
-	}
-}
-
 mutation UploadClaims( $file: Upload! ) {
 	uploadClaims( file: $file ) {
 		success

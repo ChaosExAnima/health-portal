@@ -1,4 +1,7 @@
 import {
+	Box,
+	Button,
+	LinearProgress,
 	Table,
 	TableBody,
 	TableCell,
@@ -7,15 +10,37 @@ import {
 	TableRow,
 	Typography,
 } from '@material-ui/core';
-import { Event } from 'pages/claims/queries.graphql';
+
+import {
+	Type,
+	useHistoryQuery,
+} from './query.graphql';
 import EventRow from './event-row';
 
 type HistoryTableProps = {
-	events: Event[];
+	type: 'claim' | 'appeal' | 'provider';
+	id: string;
 };
 
-const HistoryTable: React.FC<HistoryTableProps> = ( { events } ) => {
-	// TODO: Move GQL query to here and combine with parent query with fragment.
+function stringIsType( type: string ): type is Type {
+	return [ 'CLAIM', 'APPEAL', 'PROVIDER' ].includes( type );
+}
+
+const HistoryTable: React.FC<HistoryTableProps> = ( { type: lowerType, id } ) => {
+	const type = lowerType.toUpperCase();
+	if ( ! stringIsType( type ) ) {
+		return null;
+	}
+	const { data, loading, fetchMore } = useHistoryQuery( { variables: { type, id, offset: 0 } } );
+
+	if ( loading || ! data?.history ) {
+		return (
+			<LinearProgress />
+		);
+	}
+	const events = data.history;
+	const loadMore = () => fetchMore( { variables: { offset: events.length } } );
+
 	return (
 		<>
 			<Typography variant="h5" component="h2">
@@ -31,10 +56,15 @@ const HistoryTable: React.FC<HistoryTableProps> = ( { events } ) => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{ events.map( ( event: Event ) => <EventRow key={ event.id } { ...event } /> ) }
+						{ events.map( ( event ) => <EventRow key={ event.id } { ...event } /> ) }
 					</TableBody>
 				</Table>
 			</TableContainer>
+			{ events.length % 20 === 0 && (
+				<Box my={ 2 }>
+					<Button color="secondary" onClick={ loadMore }>Load more</Button>
+				</Box>
+			) }
 		</>
 	);
 };
