@@ -5,7 +5,7 @@ import type { GetStaticPaths, GetStaticProps } from 'next';
 const ClaimsPaginated = Claims;
 
 export const getStaticPaths: GetStaticPaths = async () => ( {
-	paths: [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ].map( ( page ) => ( {
+	paths: [ 2, 3, 4, 5, 6, 7, 8, 9 ].map( ( page ) => ( {
 		params: { page: page + '' },
 	} ) ),
 	fallback: true,
@@ -16,7 +16,7 @@ export const getStaticProps: GetStaticProps<ClaimsProps, { page: string }> = asy
 	if ( params && params.page ) {
 		currentPage = Number.parseInt( params.page ) - 1;
 	}
-	if ( currentPage < 2 ) {
+	if ( currentPage < 1 ) {
 		return {
 			redirect: {
 				destination: '/claims',

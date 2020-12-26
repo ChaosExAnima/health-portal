@@ -26,8 +26,8 @@ query ClaimsSlugs{
 	}
 }
 
-query Claim( $id: String! ) {
-	claim(claim: $id) {
+query Claim( $slug: String! ) {
+	claim(slug: $slug) {
 		id
 		claim
 		slug

@@ -13,9 +13,9 @@ import { useDropzone } from 'react-dropzone';
 import { useMemo } from 'react';
 import { Alert } from '@material-ui/lab';
 
-import { useUploadClaimsMutation } from './queries.graphql';
 import Link from 'components/link';
 import ButtonLink from 'components/button-link';
+import { useUploadClaimsMutation } from 'lib/apollo/queries/claims.graphql';
 
 import type { PageProps } from 'global-types';
 

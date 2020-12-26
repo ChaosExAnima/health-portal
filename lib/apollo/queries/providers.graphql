@@ -1,0 +1,25 @@
+query ProvidersIndex($offset: Int!) {
+	getProviders(offset: $offset) {
+		totalCount
+		providers {
+			id
+			slug
+			name
+		}
+	}
+}
+
+query ProvidersSlugs{
+	getProviders( limit: 10000 ) {
+		providers {
+			slug
+		}
+	}
+}
+
+query Provider( $slug: String! ) {
+	provider(slug: $slug) {
+		id
+		slug
+	}
+}

@@ -1,5 +1,8 @@
 # import Claim from './types.graphqls'
 # import Event from './types.graphqls'
+# import Provider from './types.graphqls'
+# import Call from './types.graphqls'
+# import Appeal from './types.graphqls'
 # import Upload from './scalars.graphqls'
 
 interface PaginatedQuery {
@@ -8,8 +11,29 @@ interface PaginatedQuery {
 	limit: Int!
 }
 
-type ClaimResponse implements PaginatedQuery {
+type ClaimsResponse implements PaginatedQuery {
 	claims: [Claim!]!
+	totalCount: Int!
+	offset: Int!
+	limit: Int!
+}
+
+type ProvidersResponse implements PaginatedQuery {
+	providers: [Provider!]!
+	totalCount: Int!
+	offset: Int!
+	limit: Int!
+}
+
+type CallsResponse implements PaginatedQuery {
+	calls: [Call!]!
+	totalCount: Int!
+	offset: Int!
+	limit: Int!
+}
+
+type AppealsResponse implements PaginatedQuery {
+	appeals: [Appeal!]!
 	totalCount: Int!
 	offset: Int!
 	limit: Int!
@@ -22,9 +46,15 @@ enum Type {
 }
 
 type Query {
-	getClaims(offset: Int, limit: Int): ClaimResponse!
-	claim(claim: String!): Claim!
-	history( type: Type!, id: ID!, offset: Int, limit: Int ): [Event!]
+	getAppeals(offset: Int, limit: Int): AppealsResponse!
+	appeal(slug: String!): Appeal!
+	getCalls(offset: Int, limit: Int): CallsResponse!
+	call(slug: String): Call!
+	getClaims(offset: Int, limit: Int): ClaimsResponse!
+	claim(slug: String!): Claim!
+	getProviders(offset: Int, limit: Int): ProvidersResponse!
+	provider(slug: String!): Provider!
+	history(type: Type!, id: ID!, offset: Int, limit: Int ): [Event!]
 }
 
 interface MutationResponse {

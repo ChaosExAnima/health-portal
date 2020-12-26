@@ -1,5 +1,10 @@
 import { Box, Container } from '@material-ui/core';
 
+import { CallsSlugsDocument, CallsSlugsQuery } from 'lib/apollo/queries/calls.graphql';
+import { initializeApollo } from 'lib/apollo';
+import { staticPathsNoData } from 'lib/static-helpers';
+
+import type { GetStaticPaths } from 'next';
 import type { PageProps } from 'global-types';
 
 const CallPage: React.FC<PageProps> = () => {
@@ -10,6 +15,15 @@ const CallPage: React.FC<PageProps> = () => {
 			</Box>
 		</Container>
 	);
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+	const client = initializeApollo();
+	const { data } = await client.query<CallsSlugsQuery>( { query: CallsSlugsDocument } );
+	return staticPathsNoData( data ) || {
+		paths: data.getCalls.calls.map( ( call ) => call && `/calls/${ call.slug }` ),
+		fallback: true,
+	};
 };
 
 export async function getStaticProps(): Promise<{ props: PageProps }> {

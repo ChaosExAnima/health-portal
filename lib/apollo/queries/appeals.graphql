@@ -1,0 +1,30 @@
+query AppealsIndex($offset: Int!) {
+	getAppeals(offset: $offset, limit: 20) {
+		totalCount
+		appeals {
+			id
+			slug
+		}
+	}
+}
+
+query AppealsSlugs{
+	getAppeals( limit: 10000 ) {
+		appeals {
+			slug
+		}
+	}
+}
+
+query Appeal( $slug: String! ) {
+	appeal(slug: $slug) {
+		id
+		slug
+		date
+		provider {
+			name
+			slug
+		}
+	}
+}
+

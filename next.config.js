@@ -1,5 +1,5 @@
 module.exports = {
-	webpack( config, { defaultLoaders, isServer } ) {
+	webpack( config, { defaultLoaders } ) {
 		config.module.rules.push( {
 			test: /\.graphql$/,
 			exclude: /node_modules/,

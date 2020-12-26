@@ -58,7 +58,7 @@ type Call {
 	notes: String
 }
 
-type Dispute {
+type Appeal {
 	id: ID!
 	slug: Slug!
 	provider: Provider!
@@ -67,7 +67,7 @@ type Dispute {
 	history: [Event!]
 }
 
-union EventLink = Claim | Dispute | Call
+union EventLink = Claim | Appeal | Call
 
 type Event {
 	id: ID!

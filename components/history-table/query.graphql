@@ -6,7 +6,7 @@ query History( $type: Type!, $id: ID!, $offset: Int ) {
 		type
 		link {
 			__typename
-			... on Dispute {
+			... on Appeal {
 				id
 				slug
 			}

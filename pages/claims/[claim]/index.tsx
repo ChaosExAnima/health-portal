@@ -13,6 +13,11 @@ import {
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/AddCircleOutline';
 
+import ButtonLink from 'components/button-link';
+import HistoryTable from 'components/history-table';
+import ProviderLink from 'components/provider-link';
+import Link from 'components/link';
+import { initializeApollo } from 'lib/apollo';
 import {
 	Claim,
 	ClaimDocument,
@@ -20,12 +25,7 @@ import {
 	ClaimQueryVariables,
 	ClaimsSlugsDocument,
 	ClaimsSlugsQuery,
-} from '../queries.graphql';
-import ButtonLink from 'components/button-link';
-import HistoryTable from 'components/history-table';
-import ProviderLink from 'components/provider-link';
-import Link from 'components/link';
-import { initializeApollo } from 'lib/apollo';
+} from 'lib/apollo/queries/claims.graphql';
 import { staticPathsNoData } from 'lib/static-helpers';
 import numberFormat from 'lib/number-format';
 import { claimStatus } from 'lib/strings';
@@ -120,14 +120,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	const client = initializeApollo();
 	const { data } = await client.query<ClaimsSlugsQuery>( { query: ClaimsSlugsDocument } );
 	return staticPathsNoData( data ) || {
-		paths: data.getClaims.claims.map( ( claim ) => claim && `/claims/${ claim.claim }` ).filter( Boolean ) as string[],
+		paths: data.getClaims.claims.map( ( claim ) => claim && `/claims/${ claim.claim }` ),
 		fallback: true,
 	};
 };
 
 export const getStaticProps: GetStaticProps<ClaimPageProps> = async () => {
 	const client = initializeApollo();
-	const { data } = await client.query<ClaimQuery, ClaimQueryVariables>( { query: ClaimDocument, variables: { id: '123456' } } );
+	const { data } = await client.query<ClaimQuery, ClaimQueryVariables>( { query: ClaimDocument, variables: { slug: '123456' } } );
 	return {
 		props: {
 			title: data.claim.claim ? `Claim # ${ data.claim.claim }` : 'Claim',

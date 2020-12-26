@@ -28,11 +28,11 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import { useRouter } from 'next/router';
 import dayjs from 'dayjs';
 
-import { useClaimsIndexQuery, Claim } from './queries.graphql';
 import Header, { ActionItem } from 'components/header';
 import TextLink from 'components/link';
 import Footer from 'components/footer';
 import ProviderLink from 'components/provider-link';
+import { useClaimsIndexQuery, Claim } from 'lib/apollo/queries/claims.graphql';
 import numberFormat from 'lib/number-format';
 import { claimType, claimStatus } from 'lib/strings';
 
