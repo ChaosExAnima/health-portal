@@ -80,6 +80,10 @@ const DataTableFilters: React.FC<DataTableFiltersProps> = ( { columns, filters }
 		}
 	}
 
+	if ( filters.length === 0 ) {
+		return null;
+	}
+
 	return (
 		<Toolbar>
 			<Typography variant="h5" component="p" className={ classes.filterHeader }>

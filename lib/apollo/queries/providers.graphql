@@ -5,6 +5,7 @@ query ProvidersIndex($offset: Int!) {
 			id
 			slug
 			name
+			phone
 		}
 	}
 }

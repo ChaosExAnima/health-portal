@@ -14,6 +14,7 @@ const mocks = {
 	Provider: () => ( {
 		name: casual.name,
 		slug: casual.string,
+		phone: casual.phone,
 	} ),
 	Claim: () => ( {
 		claim: casual.card_number(),

@@ -36,6 +36,7 @@ type Provider {
 	name: String!
 	slug: Slug!
 	location: String
+	phone: String
 	history: [Event!]
 }
 

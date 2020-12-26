@@ -30,7 +30,7 @@ export type DataTableRowData = {
 }
 
 // eslint-disable-next-line no-unused-vars
-export type DataTableFormatter = ( arg0: unknown ) => string;
+export type DataTableFormatter = ( arg0: unknown ) => string | React.ReactNode;
 
 export type DataTableColumn = TableCellProps & {
 	name: string;
