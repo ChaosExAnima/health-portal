@@ -13,7 +13,6 @@ const mocks = {
 	DateTime: () => casual.date( 'M/D/YYYY HH:SS' ),
 	Provider: () => ( {
 		name: casual.name,
-		slug: casual.string,
 		phone: casual.phone,
 	} ),
 	Claim: () => ( {
