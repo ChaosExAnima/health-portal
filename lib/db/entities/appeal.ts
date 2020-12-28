@@ -15,22 +15,22 @@ import { Note } from './note';
 
 @Entity()
 export class Appeal extends BaseEntity {
-	@Property()
+	@Property( { type: 'string' } )
 	name!: string;
 
-	@Property()
+	@Property( { type: 'string' } )
 	status!: string;
 
-	@Property()
+	@Property( { type: 'date' } )
 	created = new Date();
 
-	@Property( { onUpdate: () => new Date() } )
+	@Property( { type: 'date', onUpdate: () => new Date() } )
 	updated = new Date();
 
-	@ManyToOne()
+	@ManyToOne( () => Provider )
 	provider?: Provider;
 
-	@ManyToOne()
+	@ManyToOne( () => Appeal )
 	parent?: Appeal;
 
 	@OneToMany( () => Appeal, ( appeal ) => appeal.parent )

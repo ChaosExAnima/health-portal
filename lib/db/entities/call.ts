@@ -12,7 +12,7 @@ import { Provider } from './provider';
 
 @Entity()
 export class Call extends BaseEntity {
-	@Property()
+	@Property( { type: 'datetime' } )
 	created = new Date();
 
 	@ManyToOne( () => Provider )

@@ -11,7 +11,7 @@ import { Appeal } from './appeal';
 
 @Entity()
 export class Note extends BaseEntity {
-	@Property()
+	@Property( { type: 'date' } )
 	date = new Date();
 
 	@Property( { type: 'text' } )

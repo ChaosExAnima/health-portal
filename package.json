@@ -19,6 +19,7 @@
     "@mikro-orm/core": "^4.3.4",
     "@mikro-orm/mariadb": "^4.3.4",
     "@mikro-orm/reflection": "^4.3.4",
+    "apollo-datasource": "^0.7.2",
     "apollo-server-micro": "^2.19.0",
     "clsx": "^1.1.1",
     "dayjs": "^1.9.7",
@@ -30,6 +31,7 @@
     "react-dropzone": "^11.2.4"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.12.12",
     "@graphql-codegen/cli": "^1.20.0",
     "@graphql-codegen/plugin-helpers": "^1.18.2",
     "@graphql-codegen/typescript": "^1.19.0",
@@ -53,7 +55,6 @@
   },
   "mikro-orm": {
     "useTsNode": true,
-    "tsConfigPath": "./tsconfig.orm.json",
     "configPaths": [
       "./config/db.ts"
     ]

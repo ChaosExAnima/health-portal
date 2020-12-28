@@ -13,22 +13,22 @@ import { Note } from './note';
 
 @Entity()
 export class Provider extends BaseEntity {
-	@Property()
+	@Property( { type: 'string' } )
 	name!: string;
 
-	@Property()
+	@Property( { type: 'string' } )
 	phone?: string;
 
-	@Property()
+	@Property( { type: 'string' } )
 	address?: string;
 
-	@Property()
+	@Property( { type: 'string' } )
 	details?: string;
 
-	@Property()
+	@Property( { type: 'string' } )
 	website?: string;
 
-	@Property()
+	@Property( { type: 'string' } )
 	email?: string;
 
 	@OneToMany( () => Note, ( note ) => note.parentProvider )

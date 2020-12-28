@@ -15,31 +15,33 @@ import { Provider } from './provider';
 
 @Entity()
 export class Claim extends BaseEntity {
-	@Property()
+	@Property( { type: 'string' } )
 	number?: string;
 
-	@Property()
+	@Property( { type: 'date' } )
 	created = new Date();
 
-	@Property( { onUpdate: () => new Date() } )
+	@Property( { type: 'date', onUpdate: () => new Date() } )
 	updated = new Date();
 
-	@Property()
+	@Property( { type: 'date' } )
 	serviceDate!: Date;
 
-	@Property()
+	@Property( { type: 'string' } )
 	type!: string;
 
+	@Property( { type: 'float' } )
 	billed?: number;
 
+	@Property( { type: 'float' } )
 	cost?: number;
 
-	@Property( { persist: false } )
+	@Property( { type: 'float', persist: false } )
 	get owed(): number {
 		return 0;
 	}
 
-	@ManyToOne()
+	@ManyToOne( () => Claim )
 	parent?: Claim;
 
 	@OneToMany( () => Claim, ( claim ) => claim.parent )

@@ -5,10 +5,10 @@ import {
 } from '@mikro-orm/core';
 
 export abstract class BaseEntity {
-	@PrimaryKey()
+	@PrimaryKey( { type: 'int' } )
 	id!: number;
 
-	@Property()
+	@Property( { type: 'string' } )
 	@Unique()
 	slug!: string;
 }

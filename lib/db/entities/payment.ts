@@ -10,16 +10,16 @@ import { Claim } from './claim';
 
 @Entity()
 export class Payment extends BaseEntity {
-	@Property()
+	@Property( { type: 'float' } )
 	amount!: number;
 
-	@Property()
+	@Property( { type: 'date' } )
 	date = new Date();
 
-	@Property()
+	@Property( { type: 'string' } )
 	method?: string;
 
-	@Property()
+	@Property( { type: 'string' } )
 	details?: string;
 
 	@ManyToMany( () => Claim, ( claim ) => claim.payments )

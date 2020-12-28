@@ -1,10 +1,19 @@
 import { ApolloServer } from 'apollo-server-micro';
 
+import initOrm from 'lib/db';
+import MikroAPI from 'lib/apollo/datasource';
 import { makeSchema } from 'lib/apollo/schema';
 
 const schema = makeSchema();
 
-const apolloServer = new ApolloServer( { schema } );
+const orm = initOrm();
+
+const apolloServer = new ApolloServer( {
+	schema,
+	dataSources: () => ( {
+		api: new MikroAPI( orm ),
+	} ),
+} );
 
 export const config = {
 	api: {

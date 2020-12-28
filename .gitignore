@@ -19,6 +19,7 @@
 .DS_Store
 *.pem
 *.db
+/temp
 
 # debug
 npm-debug.log*
