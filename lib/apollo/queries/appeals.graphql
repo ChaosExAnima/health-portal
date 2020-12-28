@@ -24,7 +24,9 @@ query Appeal( $slug: String! ) {
 	appeal(slug: $slug) {
 		id
 		slug
+		name
 		date
+		status
 		provider {
 			name
 			slug
