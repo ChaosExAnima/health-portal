@@ -37,8 +37,8 @@ const ClaimPage: React.FC<ClaimPageProps> = ( { claim } ) => {
 				claim.claim,
 			] } />
 			<Header title={ `Claim # ${ claim.claim }` } buttonsBelow actions={ [
-				{ action: 'Add Event', href: '', icon: 'add' },
-				{ action: 'Edit', href: ``, icon: 'edit' },
+				{ action: 'Add Event', icon: 'add' },
+				{ action: 'Edit', href: `/claims/${ claim.slug }/edit`, icon: 'edit' },
 			] } />
 			<DetailsBox details={ [
 				{ name: 'Status', detail: claimStatus( claim.status ) },
