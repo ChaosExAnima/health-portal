@@ -1,18 +1,36 @@
-import { EntitySchema } from '@mikro-orm/core';
+import {
+	Property,
+	OneToMany,
+	Collection,
+	ManyToMany,
+	Entity,
+} from '@mikro-orm/core';
+import { Appeal } from './appeal';
 
-export interface Provider {
-	id: number;
-	slug: string;
-	name: string;
+import { BaseEntity } from './base';
+import { Claim } from './claim';
+import { Note } from './note';
+
+@Entity()
+export class Provider extends BaseEntity {
+	@Property()
+	name!: string;
+
+	@Property()
 	phone?: string;
-}
 
-export const schema = new EntitySchema<Provider>( {
-	name: 'Provider',
-	properties: {
-		id: { type: 'number', primary: true },
-		slug: { type: 'string', unique: true },
-		name: { type: 'string' },
-		phone: { type: 'string', nullable: true },
-	},
-} );
+	@Property()
+	address?: string;
+
+	@Property()
+	details?: string;
+
+	@OneToMany( () => Note, ( note ) => note.parentProvider )
+	notes = new Collection<Note>( this );
+
+	@OneToMany( () => Claim, ( claim ) => claim.provider )
+	claims = new Collection<Claim>( this );
+
+	@ManyToMany( () => Appeal )
+	appeals = new Collection<Appeal>( this );
+}

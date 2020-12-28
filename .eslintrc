@@ -27,5 +27,5 @@
 	"globals": {
 		"React": "writable"
 	},
-	"ignorePatterns": "**/*.graphql.d.ts"
+	"ignorePatterns": [ "**/*.graphql.d.ts", "**/*.graphqls.d.ts" ]
 }
