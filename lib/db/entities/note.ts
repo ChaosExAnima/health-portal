@@ -6,7 +6,6 @@ import {
 
 import { BaseEntity } from './base';
 import { Provider } from './provider';
-import { Call } from './call';
 import { Claim } from './claim';
 import { Appeal } from './appeal';
 
