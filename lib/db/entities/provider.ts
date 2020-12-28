@@ -25,6 +25,12 @@ export class Provider extends BaseEntity {
 	@Property()
 	details?: string;
 
+	@Property()
+	website?: string;
+
+	@Property()
+	email?: string;
+
 	@OneToMany( () => Note, ( note ) => note.parentProvider )
 	notes = new Collection<Note>( this );
 
