@@ -11,7 +11,8 @@ class MikroAPI extends DataSource {
 	}
 
 	async initialize(): Promise<void> {
-		await this.ormPromise;
+		const orm = await this.ormPromise;
+		this.orm = orm;
 	}
 
 	get em(): EntityManager {
