@@ -2,12 +2,12 @@
 # import DateTime from './scalars.graphqls'
 # import Slug from './scalars.graphqls'
 
-
 enum ClaimType {
 	DENTAL
 	OUTOFNETWORK
 	INNETWORK
 	PHARMACY
+	OTHER
 }
 
 enum ClaimStatus {
@@ -15,6 +15,7 @@ enum ClaimStatus {
 	APPROVED
 	DENIED
 	DELETED
+	UNKNOWN
 }
 
 enum EventType {
@@ -23,12 +24,14 @@ enum EventType {
 	APPEAL
 	UPDATE
 	NOTE
+	OTHER
 }
 
 enum AppealStatus {
 	NEW
 	PENDING
 	CLOSED
+	UNKNOWN
 }
 
 type Provider {

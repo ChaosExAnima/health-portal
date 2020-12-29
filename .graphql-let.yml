@@ -1,8 +1,14 @@
 schema:
-  - lib/apollo/schema/*.graphqls
+    - lib/apollo/schema/*.graphqls
 schemaEntrypoint: lib/apollo/schema/index.graphqls
 documents: "**/*.graphql"
+config:
+    scalars:
+        Date: 'Date'
+        DateTime: 'Date'
+        ID: 'number'
+        Slug: 'string'
 plugins:
-  - typescript
-  - typescript-operations
-  - typescript-react-apollo
+    - typescript
+    - typescript-operations
+    - typescript-react-apollo

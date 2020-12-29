@@ -24,6 +24,9 @@ export class Claim extends BaseEntity {
 	@Property( { type: 'date', onUpdate: () => new Date() } )
 	updated = new Date();
 
+	@Property( { type: 'string' } )
+	status!: string;
+
 	@Property( { type: 'date' } )
 	serviceDate!: Date;
 

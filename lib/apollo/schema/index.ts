@@ -62,5 +62,6 @@ export function makeSchema(): GraphQLSchema {
 		typeDefs,
 	} );
 
-	return addMocksToSchema( { schema, mocks } );
+	return schema;
+	// return addMocksToSchema( { schema, mocks } );
 }

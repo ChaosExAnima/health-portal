@@ -14,7 +14,7 @@ class MikroAPI extends DataSource {
 		await this.ormPromise;
 	}
 
-	em(): EntityManager {
+	get em(): EntityManager {
 		return this.orm.em;
 	}
 }

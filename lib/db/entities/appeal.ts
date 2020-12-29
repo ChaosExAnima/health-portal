@@ -28,7 +28,7 @@ export class Appeal extends BaseEntity {
 	updated = new Date();
 
 	@ManyToOne( () => Provider )
-	provider?: Provider;
+	provider!: Provider;
 
 	@ManyToOne( () => Appeal )
 	parent?: Appeal;
