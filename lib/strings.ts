@@ -1,5 +1,11 @@
+import slugifyFn from 'slugify';
+
 export function capitalize( word: string ): string {
 	return ( word.substr( 0, 1 ).toUpperCase() ) + ( word.substr( 1 ).toLowerCase() );
+}
+
+export function slugify( text: string ): string {
+	return slugifyFn( text, { locale: 'en-US', lower: true } );
 }
 
 export function claimType( type: string ): string {
