@@ -5,7 +5,7 @@ import {
 } from '@mikro-orm/core';
 
 export abstract class BaseEntity {
-	@PrimaryKey( { type: 'int' } )
+	@PrimaryKey( { type: 'number' } )
 	id!: number;
 
 	@Property( { type: 'string' } )

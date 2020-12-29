@@ -10,7 +10,6 @@ async function run(): Promise<void> {
 
 	for ( let index = 0; index < 5; index++ ) {
 		const provider = new Provider();
-		provider.id = index;
 		provider.name = casual.coin_flip ? casual.company_name : `Dr. ${ casual.last_name }`;
 		provider.slug = slugify( provider.name );
 		provider.email = casual.email;
