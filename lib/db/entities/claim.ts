@@ -15,7 +15,7 @@ import { Provider } from './provider';
 
 @Entity()
 export class Claim extends BaseEntity {
-	@Property( { type: 'string' } )
+	@Property( { type: 'string', nullable: true } )
 	number?: string;
 
 	@Property( { type: 'date' } )
@@ -33,10 +33,10 @@ export class Claim extends BaseEntity {
 	@Property( { type: 'string' } )
 	type!: string;
 
-	@Property( { type: 'float' } )
+	@Property( { type: 'float', nullable: true } )
 	billed?: number;
 
-	@Property( { type: 'float' } )
+	@Property( { type: 'float', nullable: true } )
 	cost?: number;
 
 	@Property( { type: 'float', persist: false } )

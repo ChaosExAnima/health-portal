@@ -38,8 +38,9 @@ type Provider {
 	id: ID!
 	name: String!
 	slug: Slug!
-	location: String
+	address: String
 	phone: String
+	email: String
 	history: [Event!]
 }
 

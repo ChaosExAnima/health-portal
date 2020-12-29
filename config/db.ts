@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 
-import * as entities from 'lib/db/entities';
+import * as entities from '../lib/db/entities';
 
 export default {
 	type: process.env.DB_HOST ? 'mariadb' : 'sqlite',

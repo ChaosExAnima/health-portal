@@ -16,19 +16,19 @@ export class Provider extends BaseEntity {
 	@Property( { type: 'string' } )
 	name!: string;
 
-	@Property( { type: 'string' } )
+	@Property( { type: 'string', nullable: true } )
 	phone?: string;
 
-	@Property( { type: 'string' } )
+	@Property( { type: 'string', nullable: true } )
 	address?: string;
 
-	@Property( { type: 'string' } )
+	@Property( { type: 'string', nullable: true } )
 	details?: string;
 
-	@Property( { type: 'string' } )
+	@Property( { type: 'string', nullable: true } )
 	website?: string;
 
-	@Property( { type: 'string' } )
+	@Property( { type: 'string', nullable: true } )
 	email?: string;
 
 	@OneToMany( () => Note, ( note ) => note.parentProvider )

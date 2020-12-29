@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 
-import config from 'config/db';
+import config from '../../config/db';
 
 async function init(): Promise<MikroORM> {
 	if ( typeof window !== 'undefined' ) {

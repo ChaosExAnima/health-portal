@@ -16,10 +16,10 @@ export class Payment extends BaseEntity {
 	@Property( { type: 'date' } )
 	date = new Date();
 
-	@Property( { type: 'string' } )
+	@Property( { type: 'string', nullable: true } )
 	method?: string;
 
-	@Property( { type: 'string' } )
+	@Property( { type: 'string', nullable: true } )
 	details?: string;
 
 	@ManyToMany( () => Claim, ( claim ) => claim.payments )
