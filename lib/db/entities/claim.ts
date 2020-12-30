@@ -51,7 +51,7 @@ export class Claim extends BaseEntity {
 	children = new Collection<Claim>( this );
 
 	@ManyToOne( () => Provider )
-	provider = new Collection<Provider>( this );
+	provider!: Provider;
 
 	@ManyToMany( () => Appeal )
 	appeals = new Collection<Appeal>( this );
