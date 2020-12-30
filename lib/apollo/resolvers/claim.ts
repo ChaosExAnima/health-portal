@@ -3,14 +3,17 @@ import {
 	MutationResolver,
 	Mapper,
 	maps,
+	TypeResolver,
 } from './index';
-import { Claim } from 'lib/db/entities';
+import { Claim, Provider } from 'lib/db/entities';
 
 import type {
 	Claim as ClaimGQL,
+	ClaimResolvers,
 	ClaimStatus,
 	ClaimType,
 } from 'lib/apollo/schema/index.graphqls';
+import type { ResolverContext } from '../index';
 
 function statusMap( status: string ): ClaimStatus {
 	switch ( status ) {
@@ -75,7 +78,17 @@ const uploadClaims: MutationResolver<'uploadClaims'> = async () => {
 	};
 };
 
+const Resolver: TypeResolver<'Claim'> = ( {
+	provider( parent, {}, { dataSources: { db } } ) {
+		return db.em.findOne( Provider, { id: parent.provider.id } ) as Promise<Provider>;
+	},
+	history() {
+		return [];
+	},
+} );
+
 export default {
 	Query: { getClaims, claim },
 	Mutation: { uploadClaims },
+	Resolver: { Claim: Resolver },
 };

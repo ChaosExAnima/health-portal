@@ -2,10 +2,14 @@ import {
 	Mapper,
 	QueryResolver,
 	maps,
+	TypeResolver,
 } from './index';
-import { Appeal } from 'lib/db/entities';
+import { Appeal, Provider } from 'lib/db/entities';
 
-import type { Appeal as AppealGQL, AppealStatus } from 'lib/apollo/schema/index.graphqls';
+import type {
+	Appeal as AppealGQL,
+	AppealStatus,
+} from 'lib/apollo/schema/index.graphqls';
 
 function statusMap( status: string ): AppealStatus {
 	switch ( status ) {
@@ -23,8 +27,8 @@ function statusMap( status: string ): AppealStatus {
 export const map: Mapper<Appeal, AppealGQL> = ( appeal ) => ( {
 	...appeal,
 	date: appeal.created,
-	calls: appeal.calls.map( maps.callMap ),
-	claims: appeal.claims.map( maps.claimMap ),
+	calls: appeal.calls.toArray().map( maps.callMap ),
+	claims: appeal.claims.toArray().map( maps.claimMap ),
 	provider: maps.providerMap( appeal.provider ),
 	status: statusMap( appeal.status ),
 } );
@@ -44,7 +48,22 @@ const appeal: QueryResolver<'appeal'> = async ( parent, { slug }, { dataSources:
 	return map( appealData );
 };
 
+const Resolver: TypeResolver<'Appeal'> = ( {
+	provider( parent, {}, { dataSources: { db } } ) {
+		return db.em.findOne( Provider, { id: parent.provider.id } ) as Promise<Provider>;
+	},
+	async claims( parent, {}, { dataSources: { db } } ) {
+		const parentObj = await db.em.findOne( Appeal, { id: parent.id } );
+		const claims = await parentObj?.claims.loadItems();
+		if ( ! claims ) {
+			return [];
+		}
+		return claims.map( maps.claimMap );
+	},
+} );
+
 export default {
 	Query: { getAppeals, appeal },
 	Mutation: {},
+	Resolver: { Appeal: Resolver },
 };
