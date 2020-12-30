@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "gen": "graphql-let",
+    "orm": "mikro-orm",
+    "load-schema": "mikro-orm schema:create -r",
     "load-fixtures": "ts-node --project tsconfig.orm.json lib/db/populate.ts"
   },
   "dependencies": {
@@ -49,6 +51,7 @@
     "@typescript-eslint/parser": "^4.9.1",
     "@wordpress/eslint-plugin": "^7.3.0",
     "casual": "^1.6.2",
+    "dotenv": "^8.2.0",
     "eslint": "^7.15.0",
     "eslint-plugin-mui-unused-classes": "^1.0.3",
     "eslint-plugin-react": "^7.21.5",
