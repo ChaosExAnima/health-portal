@@ -8,7 +8,15 @@ config:
         DateTime: 'Date'
         ID: 'number'
         Slug: 'string'
+    mappers:
+        Appeal: './lib/db/entities/appeal#Appeal'
+        Call: './lib/db/entities/call#Call'
+        Claim: './lib/db/entities/claim#Claim'
+        File: './lib/db/entities/file#File'
+        Note: './lib/db/entities/note#Note'
+        Provider: './lib/db/entities/provider#Provider'
 plugins:
     - typescript
     - typescript-operations
     - typescript-react-apollo
+    - typescript-resolvers

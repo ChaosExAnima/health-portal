@@ -1,16 +1,14 @@
 import { Provider } from 'lib/db/entities';
 
-import type { Mapper, QueryResolver } from './index';
-import type { Provider as ProviderGQL } from 'lib/apollo/schema/index.graphqls';
-
-export const map: Mapper<Provider, ProviderGQL> = ( provider ) => ( {
-	...provider,
-} );
+import {
+	QueryResolver,
+	TypeResolver,
+} from './index';
 
 const getProviders: QueryResolver<'getProviders'> = async ( parent, { offset, limit }, { dataSources: { db } } ) => {
-	const [ providersData, totalCount ] = await db.em.findAndCount( Provider, {} );
+	const [ providers, totalCount ] = await db.em.findAndCount( Provider, {} );
 	return {
-		providers: providersData.map( map ),
+		providers,
 		totalCount,
 		offset: offset || 0,
 		limit: limit || 1000,
@@ -18,11 +16,19 @@ const getProviders: QueryResolver<'getProviders'> = async ( parent, { offset, li
 };
 
 const provider: QueryResolver<'provider'> = async ( parent, { slug }, { dataSources: { db } } ) => {
-	const providerData = await db.em.findOneOrFail( Provider, { slug } );
-	return map( providerData );
+	return db.em.findOne( Provider, { slug } );
 };
+
+const Resolver: TypeResolver<'Provider'> = ( {
+	async notes( parent, {}, { dataSources: { db } } ) {
+		const parentObj = await db.em.findOneOrFail( Provider, { id: parent.id } );
+		const notes = await parentObj.notes.loadItems();
+		return notes;
+	},
+} );
 
 export default {
 	Query: { getProviders, provider },
 	Mutation: {},
+	Resolver: { Provider: Resolver },
 };

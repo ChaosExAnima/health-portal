@@ -1,15 +1,10 @@
 import {
-	Mapper,
 	QueryResolver,
-	maps,
 	TypeResolver,
 } from './index';
 import { Appeal, Provider } from 'lib/db/entities';
 
-import type {
-	Appeal as AppealGQL,
-	AppealStatus,
-} from 'lib/apollo/schema/index.graphqls';
+import type { AppealStatus } from 'lib/apollo/schema/index.graphqls';
 
 function statusMap( status: string ): AppealStatus {
 	switch ( status ) {
@@ -24,19 +19,10 @@ function statusMap( status: string ): AppealStatus {
 	}
 }
 
-export const map: Mapper<Appeal, AppealGQL> = ( appeal ) => ( {
-	...appeal,
-	date: appeal.created,
-	calls: appeal.calls.toArray().map( maps.callMap ),
-	claims: appeal.claims.toArray().map( maps.claimMap ),
-	provider: maps.providerMap( appeal.provider ),
-	status: statusMap( appeal.status ),
-} );
-
 const getAppeals: QueryResolver<'getAppeals'> = async ( parent, { offset, limit }, { dataSources: { db } } ) => {
-	const [ appealsData, totalCount ] = await db.em.findAndCount( Appeal, {} );
+	const [ appeals, totalCount ] = await db.em.findAndCount( Appeal, {} );
 	return {
-		appeals: appealsData.map( map ),
+		appeals,
 		totalCount,
 		offset: offset || 0,
 		limit: limit || 1000,
@@ -44,21 +30,32 @@ const getAppeals: QueryResolver<'getAppeals'> = async ( parent, { offset, limit 
 };
 
 const appeal: QueryResolver<'appeal'> = async ( parent, { slug }, { dataSources: { db } } ) => {
-	const appealData = await db.em.findOneOrFail( Appeal, { slug } );
-	return map( appealData );
+	const appealData = await db.em.findOne( Appeal, { slug } );
+	if ( ! appealData ) {
+		return null;
+	}
+	return appealData;
 };
 
 const Resolver: TypeResolver<'Appeal'> = ( {
-	provider( parent, {}, { dataSources: { db } } ) {
-		return db.em.findOne( Provider, { id: parent.provider.id } ) as Promise<Provider>;
+	async provider( parent, {}, { dataSources: { db } } ) {
+		return db.em.findOneOrFail( Provider, { id: parent.provider.id } );
+	},
+	async otherProviders( parent, {}, { dataSources: { db } } ) {
+		const parentObj = await db.em.findOneOrFail( Appeal, { id: parent.id }, [ 'involvedProviders' ] );
+		return parentObj.involvedProviders.toArray();
+	},
+	async calls( parent, {}, { dataSources: { db } } ) {
+		const parentObj = await db.em.findOneOrFail( Appeal, { id: parent.id }, [ 'calls' ] );
+		return parentObj.calls.toArray();
 	},
 	async claims( parent, {}, { dataSources: { db } } ) {
-		const parentObj = await db.em.findOne( Appeal, { id: parent.id } );
-		const claims = await parentObj?.claims.loadItems();
-		if ( ! claims ) {
-			return [];
-		}
-		return claims.map( maps.claimMap );
+		const parentObj = await db.em.findOneOrFail( Appeal, { id: parent.id }, [ 'claims' ] );
+		return parentObj.claims.toArray();
+	},
+	async notes( parent, {}, { dataSources: { db } } ) {
+		const parentObj = await db.em.findOneOrFail( Appeal, { id: parent.id }, [ 'notes' ] );
+		return parentObj.notes.toArray();
 	},
 } );
 

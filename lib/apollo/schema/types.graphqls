@@ -58,6 +58,8 @@ type Call {
 	date: DateTime!
 	reason: String
 	note: Note
+	claims: [Claim!]
+	appeals: [Appeal!]
 }
 
 type Appeal {

@@ -1,19 +1,14 @@
 import {
 	QueryResolver,
 	MutationResolver,
-	Mapper,
-	maps,
 	TypeResolver,
 } from './index';
-import { Claim, Provider } from 'lib/db/entities';
+import { Claim } from 'lib/db/entities';
 
 import type {
-	Claim as ClaimGQL,
-	ClaimResolvers,
 	ClaimStatus,
 	ClaimType,
 } from 'lib/apollo/schema/index.graphqls';
-import type { ResolverContext } from '../index';
 
 function statusMap( status: string ): ClaimStatus {
 	switch ( status ) {
@@ -45,19 +40,10 @@ function typeMap( type: string ): ClaimType {
 	}
 }
 
-export const map: Mapper<Claim, ClaimGQL> = ( claim ) => ( {
-	...claim,
-	claim: claim.number || 'Unknown',
-	date: claim.serviceDate,
-	provider: maps.providerMap( claim.provider ),
-	status: statusMap( claim.status ),
-	type: typeMap( claim.type ),
-} );
-
 const getClaims: QueryResolver<'getClaims'> = async ( parent, { offset, limit }, { dataSources: { db } } ) => {
-	const [ claimsData, totalCount ] = await db.em.findAndCount( Claim, {} );
+	const [ claims, totalCount ] = await db.em.findAndCount( Claim, {} );
 	return {
-		claims: claimsData.map( map ),
+		claims,
 		totalCount,
 		offset: offset || 0,
 		limit: limit || 1000,
@@ -65,8 +51,7 @@ const getClaims: QueryResolver<'getClaims'> = async ( parent, { offset, limit },
 };
 
 const claim: QueryResolver<'claim'> = async ( parent, { slug }, { dataSources: { db } } ) => {
-	const claimData = await db.em.findOneOrFail( Claim, { slug } );
-	return map( claimData );
+	return db.em.findOneOrFail( Claim, { slug } );
 };
 
 const uploadClaims: MutationResolver<'uploadClaims'> = async () => {
@@ -79,11 +64,16 @@ const uploadClaims: MutationResolver<'uploadClaims'> = async () => {
 };
 
 const Resolver: TypeResolver<'Claim'> = ( {
-	provider( parent, {}, { dataSources: { db } } ) {
-		return db.em.findOne( Provider, { id: parent.provider.id } ) as Promise<Provider>;
+	claim( parent ) {
+		return parent.number;
 	},
-	history() {
-		return [];
+	async provider( parent, {}, { dataSources: { db } } ) {
+		const parentObj = await db.em.findOneOrFail( Claim, { id: parent.id }, [ 'provider' ] );
+		return parentObj.provider;
+	},
+	async notes( parent, {}, { dataSources: { db } } ) {
+		const parentObj = await db.em.findOneOrFail( Claim, { id: parent.id }, [ 'notes' ] );
+		return parentObj.notes.toArray();
 	},
 } );
 
