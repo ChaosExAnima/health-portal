@@ -10,7 +10,6 @@ import {
 import { BaseSlugEntity } from './slug';
 import { Call } from './call';
 import { Claim } from './claim';
-import { File } from './file';
 import { Note } from './note';
 import { Provider } from './provider';
 

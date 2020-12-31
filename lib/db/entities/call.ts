@@ -4,7 +4,6 @@ import {
 	ManyToOne,
 	ManyToMany,
 	Collection,
-	OneToOne,
 } from '@mikro-orm/core';
 import { Appeal } from './appeal';
 import { Claim } from './claim';
