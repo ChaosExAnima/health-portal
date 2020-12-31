@@ -1,21 +1,21 @@
 query History( $type: Type!, $id: ID!, $offset: Int ) {
 	history( type: $type, id: $id, offset: $offset, limit: 20 ) {
 		id
-		date
+		created
 		description
-		type
+		files {
+			name
+			type
+		}
 		link {
 			__typename
 			... on Appeal {
-				id
 				slug
 			}
 			... on Claim {
-				id
 				slug
 			}
-			... on Call {
-				id
+			... on Provider {
 				slug
 			}
 		}

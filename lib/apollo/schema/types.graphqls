@@ -18,15 +18,6 @@ enum ClaimStatus {
 	UNKNOWN
 }
 
-enum EventType {
-	PAYMENT
-	CALL
-	APPEAL
-	UPDATE
-	NOTE
-	OTHER
-}
-
 enum AppealStatus {
 	NEW
 	PENDING
@@ -41,7 +32,7 @@ type Provider {
 	address: String
 	phone: String
 	email: String
-	history: [Event!]
+	notes: [Note!]
 }
 
 type Claim {
@@ -55,7 +46,7 @@ type Claim {
 	cost: Float
 	owed: Float
 	status: ClaimStatus!
-	history: [Event!]
+	notes: [Note!]
 }
 
 type Call {
@@ -66,28 +57,37 @@ type Call {
 	callId: String
 	date: DateTime!
 	reason: String
-	notes: String
+	note: Note
 }
 
 type Appeal {
 	id: ID!
+	created: Date!
 	slug: Slug!
 	name: String!
 	status: AppealStatus!
 	provider: Provider!
-	related: [Appeal!]
+	otherProviders: [Provider!]
+	diffs(length: Int!): [Appeal!]
 	claims: [Claim!]
 	calls: [Call!]
-	date: Date!
-	history: [Event!]
+	notes: [Note!]
 }
 
-union EventLink = Claim | Appeal | Call
+union NoteLink = Claim | Appeal | Provider
 
-type Event {
+type File {
 	id: ID!
-	type: EventType!
-	date: Date!
+	name: String!
+	created: Date!
+	path: String!
+	type: String!
+}
+
+type Note {
+	id: ID!
+	created: Date!
 	description: String
-	link: EventLink
+	link: NoteLink
+	files: [File!]
 }

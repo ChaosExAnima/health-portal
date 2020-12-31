@@ -1,5 +1,5 @@
 # import Claim from './types.graphqls'
-# import Event from './types.graphqls'
+# import Note from './types.graphqls'
 # import Provider from './types.graphqls'
 # import Call from './types.graphqls'
 # import Appeal from './types.graphqls'
@@ -47,14 +47,14 @@ enum Type {
 
 type Query {
 	getAppeals(offset: Int, limit: Int): AppealsResponse!
-	appeal(slug: String!): Appeal!
+	appeal(slug: String!): Appeal
 	getCalls(offset: Int, limit: Int): CallsResponse!
-	call(slug: String): Call!
+	call(slug: String): Call
 	getClaims(offset: Int, limit: Int): ClaimsResponse!
-	claim(slug: String!): Claim!
+	claim(slug: String!): Claim
 	getProviders(offset: Int, limit: Int): ProvidersResponse!
-	provider(slug: String!): Provider!
-	history(type: Type!, id: ID!, offset: Int, limit: Int ): [Event!]
+	provider(slug: String!): Provider
+	history(type: Type!, id: ID!, offset: Int, limit: Int ): [Note!]
 }
 
 interface MutationResponse {

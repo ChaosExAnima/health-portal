@@ -5,7 +5,7 @@ query AppealsIndex($offset: Int!) {
 			__typename
 			id
 			slug
-			date
+			created
 			name
 			status
 		}
@@ -25,7 +25,7 @@ query Appeal( $slug: String! ) {
 		id
 		slug
 		name
-		date
+		created
 		status
 		provider {
 			name
