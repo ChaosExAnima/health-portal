@@ -7,12 +7,12 @@ import {
 	IdentifiedReference,
 } from '@mikro-orm/core';
 
-import { BaseEntity } from './base';
-import { Claim } from './claim';
-import { File } from './file';
+import BaseEntity from './base';
+import Claim from './claim';
+import File from './file';
 
 @Entity()
-export class Payment extends BaseEntity {
+export default class Payment extends BaseEntity {
 	@Property( { type: 'float' } )
 	amount!: number;
 

@@ -6,15 +6,15 @@ import {
 	Collection,
 	IdentifiedReference,
 } from '@mikro-orm/core';
-import { Appeal } from './appeal';
-import { Claim } from './claim';
-import { Note } from './note';
+import Appeal from './appeal';
+import Claim from './claim';
+import Note from './note';
 
-import { Provider } from './provider';
-import { BaseSlugEntity } from './slug';
+import Provider from './provider';
+import BaseSlugEntity from './slug';
 
 @Entity()
-export class Call extends BaseSlugEntity {
+export default class Call extends BaseSlugEntity {
 	@Property( { type: 'date' } )
 	created = new Date();
 

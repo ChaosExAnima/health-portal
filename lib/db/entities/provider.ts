@@ -5,14 +5,14 @@ import {
 	ManyToMany,
 	Entity,
 } from '@mikro-orm/core';
-import { Appeal } from './appeal';
+import Appeal from './appeal';
 
-import { Claim } from './claim';
-import { Note } from './note';
-import { BaseSlugEntity } from './slug';
+import Claim from './claim';
+import Note from './note';
+import BaseSlugEntity from './slug';
 
 @Entity()
-export class Provider extends BaseSlugEntity {
+export default class Provider extends BaseSlugEntity {
 	@Property( { type: 'string' } )
 	name!: string;
 

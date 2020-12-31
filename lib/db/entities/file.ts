@@ -3,10 +3,10 @@ import {
 	Property,
 } from '@mikro-orm/core';
 
-import { BaseEntity } from './base';
+import BaseEntity from './base';
 
 @Entity()
-export class File extends BaseEntity {
+export default class File extends BaseEntity {
 	@Property( { type: 'string' } )
 	name!: string;
 

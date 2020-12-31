@@ -8,14 +8,14 @@ import {
 	IdentifiedReference,
 } from '@mikro-orm/core';
 
-import { BaseSlugEntity } from './slug';
-import { Call } from './call';
-import { Claim } from './claim';
-import { Note } from './note';
-import { Provider } from './provider';
+import BaseSlugEntity from './slug';
+import Call from './call';
+import Claim from './claim';
+import Note from './note';
+import Provider from './provider';
 
 @Entity()
-export class Appeal extends BaseSlugEntity {
+export default class Appeal extends BaseSlugEntity {
 	@Property( { type: 'string' } )
 	name!: string;
 

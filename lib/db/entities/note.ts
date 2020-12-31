@@ -7,14 +7,14 @@ import {
 	IdentifiedReference,
 } from '@mikro-orm/core';
 
-import { BaseEntity } from './base';
-import { Provider } from './provider';
-import { Claim } from './claim';
-import { Appeal } from './appeal';
-import { File } from './file';
+import BaseEntity from './base';
+import Provider from './provider';
+import Claim from './claim';
+import Appeal from './appeal';
+import File from './file';
 
 @Entity()
-export class Note extends BaseEntity {
+export default class Note extends BaseEntity {
 	@Property( { type: 'date' } )
 	created = new Date();
 
