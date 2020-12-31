@@ -16,7 +16,7 @@ class MikroAPI extends DataSource {
 	}
 
 	get em(): EntityManager {
-		return this.orm.em.fork();
+		return this.orm.em;
 	}
 }
 
