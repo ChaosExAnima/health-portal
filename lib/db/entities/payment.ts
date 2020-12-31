@@ -3,10 +3,12 @@ import {
 	Collection,
 	ManyToMany,
 	Entity,
+	ManyToOne,
 } from '@mikro-orm/core';
 
 import { BaseEntity } from './base';
 import { Claim } from './claim';
+import { File } from './file';
 
 @Entity()
 export class Payment extends BaseEntity {
@@ -24,4 +26,7 @@ export class Payment extends BaseEntity {
 
 	@ManyToMany( () => Claim, ( claim ) => claim.payments )
 	claims = new Collection<Claim>( this );
+
+	@ManyToOne( () => File )
+	receipt?: File;
 }

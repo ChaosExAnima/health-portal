@@ -12,10 +12,16 @@ import { Appeal } from './appeal';
 @Entity()
 export class Note extends BaseEntity {
 	@Property( { type: 'date' } )
-	date = new Date();
+	created = new Date();
 
 	@Property( { type: 'text' } )
 	text!: string;
+
+	@Property( { type: 'date', nullable: true } )
+	due?: Date;
+
+	@Property( { type: 'boolean', nullable: true } )
+	resolved?: boolean;
 
 	@ManyToOne( () => Provider, { nullable: true } )
 	provider?: Provider;
