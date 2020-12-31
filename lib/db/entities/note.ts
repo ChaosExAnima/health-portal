@@ -17,12 +17,12 @@ export class Note extends BaseEntity {
 	@Property( { type: 'text' } )
 	text!: string;
 
-	@ManyToOne( () => Provider )
-	parentProvider?: Provider;
+	@ManyToOne( () => Provider, { nullable: true } )
+	provider?: Provider;
 
-	@ManyToOne( () => Claim )
-	parentClaim?: Claim;
+	@ManyToOne( () => Claim, { nullable: true } )
+	claim?: Claim;
 
-	@ManyToOne( () => Appeal )
-	parentAppeal?: Appeal;
+	@ManyToOne( () => Appeal, { nullable: true } )
+	appeal?: Appeal;
 }

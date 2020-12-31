@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import casual from 'casual';
-import { Collection, EntityRepository } from '@mikro-orm/core';
+import dayjs from 'dayjs';
 
 import init from './index';
 import {
@@ -12,7 +12,8 @@ import {
 	Provider,
 } from './entities';
 import { slugify } from '../strings';
-import dayjs from 'dayjs';
+
+import type { EntityRepository } from '@mikro-orm/core';
 
 type DBTypes = Appeal | Call | Claim | Note | Payment | Provider;
 
@@ -27,15 +28,28 @@ function dateThisYear(): Date {
 	return casual.moment.year( 2020 ).toDate();
 }
 
-function pickFromArray<T extends DBTypes | string>( array: T[] ): T | null {
-	if ( ! array.length ) {
-		return null;
+function pickManyFromArray<T extends DBTypes | string>( array: T[], number = 1 ): T[] {
+	let len = array.length;
+	const result = new Array( number );
+	const taken = new Array( len );
+	if ( number > len ) {
+		throw new RangeError( 'getRandom: more elements taken than available' );
 	}
-	return array[ casual.integer( 0, array.length ) ];
+	while ( number-- ) {
+		const x = Math.floor( Math.random() * len );
+		result[ number ] = array[ x in taken ? taken[ x ] : x ];
+		taken[ x ] = --len in taken ? taken[ len ] : len;
+	}
+	return result;
+}
+
+function pickFromArray<T extends DBTypes | string>( array: T[] ): T | null {
+	return pickManyFromArray( array )[ 0 ];
 }
 
 async function run( size: number ): Promise<void> {
 	const orm = await init();
+	const numToAssign = Math.floor( size / 2 );
 
 	const providerRepo = orm.em.getRepository( Provider );
 	for ( let index = 0; index < size; index++ ) {
@@ -45,6 +59,8 @@ async function run( size: number ): Promise<void> {
 		provider.email = casual.email;
 		provider.phone = casual.phone;
 		provider.address = casual.address;
+		provider.details = casual.text;
+		provider.website = casual.url;
 		await providerRepo.persist( provider );
 	}
 	const providers = await saveAndGetObjects<Provider>( providerRepo );
@@ -96,6 +112,12 @@ async function run( size: number ): Promise<void> {
 		await claimRepo.persist( claim );
 	}
 	const claims = await saveAndGetObjects<Claim>( claimRepo );
+	const claimsToGiveParents = pickManyFromArray( claims, numToAssign );
+	for ( const claim of claimsToGiveParents ) {
+		claim.parent = pickFromArray<Claim>( claims ) || undefined;
+		await claimRepo.persist( claim );
+	}
+	await claimRepo.flush();
 	console.log( `Inserted ${ claims.length } claims.` );
 
 	const appealRepo = orm.em.getRepository( Appeal );
@@ -130,6 +152,12 @@ async function run( size: number ): Promise<void> {
 		await appealRepo.persist( appeal );
 	}
 	const appeals = await saveAndGetObjects<Appeal>( appealRepo );
+	const appealsToGiveParents = pickManyFromArray( appeals, numToAssign );
+	for ( const appeal of appealsToGiveParents ) {
+		appeal.parent = pickFromArray<Appeal>( appeals ) || undefined;
+		await claimRepo.persist( appeal );
+	}
+	await claimRepo.flush();
 	console.log( `Inserted ${ appeals.length } appeals.` );
 
 	const paymentRepo = orm.em.getRepository( Payment );
@@ -144,7 +172,6 @@ async function run( size: number ): Promise<void> {
 			payment.amount = casual.integer( 1, claim.cost || 50 );
 			payment.claims.add( claim );
 		}
-		payment.slug = slugify( `Payment for claim ${ claim?.number || 'unknown' } on ${ dayjs( payment.date ).format( 'DD/MM/YYYY' ) }` );
 		await paymentRepo.persist( payment );
 	}
 	await paymentRepo.flush();
@@ -154,15 +181,14 @@ async function run( size: number ): Promise<void> {
 		const note = new Note();
 		note.date = dateThisYear();
 		note.text = casual.sentences( 5 );
-		note.slug = slugify( casual.words( 20 ) );
 
 		const type = pickFromArray<string>( [ 'claim', 'appeal', 'provider' ] );
 		if ( type === 'claim' ) {
-			note.parentClaim = pickFromArray<Claim>( claims ) || undefined;
+			note.claim = pickFromArray<Claim>( claims ) || undefined;
 		} else if ( type === 'appeal' ) {
-			note.parentAppeal = pickFromArray<Appeal>( appeals ) || undefined;
+			note.appeal = pickFromArray<Appeal>( appeals ) || undefined;
 		} else if ( type === 'provider' ) {
-			note.parentProvider = pickFromArray<Provider>( providers ) || undefined;
+			note.provider = pickFromArray<Provider>( providers ) || undefined;
 		}
 		await notesRepo.persist( note );
 	}

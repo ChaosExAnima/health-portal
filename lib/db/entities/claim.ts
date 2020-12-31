@@ -8,13 +8,14 @@ import {
 } from '@mikro-orm/core';
 
 import { Appeal } from './appeal';
-import { BaseEntity } from './base';
+import { Call } from './call';
 import { Note } from './note';
 import { Payment } from './payment';
 import { Provider } from './provider';
+import { BaseSlugEntity } from './slug';
 
 @Entity()
-export class Claim extends BaseEntity {
+export class Claim extends BaseSlugEntity {
 	@Property( { type: 'string', nullable: true } )
 	number?: string;
 
@@ -44,7 +45,7 @@ export class Claim extends BaseEntity {
 		return 0;
 	}
 
-	@ManyToOne( () => Claim )
+	@ManyToOne( () => Claim, { nullable: true } )
 	parent?: Claim;
 
 	@OneToMany( () => Claim, ( claim ) => claim.parent )
@@ -59,6 +60,9 @@ export class Claim extends BaseEntity {
 	@ManyToMany( () => Payment )
 	payments = new Collection<Payment>( this );
 
-	@OneToMany( () => Note, ( note ) => note.parentClaim )
+	@OneToMany( () => Note, ( note ) => note.claim )
 	notes = new Collection<Note>( this );
+
+	@ManyToMany( () => Call )
+	calls = new Collection<Call>( this );
 }

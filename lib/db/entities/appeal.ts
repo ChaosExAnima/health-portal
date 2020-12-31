@@ -7,14 +7,14 @@ import {
 	ManyToMany,
 } from '@mikro-orm/core';
 
-import { BaseEntity } from './base';
 import { Provider } from './provider';
 import { Call } from './call';
 import { Claim } from './claim';
 import { Note } from './note';
+import { BaseSlugEntity } from './slug';
 
 @Entity()
-export class Appeal extends BaseEntity {
+export class Appeal extends BaseSlugEntity {
 	@Property( { type: 'string' } )
 	name!: string;
 
@@ -30,7 +30,7 @@ export class Appeal extends BaseEntity {
 	@ManyToOne( () => Provider )
 	provider!: Provider;
 
-	@ManyToOne( () => Appeal )
+	@ManyToOne( () => Appeal, { nullable: true } )
 	parent?: Appeal;
 
 	@OneToMany( () => Appeal, ( appeal ) => appeal.parent )
@@ -45,6 +45,6 @@ export class Appeal extends BaseEntity {
 	@ManyToMany( () => Provider, ( provider ) => provider.appeals )
 	involvedProviders = new Collection<Provider>( this );
 
-	@OneToMany( () => Note, ( note ) => note.parentAppeal )
+	@OneToMany( () => Note, ( note ) => note.appeal )
 	notes = new Collection<Note>( this );
 }
