@@ -5,6 +5,7 @@ import {
 	OneToMany,
 	Collection,
 	ManyToMany,
+	IdentifiedReference,
 } from '@mikro-orm/core';
 
 import { BaseSlugEntity } from './slug';
@@ -28,10 +29,10 @@ export class Appeal extends BaseSlugEntity {
 	updated = new Date();
 
 	@ManyToOne( () => Provider )
-	provider!: Provider;
+	provider!: IdentifiedReference<Provider>;
 
 	@ManyToOne( () => Appeal, { nullable: true } )
-	parent?: Appeal;
+	parent?: IdentifiedReference<Appeal>;
 
 	@OneToMany( () => Appeal, ( appeal ) => appeal.parent )
 	children = new Collection<Appeal>( this );

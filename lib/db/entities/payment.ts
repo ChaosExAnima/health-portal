@@ -4,6 +4,7 @@ import {
 	ManyToMany,
 	Entity,
 	ManyToOne,
+	IdentifiedReference,
 } from '@mikro-orm/core';
 
 import { BaseEntity } from './base';
@@ -28,5 +29,5 @@ export class Payment extends BaseEntity {
 	claims = new Collection<Claim>( this );
 
 	@ManyToOne( () => File )
-	receipt?: File;
+	receipt?: IdentifiedReference<File>;
 }

@@ -2,12 +2,16 @@ import {
 	Entity,
 	Property,
 	ManyToOne,
+	Collection,
+	ManyToMany,
+	IdentifiedReference,
 } from '@mikro-orm/core';
 
 import { BaseEntity } from './base';
 import { Provider } from './provider';
 import { Claim } from './claim';
 import { Appeal } from './appeal';
+import { File } from './file';
 
 @Entity()
 export class Note extends BaseEntity {
@@ -24,11 +28,14 @@ export class Note extends BaseEntity {
 	resolved?: boolean;
 
 	@ManyToOne( () => Provider, { nullable: true } )
-	provider?: Provider;
+	provider?: IdentifiedReference<Provider>;
 
 	@ManyToOne( () => Claim, { nullable: true } )
-	claim?: Claim;
+	claim?: IdentifiedReference<Claim>;
 
 	@ManyToOne( () => Appeal, { nullable: true } )
-	appeal?: Appeal;
+	appeal?: IdentifiedReference<Appeal>;
+
+	@ManyToMany( () => File )
+	files = new Collection<File>( this );
 }
