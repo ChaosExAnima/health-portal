@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "yarn gen && NODE_OPTIONS='--inspect' next dev",
+    "dev": "NODE_OPTIONS='--inspect' next dev",
+    "predev": "yarn gen",
     "build": "next build",
     "start": "next start",
     "gen": "graphql-let",
