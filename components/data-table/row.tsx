@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
 import { TableCell, TableRow } from '@material-ui/core';
-import dayjs from 'dayjs';
 
 import OptionalLink from 'components/optional-link';
 import { typeToPath } from 'lib/apollo/utils';
-import { toInt, toString } from 'lib/casting';
+import { toInt } from 'lib/casting';
 import numberFormat from 'lib/number-format';
 
 import { DataTableColumn, DataTableRowData } from './types';

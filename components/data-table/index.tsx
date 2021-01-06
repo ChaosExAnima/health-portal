@@ -31,6 +31,7 @@ type DataTableProps = {
 	rows?: DataTableRowData[];
 	rowsPerPage?: number;
 	totalCount?: number;
+	hasDates?: true;
 };
 
 const DataTable: React.FC<DataTableProps> = ( {
@@ -42,6 +43,7 @@ const DataTable: React.FC<DataTableProps> = ( {
 	rows,
 	rowsPerPage = 20,
 	totalCount,
+	hasDates = false,
 } ) => {
 	const router = useRouter();
 	if ( loading || ! rows ) {
@@ -59,7 +61,7 @@ const DataTable: React.FC<DataTableProps> = ( {
 	return (
 		<Container maxWidth="lg">
 			<TableContainer component={ Paper }>
-				<DataTableFilters columns={ columns } filters={ filters } />
+				<DataTableFilters filters={ filters } hasDates={ hasDates } />
 				<Table>
 					<DataTableHead columns={ columns } />
 					<TableBody>

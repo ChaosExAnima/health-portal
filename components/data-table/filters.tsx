@@ -12,13 +12,13 @@ import {
 } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import dayjs from 'dayjs';
-import React, { useMemo } from 'react';
+import React from 'react';
 
-import type { DataTableColumn, DataTableFilter } from './types';
+import type { DataTableFilter } from './types';
 
 type DataTableFiltersProps = {
-	columns: DataTableColumn[];
 	filters: DataTableFilter[];
+	hasDates: boolean;
 };
 
 const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
@@ -31,9 +31,8 @@ const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	},
 } ) );
 
-const DataTableFilters: React.FC<DataTableFiltersProps> = ( { columns, filters } ) => {
+const DataTableFilters: React.FC<DataTableFiltersProps> = ( { filters, hasDates } ) => {
 	const classes = useStyles();
-	const hasDates = useMemo( () => columns.reduce( ( prev, { format } ) => prev || format === 'date' || format === 'datetime', false ), columns );
 	const filterComponents: React.ReactNode[] = [];
 
 	if ( hasDates ) {
