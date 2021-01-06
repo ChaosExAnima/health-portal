@@ -19,9 +19,6 @@ const call: QueryResolver<'call'> = async ( parent, { slug }, { dataSources: { d
 };
 
 const Resolver: TypeResolver<'Call'> = ( {
-	date( parent ) {
-		return parent.created;
-	},
 	async provider( parent ) {
 		return parent.provider.load();
 	},

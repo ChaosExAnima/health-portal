@@ -21,6 +21,11 @@ export class Note extends BaseEntity {
 	@Property( { type: 'text' } )
 	text!: string;
 
+	@Property( { type: 'text', persist: false } )
+	get description(): string {
+		return this.text;
+	}
+
 	@Property( { type: 'date', nullable: true } )
 	due?: Date;
 

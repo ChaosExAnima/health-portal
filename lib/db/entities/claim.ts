@@ -20,11 +20,18 @@ export class Claim extends BaseSlugEntity {
 	@Property( { type: 'string', nullable: true } )
 	number?: string;
 
+	@Property( { type: 'string', persist: false } )
+	get claim(): string | undefined {
+		return this.number;
+	}
+
 	@Property( { type: 'date' } )
 	created = new Date();
 
-	@Property( { type: 'date', onUpdate: () => new Date() } )
-	updated = new Date();
+	@Property( { type: 'date', persist: false } )
+	get date(): Date {
+		return this.created;
+	}
 
 	@Property( { type: 'string' } )
 	status!: string;

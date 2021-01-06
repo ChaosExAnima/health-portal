@@ -11,9 +11,6 @@ import type {
 } from 'lib/apollo/schema/index.graphqls';
 
 const Resolver: TypeResolver<'Note'> = ( {
-	description( parent ) {
-		return parent.text;
-	},
 	async files( parent ) {
 		return parent.files.loadItems();
 	},

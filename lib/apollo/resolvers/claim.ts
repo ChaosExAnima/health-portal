@@ -29,12 +29,6 @@ const uploadClaims: MutationResolver<'uploadClaims'> = async () => {
 };
 
 const Resolver: TypeResolver<'Claim'> = ( {
-	date( parent ) {
-		return parent.created;
-	},
-	claim( parent ) {
-		return parent.number || null;
-	},
 	async provider( parent ) {
 		return parent.provider.load();
 	},

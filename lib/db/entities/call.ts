@@ -18,6 +18,11 @@ export class Call extends BaseSlugEntity {
 	@Property( { type: 'date' } )
 	created = new Date();
 
+	@Property( { type: 'date', persist: false } )
+	get date(): Date {
+		return this.created;
+	}
+
 	@ManyToOne( () => Provider, { wrappedReference: true } )
 	provider!: IdentifiedReference<Provider>;
 
