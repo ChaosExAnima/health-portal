@@ -5,10 +5,11 @@ import {
 	ManyToMany,
 	Entity,
 } from '@mikro-orm/core';
-import Appeal from './appeal';
 
+import Appeal from './appeal';
 import Claim from './claim';
 import Note from './note';
+import Representative from './representative';
 import BaseSlugEntity from './slug';
 
 @Entity()
@@ -39,6 +40,9 @@ export class Provider extends BaseSlugEntity {
 
 	@ManyToMany( () => Appeal )
 	appeals = new Collection<Appeal>( this );
+
+	@OneToMany( () => Representative, ( rep ) => rep.provider )
+	representatives = new Collection<Representative>( this );
 }
 
 export default Provider;

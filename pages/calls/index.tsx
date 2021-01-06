@@ -35,10 +35,13 @@ const CallsPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 			width: 200,
 		},
 		{
-			key: 'rep',
+			key: 'reps',
 			link: true,
 			name: 'Representative',
 			width: 200,
+			format: ( values: string[] | null ) => values && values.length
+				? values.join( ', ' )
+				: 'Unknown',
 		},
 		{
 			key: 'provider',
@@ -59,6 +62,7 @@ const CallsPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 				loading={ loading }
 				rows={ data?.getCalls.calls }
 				totalCount={ data?.getCalls.totalCount }
+				hasDates
 			/>
 			<Footer wrap />
 		</>

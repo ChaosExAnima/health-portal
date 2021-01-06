@@ -16,10 +16,11 @@ import {
 	Note,
 	Payment,
 	Provider,
+	Representative,
 } from './entities';
 import { slugify } from '../strings';
 
-type DBTypes = Appeal | Call | Claim | Note | Payment | Provider | File;
+type DBTypes = Appeal | Call | Claim | Note | Payment | Provider | File | Representative;
 
 async function saveAndGetObjects<T extends DBTypes>(
 	repo: EntityRepository<T>
@@ -75,6 +76,13 @@ async function run( size: number ): Promise<void> {
 	const providers = await saveAndGetObjects<Provider>( providerRepo );
 	console.log( `Inserted ${ providers.length } providers.` );
 
+	const repRepo = orm.em.getRepository( Representative );
+	for ( let index = 0; index < size; index++ ) {
+		const rep = new Representative( casual.first_name );
+		await repRepo.persist( rep );
+	}
+	const reps = await saveAndGetObjects<Representative>( repRepo );
+
 	const callRepo = orm.em.getRepository( Call );
 	for ( let index = 0; index < size; index++ ) {
 		const call = new Call();
@@ -82,6 +90,7 @@ async function run( size: number ): Promise<void> {
 		const provider = pickFromArray<Provider>( providers );
 		call.provider = pickRefFromArray<Provider>( providers );
 		call.slug = slugify( `Call on ${ dayjs( call.created ).format( 'D/M' ) } with ${ provider?.name || 'Unknown' }` );
+		call.reps.add( pickRefFromArray<Representative>( reps ) );
 		await callRepo.persist( call );
 	}
 	const calls = await saveAndGetObjects<Call>( callRepo );
@@ -91,7 +100,6 @@ async function run( size: number ): Promise<void> {
 	for ( let index = 0; index < size; index++ ) {
 		const claim = new Claim();
 		claim.created = dateThisYear();
-		claim.updated = claim.created;
 		claim.number = casual.card_number();
 		claim.billed = casual.integer( 100, 1000 );
 		claim.cost = casual.integer( 0, 50 );

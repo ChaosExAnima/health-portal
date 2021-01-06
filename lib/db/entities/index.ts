@@ -5,3 +5,4 @@ export { default as File } from './file';
 export { default as Note } from './note';
 export { default as Payment } from './payment';
 export { default as Provider } from './provider';
+export { default as Representative } from './representative';

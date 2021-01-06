@@ -11,6 +11,7 @@ import Claim from './claim';
 import Note from './note';
 
 import Provider from './provider';
+import Representative from './representative';
 import BaseSlugEntity from './slug';
 
 @Entity()
@@ -25,6 +26,9 @@ export class Call extends BaseSlugEntity {
 
 	@ManyToOne( () => Provider, { wrappedReference: true } )
 	provider!: IdentifiedReference<Provider>;
+
+	@ManyToMany( () => Representative )
+	reps = new Collection<Representative>( this );
 
 	@ManyToOne( () => Note, { nullable: true, wrappedReference: true } )
 	note?: IdentifiedReference<Note>;

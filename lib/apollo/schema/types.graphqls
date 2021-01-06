@@ -53,7 +53,7 @@ type Call {
 	id: ID!
 	slug: Slug!
 	provider: Provider!
-	rep: String
+	reps: [String!]
 	callId: String
 	date: DateTime!
 	reason: String

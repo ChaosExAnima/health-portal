@@ -31,6 +31,10 @@ const Resolver: TypeResolver<'Call'> = ( {
 	async note( parent ) {
 		return parent.note?.load() || null;
 	},
+	async reps( parent ) {
+		const reps = await parent.reps.loadItems();
+		return reps.map( ( { name } ) => name );
+	},
 } );
 
 export default {
