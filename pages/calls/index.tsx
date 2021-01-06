@@ -29,7 +29,6 @@ const CallsPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 	const columns: DataTableColumn[] = [
 		{
 			key: 'date',
-			format: 'datetime',
 			link: true,
 			name: 'Date',
 			align: 'right',

@@ -59,7 +59,6 @@ const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
 			align: 'right',
 			key: 'date',
 			name: 'Service Date',
-			format: 'date',
 			width: 150,
 		},
 		{

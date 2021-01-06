@@ -42,7 +42,6 @@ const AppealsPage: React.FC<PaginatedPageProps> = ( { title, currentPage } ) => 
 			align: 'right',
 			key: 'created',
 			name: 'Date Started',
-			format: 'date',
 			width: 150,
 		},
 		{

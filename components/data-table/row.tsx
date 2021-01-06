@@ -27,10 +27,6 @@ const DataTableCell: React.FC<DataTableCellProps> = ( { value, link, slug, __typ
 	if ( value && format && ! React.isValidElement( value ) ) {
 		if ( format === 'currency' ) {
 			text = numberFormat( toInt( value ), true );
-		} else if ( format === 'date' ) {
-			text = dayjs( toString( value ) ).format( 'M/D/YYYY' );
-		} else if ( format === 'datetime' ) {
-			text = dayjs( toString( value ) ).format( 'M/D/YYYY h:mm A' );
 		} else if ( typeof format === 'function' ) {
 			text = format( value );
 		}

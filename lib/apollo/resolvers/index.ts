@@ -9,7 +9,11 @@ import type {
 	QueryResolvers,
 	MutationResolvers,
 	Resolvers,
+	DateScalarConfig,
+	DateTimeScalarConfig,
 } from 'lib/apollo/schema/index.graphqls';
+import { GraphQLScalarType } from 'graphql';
+import dayjs from 'dayjs';
 
 export type QueryResolver<T extends keyof QueryResolvers<ResolverContext>> = QueryResolvers<ResolverContext>[T];
 export type MutationResolver<T extends keyof MutationResolvers<ResolverContext>> = MutationResolvers<ResolverContext>[T];
@@ -34,6 +38,20 @@ const Mutation: Required<MutationResolvers<ResolverContext>> = {
 	...Note.Mutation,
 };
 
+const Date = new GraphQLScalarType( {
+	name: 'Date',
+	serialize( value: Date ) {
+		return dayjs( value ).format( 'M/D/YY' );
+	},
+} as DateScalarConfig );
+
+const DateTime = new GraphQLScalarType( {
+	name: 'DateTime',
+	serialize( value: Date ) {
+		return dayjs( value ).format( 'M/D/YY h:mm A' );
+	},
+} as DateTimeScalarConfig );
+
 export default {
 	Query,
 	Mutation,
@@ -42,4 +60,6 @@ export default {
 	...Claim.Resolver,
 	...Note.Resolver,
 	...Provider.Resolver,
+	Date,
+	DateTime,
 };

@@ -35,6 +35,6 @@ export type DataTableFormatter = ( arg0: unknown ) => string | React.ReactNode;
 export type DataTableColumn = TableCellProps & {
 	name: string;
 	key: string;
-	format?: 'date' | 'datetime' | 'currency' | DataTableFormatter;
+	format?: 'currency' | DataTableFormatter;
 	link?: boolean;
 }
