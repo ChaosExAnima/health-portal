@@ -1,4 +1,4 @@
-export default function( amount: number, currency = false ): string {
+export default function format( amount: number, currency = false ): string {
 	let formatOptions = {};
 	if ( currency ) {
 		formatOptions = { style: 'currency', currency: 'USD' };
