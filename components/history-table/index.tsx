@@ -19,7 +19,7 @@ import EventRow from './event-row';
 
 type HistoryTableProps = {
 	type: 'claim' | 'appeal' | 'provider';
-	id: string;
+	id: number;
 };
 
 function stringIsType( type: string ): type is Type {
