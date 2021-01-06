@@ -19,14 +19,6 @@ query ClaimsIndex($offset: Int!) {
 	}
 }
 
-query ClaimsSlugs{
-	getClaims( limit: 10000 ) {
-		claims {
-			claim
-		}
-	}
-}
-
 query Claim( $slug: String! ) {
 	claim(slug: $slug) {
 		id

@@ -10,14 +10,6 @@ query ProvidersIndex($offset: Int!) {
 	}
 }
 
-query ProvidersSlugs{
-	getProviders( limit: 10000 ) {
-		providers {
-			slug
-		}
-	}
-}
-
 query Provider( $slug: String! ) {
 	provider(slug: $slug) {
 		id

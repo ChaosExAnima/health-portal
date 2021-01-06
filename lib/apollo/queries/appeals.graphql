@@ -12,14 +12,6 @@ query AppealsIndex($offset: Int!) {
 	}
 }
 
-query AppealsSlugs{
-	getAppeals( limit: 10000 ) {
-		appeals {
-			slug
-		}
-	}
-}
-
 query Appeal( $slug: String! ) {
 	appeal(slug: $slug) {
 		id

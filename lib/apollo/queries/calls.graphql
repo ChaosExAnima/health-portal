@@ -15,14 +15,6 @@ query CallsIndex($offset: Int!) {
 	}
 }
 
-query CallsSlugs{
-	getCalls( limit: 10000 ) {
-		calls {
-			slug
-		}
-	}
-}
-
 query Call( $slug: String! ) {
 	call(slug: $slug) {
 		id
