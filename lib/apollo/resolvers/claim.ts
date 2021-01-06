@@ -5,41 +5,6 @@ import {
 } from './index';
 import { Claim } from 'lib/db/entities';
 
-import type {
-	ClaimStatus,
-	ClaimType,
-} from 'lib/apollo/schema/index.graphqls';
-
-function statusMap( status: string ): ClaimStatus {
-	switch ( status ) {
-		case 'approved':
-			return 'APPROVED' as ClaimStatus.Approved;
-		case 'deleted':
-			return 'DELETED' as ClaimStatus.Deleted;
-		case 'denied':
-			return 'DENIED' as ClaimStatus.Denied;
-		case 'pending':
-			return 'PENDING' as ClaimStatus.Pending;
-		default:
-			return 'UNKNOWN' as ClaimStatus.Unknown;
-	}
-}
-
-function typeMap( type: string ): ClaimType {
-	switch ( type ) {
-		case 'dental':
-			return 'DENTAL' as ClaimType.Dental;
-		case 'in-network':
-			return 'INNETWORK' as ClaimType.Innetwork;
-		case 'out-of-network':
-			return 'OUTOFNETWORK' as ClaimType.Outofnetwork;
-		case 'pharmacy':
-			return 'PHARMACY' as ClaimType.Pharmacy;
-		default:
-			return 'OTHER' as ClaimType.Other;
-	}
-}
-
 const getClaims: QueryResolver<'getClaims'> = async ( parent, { offset, limit }, { dataSources: { db } } ) => {
 	const [ claims, totalCount ] = await db.em.findAndCount( Claim, {} );
 	return {
