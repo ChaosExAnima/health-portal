@@ -2,7 +2,13 @@ import {
 	QueryResolver,
 	TypeResolver,
 } from './index';
-import { Appeal, Provider } from 'lib/db/entities';
+import {
+	Appeal,
+	Call,
+	Claim,
+	Note,
+	Provider,
+} from 'lib/db/entities';
 
 import type { AppealStatus } from 'lib/apollo/schema/index.graphqls';
 
@@ -43,19 +49,19 @@ const Resolver: TypeResolver<'Appeal'> = ( {
 	},
 	async otherProviders( parent, {}, { dataSources: { db } } ) {
 		const parentObj = await db.em.findOneOrFail( Appeal, { id: parent.id }, [ 'involvedProviders' ] );
-		return parentObj.involvedProviders.toArray();
+		return parentObj.involvedProviders.toArray() as Provider[];
 	},
 	async calls( parent, {}, { dataSources: { db } } ) {
 		const parentObj = await db.em.findOneOrFail( Appeal, { id: parent.id }, [ 'calls' ] );
-		return parentObj.calls.toArray();
+		return parentObj.calls.toArray() as Call[];
 	},
 	async claims( parent, {}, { dataSources: { db } } ) {
 		const parentObj = await db.em.findOneOrFail( Appeal, { id: parent.id }, [ 'claims' ] );
-		return parentObj.claims.toArray();
+		return parentObj.claims.toArray() as Claim[];
 	},
 	async notes( parent, {}, { dataSources: { db } } ) {
 		const parentObj = await db.em.findOneOrFail( Appeal, { id: parent.id }, [ 'notes' ] );
-		return parentObj.notes.toArray();
+		return parentObj.notes.toArray() as Note[];
 	},
 } );
 

@@ -9,12 +9,14 @@ config:
         ID: 'number'
         Slug: 'string'
     mappers:
-        Appeal: './lib/db/entities/appeal#Appeal'
-        Call: './lib/db/entities/call#Call'
-        Claim: './lib/db/entities/claim#Claim'
-        File: './lib/db/entities/file#File'
-        Note: './lib/db/entities/note#Note'
-        Provider: './lib/db/entities/provider#Provider'
+        Appeal: 'lib/db/entities#Appeal'
+        Call: 'lib/db/entities#Call'
+        Claim: 'lib/db/entities#Claim'
+        File: 'lib/db/entities#File'
+        Note: 'lib/db/entities#Note'
+        Provider: 'lib/db/entities#Provider'
+    avoidOptionals: true
+    useTypeImports: true
 plugins:
     - typescript
     - typescript-operations

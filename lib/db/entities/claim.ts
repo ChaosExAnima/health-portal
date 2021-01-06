@@ -16,7 +16,7 @@ import Provider from './provider';
 import BaseSlugEntity from './slug';
 
 @Entity()
-export default class Claim extends BaseSlugEntity {
+export class Claim extends BaseSlugEntity {
 	@Property( { type: 'string', nullable: true } )
 	number?: string;
 
@@ -67,3 +67,5 @@ export default class Claim extends BaseSlugEntity {
 	@ManyToMany( () => Call )
 	calls = new Collection<Call>( this );
 }
+
+export default Claim;

@@ -12,7 +12,7 @@ import Claim from './claim';
 import File from './file';
 
 @Entity()
-export default class Payment extends BaseEntity {
+export class Payment extends BaseEntity {
 	@Property( { type: 'float' } )
 	amount!: number;
 
@@ -31,3 +31,5 @@ export default class Payment extends BaseEntity {
 	@ManyToOne( () => File )
 	receipt?: IdentifiedReference<File>;
 }
+
+export default Payment;

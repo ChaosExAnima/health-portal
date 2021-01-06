@@ -14,7 +14,7 @@ import Appeal from './appeal';
 import File from './file';
 
 @Entity()
-export default class Note extends BaseEntity {
+export class Note extends BaseEntity {
 	@Property( { type: 'date' } )
 	created = new Date();
 
@@ -39,3 +39,5 @@ export default class Note extends BaseEntity {
 	@ManyToMany( () => File )
 	files = new Collection<File>( this );
 }
+
+export default Note;

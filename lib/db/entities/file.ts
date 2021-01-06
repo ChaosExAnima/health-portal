@@ -6,7 +6,7 @@ import {
 import BaseEntity from './base';
 
 @Entity()
-export default class File extends BaseEntity {
+export class File extends BaseEntity {
 	@Property( { type: 'string' } )
 	name!: string;
 
@@ -19,3 +19,5 @@ export default class File extends BaseEntity {
 	@Property( { type: 'string' } )
 	path!: string;
 }
+
+export default File;

@@ -14,7 +14,7 @@ import Provider from './provider';
 import BaseSlugEntity from './slug';
 
 @Entity()
-export default class Call extends BaseSlugEntity {
+export class Call extends BaseSlugEntity {
 	@Property( { type: 'date' } )
 	created = new Date();
 
@@ -30,3 +30,5 @@ export default class Call extends BaseSlugEntity {
 	@ManyToMany( () => Claim, ( claim ) => claim.calls )
 	claims = new Collection<Claim>( this );
 }
+
+export default Call;

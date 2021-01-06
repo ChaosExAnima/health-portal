@@ -12,7 +12,7 @@ import Note from './note';
 import BaseSlugEntity from './slug';
 
 @Entity()
-export default class Provider extends BaseSlugEntity {
+export class Provider extends BaseSlugEntity {
 	@Property( { type: 'string' } )
 	name!: string;
 
@@ -40,3 +40,5 @@ export default class Provider extends BaseSlugEntity {
 	@ManyToMany( () => Appeal )
 	appeals = new Collection<Appeal>( this );
 }
+
+export default Provider;
