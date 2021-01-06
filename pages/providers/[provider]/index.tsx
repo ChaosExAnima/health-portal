@@ -1,13 +1,13 @@
 import { Box, Container } from '@material-ui/core';
 
-import { initializeApollo } from 'lib/apollo';
-import { ProvidersSlugsDocument, ProvidersSlugsQuery } from 'lib/apollo/queries/providers.graphql';
-import { staticPathsNoData } from 'lib/static-helpers';
+import { staticPathsFromSlugs } from 'lib/static-helpers';
+import initDb from 'lib/db';
+import Provider from 'lib/db/entities/provider';
 
-import type { GetStaticPaths } from 'next';
-import type { PageProps } from 'global-types';
+import type { GetStaticPaths, GetStaticProps } from 'next';
+import type { SinglePageProps } from 'global-types';
 
-const ProviderPage: React.FC<PageProps> = () => {
+const ProviderPage: React.FC<SinglePageProps> = () => {
 	return (
 		<Container maxWidth="md">
 			<Box my={ 4 }>
@@ -17,21 +17,30 @@ const ProviderPage: React.FC<PageProps> = () => {
 	);
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-	const client = initializeApollo();
-	const { data } = await client.query<ProvidersSlugsQuery>( { query: ProvidersSlugsDocument } );
-	return staticPathsNoData( data ) || {
-		paths: data.getProviders.providers.map( ( provider ) => provider && `/providers/${ provider.slug }` ),
-		fallback: true,
-	};
-};
+export const getStaticPaths: GetStaticPaths = async () =>
+	staticPathsFromSlugs( Provider, 'providers' );
 
-export async function getStaticProps(): Promise<{ props: PageProps }> {
+export const getStaticProps: GetStaticProps<SinglePageProps, { provider: string }> = async ( { params } ) => {
+	if ( ! params ) {
+		return {
+			notFound: true,
+		};
+	}
+	const { provider: providerSlug } = params;
+	const db = await initDb();
+	const provider = await db.em.findOne( Provider, { slug: providerSlug } );
+	if ( ! provider ) {
+		return {
+			notFound: true,
+		};
+	}
 	return {
 		props: {
-			title: 'Provider Dr. Steve',
+			id: provider.id,
+			slug: providerSlug,
+			title: provider.name,
 		},
 	};
-}
+};
 
 export default ProviderPage;

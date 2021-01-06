@@ -5,6 +5,7 @@ import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
 import DataTable, { DataTableColumn, DataTableFilter } from 'components/data-table';
 import { useAppealsIndexQuery } from 'lib/apollo/queries/appeals.graphql';
+import { capitalize } from 'lib/strings';
 
 import type { PaginatedPageProps } from 'global-types';
 
@@ -39,7 +40,7 @@ const AppealsPage: React.FC<PaginatedPageProps> = ( { title, currentPage } ) => 
 	const columns: DataTableColumn[] = [
 		{
 			align: 'right',
-			key: 'date',
+			key: 'created',
 			name: 'Date Started',
 			format: 'date',
 			width: 150,
@@ -52,6 +53,7 @@ const AppealsPage: React.FC<PaginatedPageProps> = ( { title, currentPage } ) => 
 		{
 			key: 'status',
 			name: 'Status',
+			format: capitalize,
 		},
 	];
 

@@ -1,11 +1,12 @@
 import { Box, Container } from '@material-ui/core';
 
-import { getStaticPaths as getRootStaticPaths } from '.';
+import { getStaticPaths as getRootStaticPaths, getStaticProps as getRootStaticProps } from '.';
 
-import type { GetStaticPaths } from 'next';
-import type { PageProps } from 'global-types';
+import type { GetStaticPaths, GetStaticProps } from 'next';
+import type { SinglePageProps } from 'global-types';
+import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
-const CallEditPage: React.FC<PageProps> = () => {
+const CallEditPage: React.FC<SinglePageProps> = () => {
 	return (
 		<Container maxWidth="md">
 			<Box my={ 4 }>
@@ -15,20 +16,10 @@ const CallEditPage: React.FC<PageProps> = () => {
 	);
 };
 
-export async function getStaticProps(): Promise<{ props: PageProps }> {
-	return {
-		props: {
-			title: 'Editing call on 1/1/2020',
-		},
-	};
-}
+export const getStaticProps: GetStaticProps<SinglePageProps> = async ( context ) =>
+	staticPropsEdit( getRootStaticProps, context );
 
-export const getStaticPaths: GetStaticPaths = async ( context ) => {
-	const rootStaticPaths = await getRootStaticPaths( context );
-	if ( Array.isArray( rootStaticPaths.paths ) ) {
-		rootStaticPaths.paths = rootStaticPaths.paths.map( ( path ) => `${ path }/edit` );
-	}
-	return rootStaticPaths;
-};
+export const getStaticPaths: GetStaticPaths = async ( context ) =>
+	staticPathsEdit( getRootStaticPaths, context );
 
 export default CallEditPage;

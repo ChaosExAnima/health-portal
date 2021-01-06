@@ -1,6 +1,5 @@
 import React from 'react';
 import { Container, Link } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
 
 import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';

@@ -1,8 +1,9 @@
 import { Box, Container } from '@material-ui/core';
 
-import { getStaticPaths as getRootStaticPaths } from '.';
+import { getStaticPaths as getRootStaticPaths, getStaticProps as getRootStaticProps } from '.';
+import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
-import type { GetStaticPaths } from 'next';
+import type { GetStaticPaths, GetStaticProps } from 'next';
 import type { PageProps } from 'global-types';
 
 const ProviderEditPage: React.FC<PageProps> = () => {
@@ -15,20 +16,10 @@ const ProviderEditPage: React.FC<PageProps> = () => {
 	);
 };
 
-export const getStaticPaths: GetStaticPaths = async ( context ) => {
-	const rootStaticPaths = await getRootStaticPaths( context );
-	if ( Array.isArray( rootStaticPaths.paths ) ) {
-		rootStaticPaths.paths = rootStaticPaths.paths.map( ( path ) => `${ path }/edit` );
-	}
-	return rootStaticPaths;
-};
+export const getStaticPaths: GetStaticPaths = async ( context ) =>
+	staticPathsEdit( getRootStaticPaths, context );
 
-export async function getStaticProps(): Promise<{ props: PageProps }> {
-	return {
-		props: {
-			title: 'Editing Dr. Steve',
-		},
-	};
-}
+export const getStaticProps: GetStaticProps = async ( context ) =>
+	staticPropsEdit( getRootStaticProps, context );
 
 export default ProviderEditPage;

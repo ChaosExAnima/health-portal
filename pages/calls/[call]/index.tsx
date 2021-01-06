@@ -1,13 +1,13 @@
 import { Box, Container } from '@material-ui/core';
 
-import { CallsSlugsDocument, CallsSlugsQuery } from 'lib/apollo/queries/calls.graphql';
-import { initializeApollo } from 'lib/apollo';
-import { staticPathsNoData } from 'lib/static-helpers';
+import initDb from 'lib/db';
+import Call from 'lib/db/entities/call';
+import { staticPathsFromSlugs } from 'lib/static-helpers';
 
-import type { GetStaticPaths } from 'next';
-import type { PageProps } from 'global-types';
+import type { GetStaticPaths, GetStaticProps } from 'next';
+import type { SinglePageProps } from 'global-types';
 
-const CallPage: React.FC<PageProps> = () => {
+const CallPage: React.FC<SinglePageProps> = () => {
 	return (
 		<Container maxWidth="md">
 			<Box my={ 4 }>
@@ -17,21 +17,23 @@ const CallPage: React.FC<PageProps> = () => {
 	);
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-	const client = initializeApollo();
-	const { data } = await client.query<CallsSlugsQuery>( { query: CallsSlugsDocument } );
-	return staticPathsNoData( data ) || {
-		paths: data.getCalls.calls.map( ( call ) => call && `/calls/${ call.slug }` ),
-		fallback: true,
-	};
-};
+export const getStaticPaths: GetStaticPaths = async () => staticPathsFromSlugs( Call, 'calls' );
 
-export async function getStaticProps(): Promise<{ props: PageProps }> {
+export const getStaticProps: GetStaticProps<SinglePageProps, { call: string }> = async ( { params } ) => {
+	const db = await initDb();
+	const call = params && await db.em.findOne( Call, { slug: params.call }, [ 'provider' ] );
+	if ( ! call ) {
+		return {
+			notFound: true,
+		};
+	}
 	return {
 		props: {
-			title: 'Call on 1/1/2020',
+			id: call.id,
+			slug: call.slug,
+			title: `Call with ${ call.provider.getProperty( 'name' ) } on ${ call.created }`,
 		},
 	};
-}
+};
 
 export default CallPage;

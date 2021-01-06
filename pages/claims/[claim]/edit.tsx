@@ -15,13 +15,14 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import {
-	ClaimPageProps,
 	getStaticPaths as getRootStaticPaths,
-	getStaticProps,
+	getStaticProps as getRootStaticProps,
 } from '.';
 import Link from 'components/link';
+import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
-import type { GetStaticPaths } from 'next';
+import type { GetStaticPaths, GetStaticProps } from 'next';
+import type { SinglePageProps } from 'global-types';
 
 const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	actionButtons: {
@@ -42,10 +43,10 @@ const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
 	},
 } ) );
 
-const ClaimPageEdit: React.FC<ClaimPageProps> = ( { claim } ) => {
+const ClaimPageEdit: React.FC<SinglePageProps> = ( { slug, title } ) => {
 	const classes = useStyles();
 
-	if ( ! claim ) {
+	if ( ! slug ) {
 		return null;
 	}
 
@@ -54,13 +55,13 @@ const ClaimPageEdit: React.FC<ClaimPageProps> = ( { claim } ) => {
 			<Box my={ 2 }>
 				<Breadcrumbs aria-label="breadcrumb">
 					<Link color="inherit" href="/claims">Claims</Link>
-					<Link color="inherit" href={ `/claims/${ claim.slug }` }>{ claim.claim }</Link>
+					<Link color="inherit" href={ `/claims/${ slug }` }>{ slug }</Link>
 					<Typography color="textPrimary">Edit</Typography>
 				</Breadcrumbs>
 			</Box>
 			<Box my={ 4 }>
 				<Typography variant="h4" component="h1">
-					Claim # { claim.claim }
+					{ title }
 				</Typography>
 				<Grid container spacing={ 2 } className={ classes.actionButtons }>
 					<Grid item>
@@ -82,14 +83,10 @@ const ClaimPageEdit: React.FC<ClaimPageProps> = ( { claim } ) => {
 	);
 };
 
-export const getStaticPaths: GetStaticPaths = async ( context ) => {
-	const rootStaticPaths = await getRootStaticPaths( context );
-	if ( Array.isArray( rootStaticPaths.paths ) ) {
-		rootStaticPaths.paths = rootStaticPaths.paths.map( ( path ) => `${ path }/edit` );
-	}
-	return rootStaticPaths;
-};
+export const getStaticPaths: GetStaticPaths = async ( context ) =>
+	staticPathsEdit( getRootStaticPaths, context );
 
-export { getStaticProps };
+export const getStaticProps: GetStaticProps = async ( context ) =>
+	staticPropsEdit( getRootStaticProps, context );
 
 export default ClaimPageEdit;
