@@ -64,7 +64,7 @@ const HeaderButtonsBelow: React.FC<Pick<HeaderProps, 'actions' | 'title'>> = ( {
 		<Box mt={ 3 }>
 			<Grid container spacing={ 2 }>
 				{ actions.map( ( action ) => (
-					<Grid item key={ action.href }>
+					<Grid item key={ action.action }>
 						<HeaderButton { ...action } />
 					</Grid>
 				) ) }
