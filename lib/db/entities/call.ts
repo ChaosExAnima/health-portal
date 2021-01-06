@@ -18,10 +18,10 @@ export class Call extends BaseSlugEntity {
 	@Property( { type: 'date' } )
 	created = new Date();
 
-	@ManyToOne( () => Provider )
+	@ManyToOne( () => Provider, { wrappedReference: true } )
 	provider!: IdentifiedReference<Provider>;
 
-	@ManyToOne( () => Note, { nullable: true } )
+	@ManyToOne( () => Note, { nullable: true, wrappedReference: true } )
 	note?: IdentifiedReference<Note>;
 
 	@ManyToMany( () => Appeal, ( appeal ) => appeal.calls )

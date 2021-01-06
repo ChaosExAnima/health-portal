@@ -15,7 +15,6 @@ config:
         File: 'lib/db/entities#File'
         Note: 'lib/db/entities#Note'
         Provider: 'lib/db/entities#Provider'
-    avoidOptionals: true
     useTypeImports: true
 plugins:
     - typescript

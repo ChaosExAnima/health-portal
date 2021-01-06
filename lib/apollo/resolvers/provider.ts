@@ -20,10 +20,8 @@ const provider: QueryResolver<'provider'> = async ( parent, { slug }, { dataSour
 };
 
 const Resolver: TypeResolver<'Provider'> = ( {
-	async notes( parent, {}, { dataSources: { db } } ) {
-		const parentObj = await db.em.findOneOrFail( Provider, { id: parent.id } );
-		const notes = await parentObj.notes.loadItems();
-		return notes;
+	async notes( parent ) {
+		return parent.notes.loadItems();
 	},
 } );
 

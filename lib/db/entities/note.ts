@@ -27,13 +27,13 @@ export class Note extends BaseEntity {
 	@Property( { type: 'boolean', nullable: true } )
 	resolved?: boolean;
 
-	@ManyToOne( () => Provider, { nullable: true } )
+	@ManyToOne( () => Provider, { nullable: true, wrappedReference: true } )
 	provider?: IdentifiedReference<Provider>;
 
-	@ManyToOne( () => Claim, { nullable: true } )
+	@ManyToOne( () => Claim, { nullable: true, wrappedReference: true } )
 	claim?: IdentifiedReference<Claim>;
 
-	@ManyToOne( () => Appeal, { nullable: true } )
+	@ManyToOne( () => Appeal, { nullable: true, wrappedReference: true } )
 	appeal?: IdentifiedReference<Appeal>;
 
 	@ManyToMany( () => File )

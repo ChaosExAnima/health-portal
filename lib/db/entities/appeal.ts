@@ -28,10 +28,10 @@ export class Appeal extends BaseSlugEntity {
 	@Property( { type: 'date', onUpdate: () => new Date() } )
 	updated = new Date();
 
-	@ManyToOne( () => Provider )
+	@ManyToOne( () => Provider, { wrappedReference: true } )
 	provider!: IdentifiedReference<Provider>;
 
-	@ManyToOne( () => Appeal, { nullable: true } )
+	@ManyToOne( () => Appeal, { nullable: true, wrappedReference: true } )
 	parent?: IdentifiedReference<Appeal>;
 
 	@OneToMany( () => Appeal, ( appeal ) => appeal.parent )

@@ -1,32 +1,29 @@
+import { wrap } from '@mikro-orm/core';
+
+import type { TypeResolver } from './index';
 import {
-	Note,
 	Claim,
 	Provider,
 } from 'lib/db/entities';
-
-import type { TypeResolver } from './index';
 import type {
 	Maybe,
 	ResolversTypes,
 } from 'lib/apollo/schema/index.graphqls';
-import { wrap } from '@mikro-orm/core';
 
 const Resolver: TypeResolver<'Note'> = ( {
 	description( parent ) {
 		return parent.text;
 	},
-	async files( parent, {}, { dataSources: { db } } ) {
-		const parentObj = await db.em.findOneOrFail( Note, { id: parent.id }, [ 'files' ] );
-		return parentObj.files.toArray() as File[];
+	async files( parent ) {
+		return parent.files.loadItems();
 	},
-	async link( parent, {}, { dataSources: { db } } ): Promise<Maybe<ResolversTypes['NoteLink']>> {
-		const parentObj = await db.em.findOneOrFail( Note, { id: parent.id } );
-		if ( parentObj.appeal ) {
-			return parentObj.appeal;
-		} else if ( parentObj.claim ) {
-			return parentObj.claim;
-		} else if ( parentObj.provider ) {
-			return parentObj.provider;
+	async link( parent ): Promise<Maybe<ResolversTypes['NoteLink']>> {
+		if ( parent.appeal ) {
+			return parent.appeal.load();
+		} else if ( parent.claim ) {
+			return parent.claim.load();
+		} else if ( parent.provider ) {
+			return parent.provider.load();
 		}
 		return null;
 	},

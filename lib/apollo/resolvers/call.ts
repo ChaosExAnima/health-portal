@@ -22,21 +22,17 @@ const Resolver: TypeResolver<'Call'> = ( {
 	date( parent ) {
 		return parent.created;
 	},
-	async provider( parent, {}, { dataSources: { db } } ) {
-		const parentObj = await db.em.findOneOrFail( Call, { id: parent.id }, [ 'provider' ] );
-		return parentObj.provider;
+	async provider( parent ) {
+		return parent.provider.load();
 	},
-	async claims( parent, {}, { dataSources: { db } } ) {
-		const parentObj = await db.em.findOneOrFail( Call, { id: parent.id }, [ 'claims' ] );
-		return parentObj.claims.toArray();
+	async claims( parent ) {
+		return parent.claims.loadItems();
 	},
-	async appeals( parent, {}, { dataSources: { db } } ) {
-		const parentObj = await db.em.findOneOrFail( Call, { id: parent.id }, [ 'appeals' ] );
-		return parentObj.appeals.getItems();
+	async appeals( parent ) {
+		return parent.appeals.loadItems();
 	},
-	async note( parent, {}, { dataSources: { db } } ) {
-		const parentObj = await db.em.findOneOrFail( Call, { id: parent.id }, [ 'note' ] );
-		return parentObj.note;
+	async note( parent ) {
+		return parent.note?.load() || null;
 	},
 } );
 

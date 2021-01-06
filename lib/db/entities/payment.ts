@@ -28,7 +28,7 @@ export class Payment extends BaseEntity {
 	@ManyToMany( () => Claim, ( claim ) => claim.payments )
 	claims = new Collection<Claim>( this );
 
-	@ManyToOne( () => File )
+	@ManyToOne( () => File, { wrappedReference: true } )
 	receipt?: IdentifiedReference<File>;
 }
 

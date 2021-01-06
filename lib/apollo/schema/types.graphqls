@@ -37,7 +37,7 @@ type Provider {
 
 type Claim {
 	id: ID!
-	claim: String!
+	claim: String
 	slug: Slug!
 	date: Date!
 	provider: Provider!

@@ -51,7 +51,7 @@ const getClaims: QueryResolver<'getClaims'> = async ( parent, { offset, limit },
 };
 
 const claim: QueryResolver<'claim'> = async ( parent, { slug }, { dataSources: { db } } ) => {
-	return db.em.findOneOrFail( Claim, { slug } );
+	return db.em.findOne( Claim, { slug } );
 };
 
 const uploadClaims: MutationResolver<'uploadClaims'> = async () => {
@@ -64,16 +64,17 @@ const uploadClaims: MutationResolver<'uploadClaims'> = async () => {
 };
 
 const Resolver: TypeResolver<'Claim'> = ( {
+	date( parent ) {
+		return parent.created;
+	},
 	claim( parent ) {
-		return parent.number;
+		return parent.number || null;
 	},
-	async provider( parent, {}, { dataSources: { db } } ) {
-		const parentObj = await db.em.findOneOrFail( Claim, { id: parent.id }, [ 'provider' ] );
-		return parentObj.provider;
+	async provider( parent ) {
+		return parent.provider.load();
 	},
-	async notes( parent, {}, { dataSources: { db } } ) {
-		const parentObj = await db.em.findOneOrFail( Claim, { id: parent.id }, [ 'notes' ] );
-		return parentObj.notes.toArray();
+	async notes( parent ) {
+		return parent.notes.loadItems();
 	},
 } );
 

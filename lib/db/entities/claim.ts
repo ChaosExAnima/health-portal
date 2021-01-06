@@ -46,13 +46,13 @@ export class Claim extends BaseSlugEntity {
 		return 0;
 	}
 
-	@ManyToOne( () => Claim, { nullable: true } )
+	@ManyToOne( () => Claim, { nullable: true, wrappedReference: true } )
 	parent?: IdentifiedReference<Claim>;
 
 	@OneToMany( () => Claim, ( claim ) => claim.parent )
 	children = new Collection<Claim>( this );
 
-	@ManyToOne( () => Provider )
+	@ManyToOne( () => Provider, { wrappedReference: true } )
 	provider!: IdentifiedReference<Provider>;
 
 	@ManyToMany( () => Appeal )

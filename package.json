@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev",
-    "predev": "yarn gen",
+    "predev": "yarn start-db && yarn gen",
     "build": "next build",
     "start": "next start",
     "gen": "graphql-let",
     "orm": "mikro-orm",
+    "start-db": "docker-compose up -d",
     "load-schema": "mikro-orm schema:create -r",
     "load-fixtures": "ts-node --project tsconfig.orm.json lib/db/populate.ts"
   },
