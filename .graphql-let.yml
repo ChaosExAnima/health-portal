@@ -20,3 +20,4 @@ plugins:
     - typescript-operations
     - typescript-react-apollo
     - typescript-resolvers
+cacheDir: .graphql

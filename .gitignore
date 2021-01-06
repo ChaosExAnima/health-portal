@@ -20,6 +20,7 @@
 *.pem
 *.db
 /temp
+.graphql
 
 # debug
 npm-debug.log*
