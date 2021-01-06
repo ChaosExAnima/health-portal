@@ -7,3 +7,8 @@ export type PageProps = {
 export type PaginatedPageProps = PageProps & {
 	currentPage: number;
 };
+
+export type SinglePageProps = PageProps & {
+	id: number;
+	slug: string;
+};
