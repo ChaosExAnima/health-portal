@@ -24,7 +24,7 @@ export type DataTableRowLink = {
 
 export type DataTableRowData = {
 	__typename?: string;
-	id: string;
+	id: number;
 	slug: string;
 	[ key: string ]: React.ReactNode;
 }
