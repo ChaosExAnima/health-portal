@@ -6,7 +6,7 @@ import {
 } from '@apollo/client';
 import { offsetLimitPagination } from '@apollo/client/utilities';
 
-import type MikroAPI from './datasource';
+import type { dataSources } from './datasources';
 import type { IncomingMessage, ServerResponse } from 'http';
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
@@ -14,9 +14,7 @@ let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 export type ResolverContext = {
 	req?: IncomingMessage;
 	res?: ServerResponse;
-	dataSources: {
-		db: MikroAPI;
-	};
+	dataSources: dataSources;
 };
 
 export function createApolloClient( context?: ResolverContext ): ApolloClient<NormalizedCacheObject> {

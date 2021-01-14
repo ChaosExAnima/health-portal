@@ -1,14 +1,14 @@
 import { ApolloServer } from 'apollo-server-micro';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { RequestContext } from '@mikro-orm/core';
 
 import initOrm from 'lib/db';
-import MikroAPI from 'lib/apollo/datasource';
+import dataSources from 'lib/apollo/datasources';
 import { makeSchema } from 'lib/apollo/schema';
-import { RequestContext } from '@mikro-orm/core';
-import { NextApiRequest, NextApiResponse } from 'next';
 
 const schema = makeSchema();
 
-const orm = initOrm();
+const ormPromise = initOrm();
 
 export const config = {
 	api: {
@@ -17,12 +17,11 @@ export const config = {
 };
 
 export default async function handler( req: NextApiRequest, res: NextApiResponse ): Promise<void> {
-	RequestContext.create( ( await orm ).em, () => null );
+	const orm = await ormPromise;
+	RequestContext.create( orm.em, () => null );
 	const apolloServer = new ApolloServer( {
 		schema,
-		dataSources: () => ( {
-			db: new MikroAPI( orm ),
-		} ),
+		dataSources: () => dataSources( orm ),
 		debug: process.env.DB_DEBUG === 'true',
 	} );
 

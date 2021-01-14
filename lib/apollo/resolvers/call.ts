@@ -2,7 +2,12 @@ import {
 	QueryResolver,
 	TypeResolver,
 } from './index';
-import { Call } from 'lib/db/entities';
+import {
+	Appeal,
+	Call,
+	Claim,
+	Representative,
+} from 'lib/db/entities';
 
 const getCalls: QueryResolver<'getCalls'> = async ( parent, { offset, limit }, { dataSources: { db } } ) => {
 	const [ calls, totalCount ] = await db.em.findAndCount( Call, {} );
@@ -19,20 +24,20 @@ const call: QueryResolver<'call'> = async ( parent, { slug }, { dataSources: { d
 };
 
 const Resolver: TypeResolver<'Call'> = ( {
-	async provider( parent ) {
-		return parent.provider.load();
+	async provider( parent, args, { dataSources: { provider } } ) {
+		return provider.loadOrFail( parent.provider?.id );
 	},
-	async claims( parent ) {
-		return parent.claims.loadItems();
+	claims( parent, args, { dataSources: { call: callDB } } ) {
+		return callDB.loadCollection<Claim>( parent.id, 'claims' );
 	},
-	async appeals( parent ) {
-		return parent.appeals.loadItems();
+	appeals( parent, args, { dataSources: { call: callDB } } ) {
+		return callDB.loadCollection<Appeal>( parent.id, 'appeals' );
 	},
-	async note( parent ) {
-		return parent.note?.load() || null;
+	async note( parent, args, { dataSources: { note } } ) {
+		return note.load( parent.note?.id );
 	},
-	async reps( parent ) {
-		const reps = await parent.reps.loadItems();
+	async reps( parent, args, { dataSources: { call: callDB } } ) {
+		const reps = await callDB.loadCollection<Representative>( parent.id, 'reps' );
 		return reps.map( ( { name } ) => name );
 	},
 } );
