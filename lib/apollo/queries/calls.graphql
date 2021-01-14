@@ -6,6 +6,9 @@ query CallsIndex($offset: Int!) {
 			slug
 			date
 			reps
+			note {
+				description
+			}
 			provider {
 				__typename
 				name
