@@ -10,6 +10,7 @@
     "gen": "graphql-let",
     "orm": "mikro-orm",
     "start-db": "docker-compose up -d",
+    "stop-db": "docker-compose down",
     "load-schema": "mikro-orm schema:create -r",
     "load-fixtures": "ts-node --project tsconfig.orm.json lib/db/populate.ts"
   },
