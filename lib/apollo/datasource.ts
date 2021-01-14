@@ -5,9 +5,9 @@ class MikroAPI extends DataSource {
 	private ormPromise: Promise<MikroORM>;
 	private orm: MikroORM;
 
-	constructor( orm: Promise<MikroORM> ) {
+	constructor( orm: Promise<MikroORM> | MikroORM ) {
 		super();
-		this.ormPromise = orm;
+		this.ormPromise = Promise.resolve( orm );
 	}
 
 	async initialize(): Promise<void> {
