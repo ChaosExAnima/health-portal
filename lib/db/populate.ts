@@ -78,7 +78,7 @@ async function run( size: number ): Promise<void> {
 
 	const repRepo = orm.em.getRepository( Representative );
 	for ( let index = 0; index < size; index++ ) {
-		const rep = new Representative( casual.first_name );
+		const rep = new Representative( casual.first_name, pickRefFromArray<Provider>( providers ) );
 		await repRepo.persist( rep );
 	}
 	const reps = await saveAndGetObjects<Representative>( repRepo );
