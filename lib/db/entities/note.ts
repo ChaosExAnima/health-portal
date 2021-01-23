@@ -28,17 +28,17 @@ export class Note extends BaseEntity {
 	resolved = false;
 
 	@ManyToOne( () => Provider, { nullable: true } )
-	provider?: Provider;
+	provider?: Promise<Provider>;
 
 	@ManyToOne( () => Claim, { nullable: true } )
-	claim?: Claim;
+	claim?: Promise<Claim>;
 
 	@ManyToOne( () => Appeal, { nullable: true } )
-	appeal?: Appeal;
+	appeal?: Promise<Appeal>;
 
 	@ManyToMany( () => File )
 	@JoinTable()
-	files: File[];
+	files: Promise<File[]>;
 }
 
 export default Note;

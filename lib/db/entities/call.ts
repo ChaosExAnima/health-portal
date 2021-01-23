@@ -23,20 +23,20 @@ export default class Call extends BaseSlugEntity {
 	}
 
 	@ManyToOne( () => Provider )
-	provider: Provider;
+	provider: Promise<Provider>;
 
 	@ManyToMany( () => Representative )
 	@JoinTable()
-	reps: Representative[];
+	reps: Promise<Representative[]>;
 
 	@ManyToOne( () => Note, { nullable: true } )
-	note?: Note;
+	note?: Promise<Note>;
 
 	@ManyToMany( () => Appeal, ( appeal ) => appeal.calls )
 	@JoinTable()
-	appeals: Appeal[];
+	appeals: Promise<Appeal[]>;
 
 	@ManyToMany( () => Claim, ( claim ) => claim.calls )
 	@JoinTable()
-	claims: Claim[];
+	claims: Promise<Claim[]>;
 }

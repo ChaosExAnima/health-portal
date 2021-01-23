@@ -30,25 +30,25 @@ export default class Appeal extends BaseSlugEntity {
 	updated: Date;
 
 	@ManyToOne( () => Provider, ( provider ) => provider.appeals )
-	provider: Provider;
+	provider: Promise<Provider>;
 
 	@ManyToOne( () => Appeal, ( appeal ) => appeal.children, { nullable: true } )
-	parent?: Appeal;
+	parent?: Promise<Appeal>;
 
 	@OneToMany( () => Appeal, ( appeal ) => appeal.parent )
-	children: Appeal[];
+	children: Promise<Appeal[]>;
 
 	@ManyToMany( () => Claim, ( claim ) => claim.appeals )
 	@JoinTable()
-	claims: Claim[];
+	claims: Promise<Claim[]>;
 
 	@ManyToMany( () => Call )
-	calls: Call[];
+	calls: Promise<Call[]>;
 
 	@ManyToMany( () => Provider, ( provider ) => provider.appeals )
 	@JoinTable()
-	involvedProviders: Provider[];
+	involvedProviders: Promise<Provider[]>;
 
 	@OneToMany( () => Note, ( note ) => note.appeal )
-	notes: Note[];
+	notes: Promise<Note[]>;
 }

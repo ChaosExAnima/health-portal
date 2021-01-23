@@ -69,9 +69,9 @@ async function run( size: number ): Promise<void> {
 		const call = new Call();
 		call.created = dateThisYear();
 		const provider = pickFromArray<Provider>( providers );
-		call.provider = provider;
+		call.provider = Promise.resolve( provider );
 		call.slug = slugify( `Call on ${ dayjs( call.created ).format( 'D/M' ) } with ${ provider?.name || 'Unknown' }` );
-		call.reps = pickManyFromArray( reps );
+		call.reps = Promise.resolve( pickManyFromArray( reps ) );
 		await call.save();
 	}
 	const calls = await Call.find();
@@ -120,16 +120,16 @@ async function run( size: number ): Promise<void> {
 			'CLOSED',
 		] );
 		appeal.status = status;
-		appeal.provider = pickFromArray( providers );
-		appeal.claims = pickManyFromArray( claims );
-		appeal.calls = pickManyFromArray( calls );
+		appeal.provider = Promise.resolve( pickFromArray( providers ) );
+		appeal.claims = Promise.resolve( pickManyFromArray( claims ) );
+		appeal.calls = Promise.resolve( pickManyFromArray( calls ) );
 
 		await appeal.save();
 	}
 	const appeals = await Appeal.find();
 	const appealsToGiveParents = pickManyFromArray( appeals, numToAssign );
 	for ( const appeal of appealsToGiveParents ) {
-		appeal.parent = pickFromArray( appeals );
+		appeal.parent = Promise.resolve( pickFromArray( appeals ) );
 		await appeal.save();
 	}
 	console.log( `Inserted ${ appeals.length } appeals.` );
@@ -150,11 +150,11 @@ async function run( size: number ): Promise<void> {
 		payment.created = dateThisYear();
 		payment.method = 'check';
 		payment.details = `Deposited ${ dayjs( dateThisYear() ).format( 'D/M/YYYY' ) }, check # ${ casual.card_number() }`;
-		payment.receipt = pickFromArray( files );
+		payment.receipt = Promise.resolve( pickFromArray( files ) );
 
 		const claim = pickFromArray<Claim>( claims );
 		payment.amount = casual.integer( 1, claim.cost || 50 );
-		payment.claims = [ claim ];
+		payment.claims = Promise.resolve( [ claim ] );
 		await payment.save();
 	}
 
@@ -165,14 +165,14 @@ async function run( size: number ): Promise<void> {
 
 		const type = pickFromArray<string>( [ 'claim', 'appeal', 'provider' ] );
 		if ( type === 'claim' ) {
-			note.claim = pickFromArray( claims );
+			note.claim = Promise.resolve( pickFromArray( claims ) );
 		} else if ( type === 'appeal' ) {
-			note.appeal = pickFromArray<Appeal>( appeals );
+			note.appeal = Promise.resolve( pickFromArray( appeals ) );
 		} else if ( type === 'provider' ) {
-			note.provider = pickFromArray<Provider>( providers );
+			note.provider = Promise.resolve( pickFromArray( providers ) );
 		}
 
-		note.files = pickManyFromArray<File>( files );
+		note.files = Promise.resolve( pickManyFromArray( files ) );
 		await note.save();
 	}
 }

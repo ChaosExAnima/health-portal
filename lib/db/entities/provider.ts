@@ -33,17 +33,17 @@ export class Provider extends BaseSlugEntity {
 	email?: string;
 
 	@OneToMany( () => Note, ( note ) => note.provider )
-	notes: Note[];
+	notes: Promise<Note[]>;
 
 	@OneToMany( () => Claim, ( claim ) => claim.provider )
-	claims: Claim[];
+	claims: Promise<Claim[]>;
 
 	@ManyToMany( () => Appeal )
 	@JoinTable()
-	appeals: Appeal[];
+	appeals: Promise<Appeal[]>;
 
 	@OneToMany( () => Representative, ( rep ) => rep.provider )
-	representatives: Representative[];
+	representatives: Promise<Representative[]>;
 }
 
 export default Provider;
