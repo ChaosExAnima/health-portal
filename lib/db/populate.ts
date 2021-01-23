@@ -1,11 +1,6 @@
 /* eslint-disable no-console */
 import casual from 'casual';
 import dayjs from 'dayjs';
-import {
-	EntityRepository,
-	Reference,
-	wrap,
-} from '@mikro-orm/core';
 
 import init from './index';
 import {
@@ -21,13 +16,6 @@ import {
 import { slugify } from '../strings';
 
 type DBTypes = Appeal | Call | Claim | Note | Payment | Provider | File | Representative;
-
-async function saveAndGetObjects<T extends DBTypes>(
-	repo: EntityRepository<T>
-): Promise<T[]> {
-	await repo.flush();
-	return await repo.findAll();
-}
 
 function dateThisYear(): Date {
 	return casual.moment.year( 2020 ).toDate();
@@ -52,16 +40,10 @@ function pickFromArray<T extends DBTypes | string>( array: T[] ): T {
 	return pickManyFromArray<T>( array )[ 0 ];
 }
 
-function pickRefFromArray<T extends DBTypes>( array: T[] ): Reference<T> {
-	const picked = pickFromArray<T>( array );
-	return wrap<T, 'id'>( picked ).toReference();
-}
-
 async function run( size: number ): Promise<void> {
-	const orm = await init();
+	await init();
 	const numToAssign = Math.floor( size / 2 );
 
-	const providerRepo = orm.em.getRepository( Provider );
 	for ( let index = 0; index < size; index++ ) {
 		const provider = new Provider();
 		provider.name = casual.coin_flip ? casual.company_name : `Dr. ${ casual.last_name }`;
@@ -71,32 +53,30 @@ async function run( size: number ): Promise<void> {
 		provider.address = casual.address;
 		provider.details = casual.text;
 		provider.website = casual.url;
-		await providerRepo.persist( provider );
+		await provider.save();
 	}
-	const providers = await saveAndGetObjects<Provider>( providerRepo );
+	const providers = await Provider.find();
 	console.log( `Inserted ${ providers.length } providers.` );
 
-	const repRepo = orm.em.getRepository( Representative );
 	for ( let index = 0; index < size; index++ ) {
-		const rep = new Representative( casual.first_name, pickRefFromArray<Provider>( providers ) );
-		await repRepo.persist( rep );
+		const rep = new Representative( casual.first_name, pickFromArray( providers ) );
+		await rep.save();
 	}
-	const reps = await saveAndGetObjects<Representative>( repRepo );
+	const reps = await Representative.find();
+	console.log( `Inserted ${ reps.length } reps.` );
 
-	const callRepo = orm.em.getRepository( Call );
 	for ( let index = 0; index < size; index++ ) {
 		const call = new Call();
 		call.created = dateThisYear();
 		const provider = pickFromArray<Provider>( providers );
-		call.provider = pickRefFromArray<Provider>( providers );
+		call.provider = provider;
 		call.slug = slugify( `Call on ${ dayjs( call.created ).format( 'D/M' ) } with ${ provider?.name || 'Unknown' }` );
-		call.reps.add( pickRefFromArray<Representative>( reps ) );
-		await callRepo.persist( call );
+		call.reps = pickManyFromArray( reps );
+		await call.save();
 	}
-	const calls = await saveAndGetObjects<Call>( callRepo );
+	const calls = await Call.find();
 	console.log( `Inserted ${ calls.length } calls.` );
 
-	const claimRepo = orm.em.getRepository( Claim );
 	for ( let index = 0; index < size; index++ ) {
 		const claim = new Claim();
 		claim.created = dateThisYear();
@@ -105,7 +85,7 @@ async function run( size: number ): Promise<void> {
 		claim.cost = casual.integer( 0, 50 );
 		claim.serviceDate = dateThisYear();
 		claim.slug = slugify( claim.number );
-		claim.provider = pickRefFromArray<Provider>( providers );
+		claim.provider = Promise.resolve( pickFromArray( providers ) );
 
 		const status = pickFromArray<string>( [
 			'APPROVED',
@@ -119,18 +99,16 @@ async function run( size: number ): Promise<void> {
 			'PHARMACY',
 		] );
 		claim.type = type;
-		await claimRepo.persist( claim );
+		await claim.save();
 	}
-	const claims = await saveAndGetObjects<Claim>( claimRepo );
+	const claims = await Claim.find();
 	const claimsToGiveParents = pickManyFromArray( claims, numToAssign );
 	for ( const claim of claimsToGiveParents ) {
-		claim.parent = pickRefFromArray<Claim>( claims );
-		await claimRepo.persist( claim );
+		claim.parent = Promise.resolve( pickFromArray( claims ) );
+		await claim.save();
 	}
-	await claimRepo.flush();
 	console.log( `Inserted ${ claims.length } claims.` );
 
-	const appealRepo = orm.em.getRepository( Appeal );
 	for ( let index = 0; index < size; index++ ) {
 		const appeal = new Appeal();
 		appeal.created = dateThisYear();
@@ -142,69 +120,61 @@ async function run( size: number ): Promise<void> {
 			'CLOSED',
 		] );
 		appeal.status = status;
-		appeal.provider = pickRefFromArray<Provider>( providers );
-		appeal.claims.add( pickFromArray<Claim>( claims ) );
-		appeal.calls.add( pickFromArray<Call>( calls ) );
+		appeal.provider = pickFromArray( providers );
+		appeal.claims = pickManyFromArray( claims );
+		appeal.calls = pickManyFromArray( calls );
 
-		await appealRepo.persist( appeal );
+		await appeal.save();
 	}
-	const appeals = await saveAndGetObjects<Appeal>( appealRepo );
+	const appeals = await Appeal.find();
 	const appealsToGiveParents = pickManyFromArray( appeals, numToAssign );
 	for ( const appeal of appealsToGiveParents ) {
-		appeal.parent = pickRefFromArray<Appeal>( appeals );
-		await claimRepo.persist( appeal );
+		appeal.parent = pickFromArray( appeals );
+		await appeal.save();
 	}
-	await claimRepo.flush();
 	console.log( `Inserted ${ appeals.length } appeals.` );
 
-	const fileRepo = orm.em.getRepository( File );
 	for ( let index = 0; index < size; index++ ) {
 		const file = new File();
 		file.created = dateThisYear();
 		file.filetype = casual.file_extension;
 		file.name = `${ casual.word }.${ file.filetype }`;
 		file.path = casual.array_of_words( casual.integer( 3, 7 ) ).join( '/' );
-		await fileRepo.persist( file );
+		await file.save();
 	}
-	const files = await saveAndGetObjects<File>( fileRepo );
+	const files = await File.find();
+	console.log( `Inserted ${ appeals.length } appeals.` );
 
-	const paymentRepo = orm.em.getRepository( Payment );
 	for ( let index = 0; index < size; index++ ) {
 		const payment = new Payment();
-		payment.date = dateThisYear();
+		payment.created = dateThisYear();
 		payment.method = 'check';
 		payment.details = `Deposited ${ dayjs( dateThisYear() ).format( 'D/M/YYYY' ) }, check # ${ casual.card_number() }`;
-		payment.receipt = pickRefFromArray<File>( files );
+		payment.receipt = pickFromArray( files );
 
 		const claim = pickFromArray<Claim>( claims );
 		payment.amount = casual.integer( 1, claim.cost || 50 );
-		payment.claims.add( claim );
-
-		await paymentRepo.persist( payment );
+		payment.claims = [ claim ];
+		await payment.save();
 	}
-	await paymentRepo.flush();
 
-	const notesRepo = orm.em.getRepository( Note );
 	for ( let index = 0; index < size; index++ ) {
 		const note = new Note();
 		note.created = dateThisYear();
-		note.text = casual.text;
+		note.description = casual.text;
 
 		const type = pickFromArray<string>( [ 'claim', 'appeal', 'provider' ] );
 		if ( type === 'claim' ) {
-			note.claim = pickRefFromArray<Claim>( claims );
+			note.claim = pickFromArray( claims );
 		} else if ( type === 'appeal' ) {
-			note.appeal = pickRefFromArray<Appeal>( appeals );
+			note.appeal = pickFromArray<Appeal>( appeals );
 		} else if ( type === 'provider' ) {
-			note.provider = pickRefFromArray<Provider>( providers );
+			note.provider = pickFromArray<Provider>( providers );
 		}
 
-		const noteFiles = pickManyFromArray<File>( files );
-		noteFiles.forEach( ( file ) => note.files.add( file ) );
-
-		await notesRepo.persist( note );
+		note.files = pickManyFromArray<File>( files );
+		await note.save();
 	}
-	await notesRepo.flush();
 }
 
 run( 5 )

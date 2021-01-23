@@ -1,43 +1,42 @@
 import {
 	Entity,
-	Property,
+	CreateDateColumn,
 	ManyToOne,
 	ManyToMany,
-	Collection,
-	IdentifiedReference,
-} from '@mikro-orm/core';
+	JoinTable,
+} from 'typeorm';
+
 import Appeal from './appeal';
 import Claim from './claim';
 import Note from './note';
-
 import Provider from './provider';
 import Representative from './representative';
 import BaseSlugEntity from './slug';
 
 @Entity()
-export class Call extends BaseSlugEntity {
-	@Property( { type: 'date' } )
-	created = new Date();
+export default class Call extends BaseSlugEntity {
+	@CreateDateColumn()
+	created: Date;
 
-	@Property( { type: 'date', persist: false } )
 	get date(): Date {
 		return this.created;
 	}
 
-	@ManyToOne( () => Provider, { wrappedReference: true } )
-	provider!: IdentifiedReference<Provider>;
+	@ManyToOne( () => Provider )
+	provider: Provider;
 
 	@ManyToMany( () => Representative )
-	reps = new Collection<Representative>( this );
+	@JoinTable()
+	reps: Representative[];
 
-	@ManyToOne( () => Note, { nullable: true, wrappedReference: true } )
-	note?: IdentifiedReference<Note>;
+	@ManyToOne( () => Note, { nullable: true } )
+	note?: Note;
 
 	@ManyToMany( () => Appeal, ( appeal ) => appeal.calls )
-	appeals = new Collection<Appeal>( this );
+	@JoinTable()
+	appeals: Appeal[];
 
 	@ManyToMany( () => Claim, ( claim ) => claim.calls )
-	claims = new Collection<Claim>( this );
+	@JoinTable()
+	claims: Claim[];
 }
-
-export default Call;

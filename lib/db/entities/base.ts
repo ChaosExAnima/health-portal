@@ -1,6 +1,6 @@
-import { PrimaryKey } from '@mikro-orm/core';
+import { PrimaryGeneratedColumn, BaseEntity as ActiveRecord } from 'typeorm';
 
-export default abstract class BaseEntity {
-	@PrimaryKey( { type: 'number' } )
-	id!: number;
+export default abstract class BaseEntity extends ActiveRecord {
+	@PrimaryGeneratedColumn()
+	id: number;
 }

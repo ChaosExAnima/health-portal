@@ -1,20 +1,10 @@
-import { MikroORM } from '@mikro-orm/core';
+import { Connection, createConnection } from 'typeorm';
 
-import config from '../../config/db';
-
-let cache: MikroORM | null = null;
-
-async function init(): Promise<MikroORM> {
+async function init(): Promise<Connection> {
 	if ( typeof window !== 'undefined' ) {
 		throw new Error( 'Loading SQL in client context' );
 	}
-
-	const orm = cache || await MikroORM.init( config );
-	if ( ! cache ) {
-		cache = orm;
-	}
-
-	return orm;
+	return createConnection();
 }
 
 export default init;

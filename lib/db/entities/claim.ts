@@ -1,12 +1,11 @@
 import {
 	Entity,
-	Property,
+	Column,
+	CreateDateColumn,
 	ManyToOne,
 	OneToMany,
-	Collection,
 	ManyToMany,
-	IdentifiedReference,
-} from '@mikro-orm/core';
+} from 'typeorm';
 
 import Appeal from './appeal';
 import Call from './call';
@@ -16,63 +15,58 @@ import Provider from './provider';
 import BaseSlugEntity from './slug';
 
 @Entity()
-export class Claim extends BaseSlugEntity {
-	@Property( { type: 'string', nullable: true } )
+export default class Claim extends BaseSlugEntity {
+	@Column( { nullable: true } )
 	number?: string;
 
-	@Property( { type: 'string', persist: false } )
 	get claim(): string | undefined {
 		return this.number;
 	}
 
-	@Property( { type: 'date' } )
-	created = new Date();
+	@CreateDateColumn()
+	created: Date;
 
-	@Property( { type: 'date', persist: false } )
 	get date(): Date {
 		return this.created;
 	}
 
-	@Property( { type: 'string' } )
-	status!: string;
+	@Column()
+	status: string;
 
-	@Property( { type: 'date' } )
-	serviceDate!: Date;
+	@Column()
+	serviceDate: Date;
 
-	@Property( { type: 'string' } )
-	type!: string;
+	@Column()
+	type: string;
 
-	@Property( { type: 'float', nullable: true } )
+	@Column( { type: 'float', nullable: true } )
 	billed?: number;
 
-	@Property( { type: 'float', nullable: true } )
+	@Column( { type: 'float', nullable: true } )
 	cost?: number;
 
-	@Property( { type: 'float', persist: false } )
 	get owed(): number {
 		return 0;
 	}
 
-	@ManyToOne( () => Claim, { nullable: true, wrappedReference: true } )
-	parent?: IdentifiedReference<Claim>;
+	@ManyToOne( () => Claim, ( claim ) => claim.children, { nullable: true } )
+	parent?: Promise<Claim>;
 
 	@OneToMany( () => Claim, ( claim ) => claim.parent )
-	children = new Collection<Claim>( this );
+	children: Promise<Claim[]>;
 
-	@ManyToOne( () => Provider, { wrappedReference: true } )
-	provider!: IdentifiedReference<Provider>;
+	@ManyToOne( () => Provider, ( provider ) => provider.claims )
+	provider: Promise<Provider>;
 
-	@ManyToMany( () => Appeal )
-	appeals = new Collection<Appeal>( this );
+	@ManyToMany( () => Appeal, ( appeal ) => appeal.claims )
+	appeals: Promise<Appeal[]>;
 
-	@ManyToMany( () => Payment )
-	payments = new Collection<Payment>( this );
+	@ManyToMany( () => Payment, ( payment ) => payment.claims )
+	payments: Promise<Payment[]>;
 
 	@OneToMany( () => Note, ( note ) => note.claim )
-	notes = new Collection<Note>( this );
+	notes: Promise<Note>;
 
-	@ManyToMany( () => Call )
-	calls = new Collection<Call>( this );
+	@ManyToMany( () => Call, ( call ) => call.claims )
+	calls: Promise<Call[]>;
 }
-
-export default Claim;

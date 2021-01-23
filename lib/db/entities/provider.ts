@@ -1,10 +1,10 @@
 import {
-	Property,
+	Column,
 	OneToMany,
-	Collection,
 	ManyToMany,
 	Entity,
-} from '@mikro-orm/core';
+	JoinTable,
+} from 'typeorm';
 
 import Appeal from './appeal';
 import Claim from './claim';
@@ -14,35 +14,36 @@ import BaseSlugEntity from './slug';
 
 @Entity()
 export class Provider extends BaseSlugEntity {
-	@Property( { type: 'string' } )
-	name!: string;
+	@Column( { type: 'varchar' } )
+	name: string;
 
-	@Property( { type: 'string', nullable: true } )
+	@Column( { type: 'varchar', nullable: true, length: 15 } )
 	phone?: string;
 
-	@Property( { type: 'string', nullable: true } )
+	@Column( { type: 'varchar', nullable: true } )
 	address?: string;
 
-	@Property( { type: 'text', nullable: true } )
+	@Column( { type: 'text', nullable: true } )
 	details?: string;
 
-	@Property( { type: 'string', nullable: true } )
+	@Column( { type: 'varchar', nullable: true } )
 	website?: string;
 
-	@Property( { type: 'string', nullable: true } )
+	@Column( { type: 'varchar', nullable: true } )
 	email?: string;
 
 	@OneToMany( () => Note, ( note ) => note.provider )
-	notes = new Collection<Note>( this );
+	notes: Note[];
 
 	@OneToMany( () => Claim, ( claim ) => claim.provider )
-	claims = new Collection<Claim>( this );
+	claims: Claim[];
 
 	@ManyToMany( () => Appeal )
-	appeals = new Collection<Appeal>( this );
+	@JoinTable()
+	appeals: Appeal[];
 
 	@OneToMany( () => Representative, ( rep ) => rep.provider )
-	representatives = new Collection<Representative>( this );
+	representatives: Representative[];
 }
 
 export default Provider;

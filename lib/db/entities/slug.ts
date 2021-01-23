@@ -1,13 +1,12 @@
 import {
+	Column,
 	Index,
-	Property,
-	Unique,
-} from '@mikro-orm/core';
+} from 'typeorm';
+
 import BaseEntity from './base';
 
 export default abstract class BaseSlugEntity extends BaseEntity {
-	@Property( { type: 'string' } )
-	@Unique()
-	@Index()
-	slug!: string;
+	@Index( { unique: true } )
+	@Column()
+	slug: string;
 }

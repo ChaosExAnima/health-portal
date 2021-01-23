@@ -1,12 +1,13 @@
 import {
 	Entity,
-	Property,
+	Column,
+	CreateDateColumn,
+	UpdateDateColumn,
 	ManyToOne,
 	OneToMany,
-	Collection,
 	ManyToMany,
-	IdentifiedReference,
-} from '@mikro-orm/core';
+	JoinTable,
+} from 'typeorm';
 
 import BaseSlugEntity from './slug';
 import Call from './call';
@@ -15,39 +16,39 @@ import Note from './note';
 import Provider from './provider';
 
 @Entity()
-export class Appeal extends BaseSlugEntity {
-	@Property( { type: 'string' } )
-	name!: string;
+export default class Appeal extends BaseSlugEntity {
+	@Column()
+	name: string;
 
-	@Property( { type: 'string' } )
-	status!: string;
+	@Column()
+	status: string;
 
-	@Property( { type: 'date' } )
-	created = new Date();
+	@CreateDateColumn()
+	created: Date;
 
-	@Property( { type: 'date', onUpdate: () => new Date() } )
-	updated = new Date();
+	@UpdateDateColumn()
+	updated: Date;
 
-	@ManyToOne( () => Provider, { wrappedReference: true } )
-	provider!: IdentifiedReference<Provider>;
+	@ManyToOne( () => Provider, ( provider ) => provider.appeals )
+	provider: Provider;
 
-	@ManyToOne( () => Appeal, { nullable: true, wrappedReference: true } )
-	parent?: IdentifiedReference<Appeal>;
+	@ManyToOne( () => Appeal, ( appeal ) => appeal.children, { nullable: true } )
+	parent?: Appeal;
 
 	@OneToMany( () => Appeal, ( appeal ) => appeal.parent )
-	children = new Collection<Appeal>( this );
+	children: Appeal[];
 
 	@ManyToMany( () => Claim, ( claim ) => claim.appeals )
-	claims = new Collection<Claim>( this );
+	@JoinTable()
+	claims: Claim[];
 
 	@ManyToMany( () => Call )
-	calls = new Collection<Call>( this );
+	calls: Call[];
 
 	@ManyToMany( () => Provider, ( provider ) => provider.appeals )
-	involvedProviders = new Collection<Provider>( this );
+	@JoinTable()
+	involvedProviders: Provider[];
 
 	@OneToMany( () => Note, ( note ) => note.appeal )
-	notes = new Collection<Note>( this );
+	notes: Note[];
 }
-
-export default Appeal;

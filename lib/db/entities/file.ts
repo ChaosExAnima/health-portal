@@ -1,23 +1,22 @@
 import {
 	Entity,
-	Property,
-} from '@mikro-orm/core';
+	Column,
+	CreateDateColumn,
+} from 'typeorm';
 
 import BaseEntity from './base';
 
 @Entity()
-export class File extends BaseEntity {
-	@Property( { type: 'string' } )
-	name!: string;
+export default class File extends BaseEntity {
+	@Column( { type: 'varchar' } )
+	name: string;
 
-	@Property( { type: 'date' } )
-	created = new Date();
+	@CreateDateColumn()
+	created: Date;
 
-	@Property( { type: 'string', length: 50 } )
-	filetype!: string;
+	@Column( { type: 'varchar', length: 50 } )
+	filetype: string;
 
-	@Property( { type: 'string' } )
-	path!: string;
+	@Column( { type: 'varchar' } )
+	path: string;
 }
-
-export default File;

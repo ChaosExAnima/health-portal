@@ -1,11 +1,11 @@
 import {
-	Property,
-	Collection,
+	Column,
 	ManyToMany,
 	Entity,
 	ManyToOne,
-	IdentifiedReference,
-} from '@mikro-orm/core';
+	CreateDateColumn,
+	JoinTable,
+} from 'typeorm';
 
 import BaseEntity from './base';
 import Claim from './claim';
@@ -13,23 +13,24 @@ import File from './file';
 
 @Entity()
 export class Payment extends BaseEntity {
-	@Property( { type: 'float' } )
-	amount!: number;
+	@Column( { type: 'float' } )
+	amount: number;
 
-	@Property( { type: 'date' } )
-	date = new Date();
+	@CreateDateColumn()
+	created: Date;
 
-	@Property( { type: 'string', nullable: true } )
+	@Column( { type: 'varchar', nullable: true } )
 	method?: string;
 
-	@Property( { type: 'string', nullable: true } )
+	@Column( { type: 'varchar', nullable: true } )
 	details?: string;
 
 	@ManyToMany( () => Claim, ( claim ) => claim.payments )
-	claims = new Collection<Claim>( this );
+	@JoinTable()
+	claims: Claim[];
 
-	@ManyToOne( () => File, { wrappedReference: true } )
-	receipt?: IdentifiedReference<File>;
+	@ManyToOne( () => File, { nullable: true } )
+	receipt?: File;
 }
 
 export default Payment;

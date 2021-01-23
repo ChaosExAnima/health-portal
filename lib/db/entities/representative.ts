@@ -1,25 +1,25 @@
 import {
+	Column,
 	Entity,
-	IdentifiedReference,
 	ManyToOne,
-	Property,
-} from '@mikro-orm/core';
+} from 'typeorm';
 
 import BaseEntity from './base';
 import Provider from './provider';
 
 @Entity()
 export class Representative extends BaseEntity {
-	constructor( name: string ) {
+	constructor( name: string, provider: Provider ) {
 		super();
 		this.name = name;
+		this.provider = provider;
 	}
 
-	@Property( { type: 'string' } )
-	name!: string;
+	@Column( { type: 'varchar' } )
+	name: string;
 
-	@ManyToOne( () => Provider, { wrappedReference: true } )
-	provider!: IdentifiedReference<Provider>;
+	@ManyToOne( () => Provider )
+	provider: Provider;
 }
 
 export default Representative;

@@ -8,11 +8,11 @@
     "build": "next build",
     "start": "next start",
     "gen": "graphql-let",
-    "orm": "mikro-orm",
+    "orm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "start-db": "docker-compose up -d",
     "stop-db": "docker-compose down",
-    "load-schema": "mikro-orm schema:create -r",
-    "load-fixtures": "ts-node --project tsconfig.orm.json lib/db/populate.ts"
+    "load-schema": "yarn orm schema:sync",
+    "load-fixtures": "ts-node lib/db/populate.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.3.6",
@@ -22,9 +22,6 @@
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
-    "@mikro-orm/core": "^4.3.4",
-    "@mikro-orm/mariadb": "^4.3.4",
-    "@mikro-orm/reflection": "^4.3.4",
     "apollo-datasource": "^0.7.2",
     "apollo-server-micro": "^2.19.0",
     "clsx": "^1.1.1",
@@ -32,11 +29,14 @@
     "dayjs": "^1.9.7",
     "graphql": "^15.4.0",
     "graphql-tag": "^2.11.0",
+    "mysql": "^2.18.1",
     "next": "10.0.3",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-dropzone": "^11.2.4",
-    "slugify": "^1.4.6"
+    "reflect-metadata": "^0.1.13",
+    "slugify": "^1.4.6",
+    "typeorm": "^0.2.30"
   },
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.12.12",
@@ -47,8 +47,6 @@
     "@graphql-codegen/typescript-react-apollo": "^2.2.1",
     "@graphql-codegen/typescript-resolvers": "^1.18.1",
     "@graphql-tools/mock": "^7.0.0",
-    "@mikro-orm/cli": "^4.3.4",
-    "@mikro-orm/sqlite": "^4.3.4",
     "@types/node": "^14.14.11",
     "@types/react": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.9.1",
@@ -60,6 +58,7 @@
     "eslint-plugin-mui-unused-classes": "^1.0.3",
     "eslint-plugin-react": "^7.21.5",
     "graphql-let": "^0.16.3",
+    "ts-node": "^9.1.1",
     "typescript": "^4.1.2"
   },
   "mikro-orm": {
