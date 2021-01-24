@@ -3,9 +3,10 @@ import {
 	TypeResolver,
 } from './index';
 import { Appeal } from 'lib/db/entities';
+import { FindManyOptions } from 'typeorm';
 
 const getAppeals: QueryResolver<'getAppeals'> = async ( parent, { offset, limit }, { dataSources: { db } } ) => {
-	const [ appeals, totalCount ] = await db.em.findAndCount( Appeal, {} );
+	const [ appeals, totalCount ] = await db.get().findAndCount( 'Appeal', { skip: offset, take: limit } as FindManyOptions );
 	return {
 		appeals,
 		totalCount,
@@ -14,8 +15,8 @@ const getAppeals: QueryResolver<'getAppeals'> = async ( parent, { offset, limit 
 	};
 };
 
-const appeal: QueryResolver<'appeal'> = async ( parent, { slug }, { dataSources: { db } } ) => {
-	const appealData = await db.em.findOne( Appeal, { slug } );
+const appeal: QueryResolver<'appeal'> = async ( parent, { slug } ) => {
+	const appealData = await Appeal.findOne( { slug } );
 	if ( ! appealData ) {
 		return null;
 	}
@@ -24,19 +25,19 @@ const appeal: QueryResolver<'appeal'> = async ( parent, { slug }, { dataSources:
 
 const Resolver: TypeResolver<'Appeal'> = ( {
 	async provider( parent ) {
-		return parent.provider.load();
+		return parent.provider;
 	},
 	async otherProviders( parent ) {
-		return parent.involvedProviders.loadItems();
+		return parent.involvedProviders;
 	},
 	async calls( parent ) {
-		return parent.calls.loadItems();
+		return parent.calls;
 	},
 	async claims( parent ) {
-		return parent.claims.loadItems();
+		return parent.claims;
 	},
 	async notes( parent ) {
-		return parent.notes.loadItems();
+		return parent.notes;
 	},
 } );
 

@@ -22,7 +22,9 @@
 		"noImplicitThis": true,
 		"strictNullChecks": true,
 		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true
+		"experimentalDecorators": true,
+		"sourceMap": true,
+		"outDir": "./dist"
 	},
 	"include": [
 		"next-env.d.ts",

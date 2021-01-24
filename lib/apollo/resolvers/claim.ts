@@ -5,8 +5,10 @@ import {
 } from './index';
 import { Claim } from 'lib/db/entities';
 
+import type { FindManyOptions } from 'typeorm';
+
 const getClaims: QueryResolver<'getClaims'> = async ( parent, { offset, limit }, { dataSources: { db } } ) => {
-	const [ claims, totalCount ] = await db.em.findAndCount( Claim, {} );
+	const [ claims, totalCount ] = await db.get().findAndCount( 'Claim', { skip: offset, take: limit } as FindManyOptions );
 	return {
 		claims,
 		totalCount,
@@ -15,8 +17,8 @@ const getClaims: QueryResolver<'getClaims'> = async ( parent, { offset, limit },
 	};
 };
 
-const claim: QueryResolver<'claim'> = async ( parent, { slug }, { dataSources: { db } } ) => {
-	return db.em.findOne( Claim, { slug } );
+const claim: QueryResolver<'claim'> = async ( parent, { slug } ) => {
+	return Claim.findOneOrFail( undefined, { where: { slug } } );
 };
 
 const uploadClaims: MutationResolver<'uploadClaims'> = async () => {
@@ -30,10 +32,10 @@ const uploadClaims: MutationResolver<'uploadClaims'> = async () => {
 
 const Resolver: TypeResolver<'Claim'> = ( {
 	async provider( parent ) {
-		return parent.provider.load();
+		return parent.provider;
 	},
 	async notes( parent ) {
-		return parent.notes.loadItems();
+		return parent.notes;
 	},
 } );
 

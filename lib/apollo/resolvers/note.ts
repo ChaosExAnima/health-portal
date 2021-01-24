@@ -1,10 +1,9 @@
-import { wrap } from '@mikro-orm/core';
-
-import type { TypeResolver } from './index';
 import {
 	Claim,
 	Provider,
 } from 'lib/db/entities';
+
+import type { TypeResolver } from './index';
 import type {
 	Maybe,
 	ResolversTypes,
@@ -12,15 +11,15 @@ import type {
 
 const Resolver: TypeResolver<'Note'> = ( {
 	async files( parent ) {
-		return parent.files.loadItems();
+		return parent.files;
 	},
 	async link( parent ): Promise<Maybe<ResolversTypes['NoteLink']>> {
 		if ( parent.appeal ) {
-			return parent.appeal.load();
+			return parent.appeal;
 		} else if ( parent.claim ) {
-			return parent.claim.load();
+			return parent.claim;
 		} else if ( parent.provider ) {
-			return parent.provider.load();
+			return parent.provider;
 		}
 		return null;
 	},
@@ -34,8 +33,7 @@ const FileResolver: TypeResolver<'File'> = ( {
 
 const LinkResolver: TypeResolver<'NoteLink'> = ( {
 	async __resolveType( parent ) {
-		const loadedParent = await wrap( parent ).toReference().load();
-		if ( 'involvedProviders' in loadedParent ) {
+		if ( 'involvedProviders' in parent ) {
 			return 'Appeal';
 		} else if ( parent instanceof Claim ) {
 			return 'Claim';

@@ -1,16 +1,13 @@
-import {
+import { Call } from 'lib/db/entities';
+
+import type { FindManyOptions } from 'typeorm';
+import type {
 	QueryResolver,
 	TypeResolver,
 } from './index';
-import {
-	Appeal,
-	Call,
-	Claim,
-	Representative,
-} from 'lib/db/entities';
 
-const getCalls: QueryResolver<'getCalls'> = async ( parent, { offset, limit }, { dataSources: { db } } ) => {
-	const [ calls, totalCount ] = await db.em.findAndCount( Call, {} );
+const getCalls: QueryResolver<'getCalls'> = async ( parent, { offset = 0, limit = 100 }, { dataSources: { db } } ) => {
+	const [ calls, totalCount ] = await db.get().findAndCount( 'Call', { skip: offset, take: limit } as FindManyOptions );
 	return {
 		calls,
 		totalCount,
@@ -19,25 +16,25 @@ const getCalls: QueryResolver<'getCalls'> = async ( parent, { offset, limit }, {
 	};
 };
 
-const call: QueryResolver<'call'> = async ( parent, { slug }, { dataSources: { db } } ) => {
-	return db.em.findOneOrFail( Call, { slug } );
+const call: QueryResolver<'call'> = async ( parent, { slug } ) => {
+	return Call.findOneOrFail( undefined, { where: { slug } } );
 };
 
 const Resolver: TypeResolver<'Call'> = ( {
-	async provider( parent, args, { dataSources: { provider } } ) {
-		return provider.loadOrFail( parent.provider?.id );
+	provider( parent ) {
+		return parent.provider;
 	},
-	claims( parent, args, { dataSources: { call: callDB } } ) {
-		return callDB.loadCollection<Claim>( parent.id, 'claims' );
+	claims( parent ) {
+		return parent.claims;
 	},
-	appeals( parent, args, { dataSources: { call: callDB } } ) {
-		return callDB.loadCollection<Appeal>( parent.id, 'appeals' );
+	appeals( parent ) {
+		return parent.appeals;
 	},
-	async note( parent, args, { dataSources: { note } } ) {
-		return note.load( parent.note?.id );
+	note( parent ) {
+		return parent.note || null;
 	},
-	async reps( parent, args, { dataSources: { call: callDB } } ) {
-		const reps = await callDB.loadCollection<Representative>( parent.id, 'reps' );
+	async reps( parent ) {
+		const reps = await parent.reps;
 		return reps.map( ( { name } ) => name );
 	},
 } );

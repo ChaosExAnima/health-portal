@@ -1,12 +1,13 @@
 import { Provider } from 'lib/db/entities';
-
 import {
 	QueryResolver,
 	TypeResolver,
 } from './index';
 
+import type { FindManyOptions } from 'typeorm';
+
 const getProviders: QueryResolver<'getProviders'> = async ( parent, { offset, limit }, { dataSources: { db } } ) => {
-	const [ providers, totalCount ] = await db.em.findAndCount( Provider, {} );
+	const [ providers, totalCount ] = await db.get().findAndCount( 'Provider', { skip: offset, take: limit } as FindManyOptions );
 	return {
 		providers,
 		totalCount,
@@ -15,13 +16,13 @@ const getProviders: QueryResolver<'getProviders'> = async ( parent, { offset, li
 	};
 };
 
-const provider: QueryResolver<'provider'> = async ( parent, { slug }, { dataSources: { db } } ) => {
-	return db.em.findOne( Provider, { slug } );
+const provider: QueryResolver<'provider'> = async ( parent, { slug } ) => {
+	return Provider.findOneOrFail( undefined, { where: { slug } } );
 };
 
 const Resolver: TypeResolver<'Provider'> = ( {
 	async notes( parent ) {
-		return parent.notes.loadItems();
+		return parent.notes;
 	},
 } );
 

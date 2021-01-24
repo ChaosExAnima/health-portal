@@ -1,14 +1,12 @@
+import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server-micro';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { RequestContext } from '@mikro-orm/core';
 
 import initOrm from 'lib/db';
 import dataSources from 'lib/apollo/datasources';
 import { makeSchema } from 'lib/apollo/schema';
 
 const schema = makeSchema();
-
-const ormPromise = initOrm();
 
 export const config = {
 	api: {
@@ -17,11 +15,10 @@ export const config = {
 };
 
 export default async function handler( req: NextApiRequest, res: NextApiResponse ): Promise<void> {
-	const orm = await ormPromise;
-	RequestContext.create( orm.em, () => null );
+	const connection = await initOrm();
 	const apolloServer = new ApolloServer( {
 		schema,
-		dataSources: () => dataSources( orm ),
+		dataSources: () => dataSources( connection ),
 		debug: process.env.DB_DEBUG === 'true',
 	} );
 
