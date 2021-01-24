@@ -14,7 +14,7 @@ import Appeal from './appeal';
 import File from './file';
 
 @Entity()
-export class Note extends BaseEntity {
+export default class Note extends BaseEntity {
 	@CreateDateColumn()
 	created: Date;
 
@@ -40,5 +40,3 @@ export class Note extends BaseEntity {
 	@JoinTable()
 	files: Promise<File[]>;
 }
-
-export default Note;

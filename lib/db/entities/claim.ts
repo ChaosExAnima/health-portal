@@ -65,7 +65,7 @@ export default class Claim extends BaseSlugEntity {
 	payments: Promise<Payment[]>;
 
 	@OneToMany( () => Note, ( note ) => note.claim )
-	notes: Promise<Note>;
+	notes: Promise<Note[]>;
 
 	@ManyToMany( () => Call, ( call ) => call.claims )
 	calls: Promise<Call[]>;

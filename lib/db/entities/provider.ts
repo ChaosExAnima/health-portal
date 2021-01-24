@@ -13,7 +13,7 @@ import Representative from './representative';
 import BaseSlugEntity from './slug';
 
 @Entity()
-export class Provider extends BaseSlugEntity {
+export default class Provider extends BaseSlugEntity {
 	@Column( { type: 'varchar' } )
 	name: string;
 
@@ -45,5 +45,3 @@ export class Provider extends BaseSlugEntity {
 	@OneToMany( () => Representative, ( rep ) => rep.provider )
 	representatives: Promise<Representative[]>;
 }
-
-export default Provider;

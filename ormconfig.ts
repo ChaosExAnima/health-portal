@@ -1,7 +1,7 @@
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
-import * as entities from 'lib/db/entities';
+import * as entities from './lib/db/entities';
 
 export default {
 	type: 'mariadb',
@@ -10,7 +10,7 @@ export default {
 	password: process.env.DB_PASS || 'password',
 	database: process.env.DB_DATABASE || 'health',
 	port: process.env.DB_PORT || 3306,
-	logging: 'all', //process.env.DEBUG || false,
+	logging: process.env.DEBUG || false,
 	entities: [ ...Object.values( entities ) ],
 	cli: {
 		entitiesDir: path.resolve( process.cwd(), 'lib/db/entities' ),

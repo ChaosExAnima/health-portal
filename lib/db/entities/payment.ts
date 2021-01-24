@@ -12,7 +12,7 @@ import Claim from './claim';
 import File from './file';
 
 @Entity()
-export class Payment extends BaseEntity {
+export default class Payment extends BaseEntity {
 	@Column( { type: 'float' } )
 	amount: number;
 
@@ -32,5 +32,3 @@ export class Payment extends BaseEntity {
 	@ManyToOne( () => File, { nullable: true } )
 	receipt?: Promise<File>;
 }
-
-export default Payment;
