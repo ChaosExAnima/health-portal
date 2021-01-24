@@ -1,41 +1,37 @@
-import { FindConditions, In } from 'typeorm';
+import { FindConditions } from 'typeorm';
 
 import type { BatchLoadFn } from 'dataloader';
 import type {
-	Claim,
 	Note,
-	Provider,
 	File,
+	Provider,
 	Appeal,
+	Claim,
 } from 'lib/db/entities';
 import type { TypeResolver } from './index';
-import type {
-	Maybe,
-	ResolversTypes,
-} from 'lib/apollo/schema/index.graphqls';
+
+type Link = Appeal | Claim | Provider;
 
 const Resolver: TypeResolver<'Note'> = ( {
 	async files( parent, {}, { dataSources: { db } } ) {
 		return db.loader<Note, File[]>( 'Note', 'files' ).load( parent.id );
 	},
-	async link( parent, {}, { dataSources: { db } } ): Promise<Maybe<ResolversTypes['NoteLink']>> {
-		const cb: BatchLoadFn<number, Maybe<ResolversTypes['NoteLink']>> = async ( keys ) => {
-			const notes = await db.get().find<Note>(
+	async link( parent, {}, { dataSources: { db } } ): Promise<Link[]> {
+		const cb: BatchLoadFn<number, Link[]> = async ( keys ) => {
+			const notes = await db.em.findByIds<Note>(
 				'Note',
-				{ id: In( keys as number[] ), relations: [ 'provider', 'claim', 'appeal' ], select: [ 'provider', 'claim', 'appeal' ] } as FindConditions<Note>
+				keys as number[],
+				{ relations: [ 'providers', 'claims', 'appeals' ] } as FindConditions<Note>
 			);
-			return notes.map( ( note ) => {
-				if ( note.provider ) {
-					return note.provider;
-				} else if ( note.claim ) {
-					return note.claim;
-				} else if ( note.appeal ) {
-					return note.appeal;
-				}
-				return null;
+			return notes.map( ( note ): Link[] => {
+				return [
+					...( 'length' in note.appeals ? note.appeals : [] ),
+					...( 'length' in note.claims ? note.claims : [] ),
+					...( 'length' in note.providers ? note.providers : [] ),
+				];
 			} );
 		};
-		const loader = db.loader<Note, Maybe<ResolversTypes['NoteLink']>>( 'Note', 'provider', cb );
+		const loader = db.loader<Note, Link[]>( 'Note', 'providers', cb );
 		return loader.load( parent.id );
 	},
 } );

@@ -27,15 +27,15 @@ export default class Note extends BaseEntity {
 	@Column( { type: 'boolean', default: false } )
 	resolved = false;
 
-	@ManyToMany( () => Provider, { nullable: true } )
+	@ManyToMany( () => Provider, ( provider ) => provider.notes, { nullable: true } )
 	@JoinTable()
 	providers: Promise<Provider[]> | Provider[];
 
-	@ManyToMany( () => Claim, { nullable: true } )
+	@ManyToMany( () => Claim, ( claim ) => claim.notes, { nullable: true } )
 	@JoinTable()
 	claims: Promise<Claim[]> | Claim[];
 
-	@ManyToMany( () => Appeal, { nullable: true } )
+	@ManyToMany( () => Appeal, ( appeal ) => appeal.notes, { nullable: true } )
 	@JoinTable()
 	appeals: Promise<Appeal[]> | Appeal[];
 

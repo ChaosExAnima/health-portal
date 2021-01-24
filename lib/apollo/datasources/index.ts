@@ -20,10 +20,6 @@ class TypeORM extends DataSource {
 		this.entityManager = connection.createEntityManager();
 	}
 
-	get() {
-		return this.entityManager;
-	}
-
 	findAndCount<P>( entity: string, skip: number | null, pick: number | null ): Promise<[P[], number]> {
 		return this.entityManager.findAndCount<P>( entity, { skip, pick } as FindManyOptions );
 	}
@@ -34,9 +30,10 @@ class TypeORM extends DataSource {
 
 	private batchFn<P, L>( entity: string, column: keyof P ): BatchLoadFn<number, L> {
 		return async ( keys ) => {
-			const items: P[] = await this.entityManager.find<P>(
+			const items: P[] = await this.entityManager.findByIds<P>(
 				entity,
-				{ id: In( keys as number[] ), relations: [ column ] } as unknown as FindConditions<P>
+				keys as number[],
+				{ relations: [ column ] } as unknown as FindConditions<P>
 			);
 			return items.map( ( item ) => item[ column ] as unknown as L );
 		};
@@ -48,6 +45,10 @@ class TypeORM extends DataSource {
 			this.loaders.set( name, new DataLoader<number, L>( cb || this.batchFn<P, L>( entity, column ) ) );
 		}
 		return this.loaders.get( name );
+	}
+
+	get em() {
+		return this.entityManager;
 	}
 
 	get conn() {
