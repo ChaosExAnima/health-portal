@@ -90,6 +90,8 @@ type Note {
 	id: ID!
 	created: Date!
 	description: String
-	link: NoteLink
+	link: [NoteLink!]!
 	files: [File!]
+	due: Date
+	resolved: Boolean!
 }
