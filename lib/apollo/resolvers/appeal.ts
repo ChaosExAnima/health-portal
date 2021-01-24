@@ -40,7 +40,7 @@ const Resolver: TypeResolver<'Appeal'> = ( {
 		return db.loader<Appeal, Call[]>( 'Appeal', 'calls' ).load( parent.id );
 	},
 	async claims( parent, {}, { dataSources: { db } } ) {
-		return db.loader<Appeal, Claim[]>( 'Appeal', 'provider' ).load( parent.id );
+		return db.loader<Appeal, Claim[]>( 'Appeal', 'claims' ).load( parent.id );
 	},
 	async notes( parent, {}, { dataSources: { db } } ) {
 		return db.loader<Appeal, Note[]>( 'Appeal', 'notes' ).load( parent.id );
