@@ -32,7 +32,7 @@ export default class Provider extends BaseSlugEntity {
 	@Column( { type: 'varchar', nullable: true } )
 	email?: string;
 
-	@OneToMany( () => Note, ( note ) => note.provider )
+	@ManyToMany( () => Note, ( note ) => note.providers )
 	notes: Promise<Note[]>;
 
 	@OneToMany( () => Claim, ( claim ) => claim.provider )

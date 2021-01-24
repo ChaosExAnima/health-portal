@@ -2,9 +2,9 @@ import {
 	Entity,
 	Column,
 	CreateDateColumn,
-	ManyToOne,
 	ManyToMany,
 	JoinTable,
+	OneToMany,
 } from 'typeorm';
 
 import BaseEntity from './base';
@@ -27,16 +27,18 @@ export default class Note extends BaseEntity {
 	@Column( { type: 'boolean', default: false } )
 	resolved = false;
 
-	@ManyToOne( () => Provider, { nullable: true } )
-	provider?: Promise<Provider>;
-
-	@ManyToOne( () => Claim, { nullable: true } )
-	claim?: Promise<Claim>;
-
-	@ManyToOne( () => Appeal, { nullable: true } )
-	appeal?: Promise<Appeal>;
-
-	@ManyToMany( () => File )
+	@ManyToMany( () => Provider, { nullable: true } )
 	@JoinTable()
+	providers: Promise<Provider[]> | Provider[];
+
+	@ManyToMany( () => Claim, { nullable: true } )
+	@JoinTable()
+	claims: Promise<Claim[]> | Claim[];
+
+	@ManyToMany( () => Appeal, { nullable: true } )
+	@JoinTable()
+	appeals: Promise<Appeal[]> | Appeal[];
+
+	@OneToMany( () => File, ( file ) => file.note )
 	files: Promise<File[]>;
 }

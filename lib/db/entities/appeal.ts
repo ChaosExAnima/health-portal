@@ -49,6 +49,6 @@ export default class Appeal extends BaseSlugEntity {
 	@JoinTable()
 	involvedProviders: Promise<Provider[]>;
 
-	@OneToMany( () => Note, ( note ) => note.appeal )
+	@ManyToMany( () => Note, ( note ) => note.appeals )
 	notes: Promise<Note[]>;
 }
