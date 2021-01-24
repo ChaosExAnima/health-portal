@@ -1,14 +1,17 @@
-import {
+import type {
 	QueryResolver,
 	MutationResolver,
 	TypeResolver,
 } from './index';
-import { Claim } from 'lib/db/entities';
 
-import type { FindManyOptions } from 'typeorm';
+import type {
+	Claim,
+	Note,
+	Provider,
+} from 'lib/db/entities';
 
-const getClaims: QueryResolver<'getClaims'> = async ( parent, { offset, limit }, { dataSources: { db } } ) => {
-	const [ claims, totalCount ] = await db.get().findAndCount( 'Claim', { skip: offset, take: limit } as FindManyOptions );
+const getClaims: QueryResolver<'getClaims'> = async ( parent, { offset = 0, limit = 100 }, { dataSources: { db } } ) => {
+	const [ claims, totalCount ] = await db.findAndCount<Claim>( 'Claim', offset, limit );
 	return {
 		claims,
 		totalCount,
@@ -17,8 +20,8 @@ const getClaims: QueryResolver<'getClaims'> = async ( parent, { offset, limit },
 	};
 };
 
-const claim: QueryResolver<'claim'> = async ( parent, { slug } ) => {
-	return Claim.findOneOrFail( undefined, { where: { slug } } );
+const claim: QueryResolver<'claim'> = async ( parent, { slug }, { dataSources: { db } } ) => {
+	return db.findBySlug( 'Claim', slug );
 };
 
 const uploadClaims: MutationResolver<'uploadClaims'> = async () => {
@@ -31,11 +34,11 @@ const uploadClaims: MutationResolver<'uploadClaims'> = async () => {
 };
 
 const Resolver: TypeResolver<'Claim'> = ( {
-	async provider( parent ) {
-		return parent.provider;
+	async provider( parent, {}, { dataSources: { db } } ) {
+		return db.loader<Claim, Provider>( 'Claim', 'provider' ).load( parent.id );
 	},
-	async notes( parent ) {
-		return parent.notes;
+	async notes( parent, {}, { dataSources: { db } } ) {
+		return db.loader<Claim, Note[]>( 'Claim', 'notes' ).load( parent.id );
 	},
 } );
 

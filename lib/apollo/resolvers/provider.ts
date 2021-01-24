@@ -6,7 +6,7 @@ import {
 
 import type { FindManyOptions } from 'typeorm';
 
-const getProviders: QueryResolver<'getProviders'> = async ( parent, { offset, limit }, { dataSources: { db } } ) => {
+const getProviders: QueryResolver<'getProviders'> = async ( parent, { offset = 0, limit = 100 }, { dataSources: { db } } ) => {
 	const [ providers, totalCount ] = await db.get().findAndCount( 'Provider', { skip: offset, take: limit } as FindManyOptions );
 	return {
 		providers,
