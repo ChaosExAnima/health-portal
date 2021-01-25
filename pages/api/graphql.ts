@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server-micro';
 import { NextApiRequest, NextApiResponse } from 'next';
 

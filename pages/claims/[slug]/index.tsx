@@ -10,7 +10,7 @@ import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
-import initDb from 'lib/db';
+import { getBySlug } from 'lib/db';
 import { staticPathsFromSlugs } from 'lib/static-helpers';
 import numberFormat from 'lib/number-format';
 import { claimStatus } from 'lib/strings';
@@ -56,17 +56,15 @@ const ClaimPage: React.FC<SinglePageProps> = ( { id, slug } ) => {
 	);
 };
 
-export const getStaticPaths: GetStaticPaths = async () => staticPathsFromSlugs( Claim, 'claims' );
+export const getStaticPaths: GetStaticPaths = async () => staticPathsFromSlugs( 'Claim', 'claims' );
 
-export const getStaticProps: GetStaticProps<SinglePageProps, { claim: string }> = async ( { params } ) => {
+export const getStaticProps: GetStaticProps<SinglePageProps> = async ( { params } ) => {
 	if ( ! params ) {
 		return {
 			notFound: true,
 		};
 	}
-	const { claim: claimSlug } = params;
-	const db = await initDb();
-	const claim = await db.em.findOne( Claim, { slug: claimSlug } );
+	const claim = await getBySlug<Claim>( 'Claim', params );
 	if ( ! claim ) {
 		return {
 			notFound: true,
@@ -76,7 +74,7 @@ export const getStaticProps: GetStaticProps<SinglePageProps, { claim: string }> 
 		props: {
 			id: claim.id,
 			title: `Claim # ${ claim.number }`,
-			slug: claimSlug,
+			slug: claim.slug,
 		},
 	};
 };

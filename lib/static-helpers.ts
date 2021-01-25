@@ -1,4 +1,3 @@
-import { EntityName } from '@mikro-orm/core';
 import { SinglePageProps } from 'global-types';
 import initDb from 'lib/db';
 
@@ -10,18 +9,17 @@ import type {
 	GetStaticPropsContext,
 	GetStaticPropsResult,
 } from 'next';
-import type BaseSlugEntity from './db/entities/slug';
 
 export function isSSR(): boolean {
 	return typeof window === 'undefined';
 }
 
 export async function staticPathsFromSlugs(
-	entity: EntityName<BaseSlugEntity>,
+	entity: string,
 	prefix: string,
 ): Promise<GetStaticPathsResult> {
 	const db = await initDb();
-	const objects = await db.em.find( entity, {}, { fields: [ 'slug' ] } );
+	const objects = await db.createEntityManager().find( entity, { select: [ 'slug' ] } );
 	if ( ! objects.length ) {
 		return {
 			paths: [],
