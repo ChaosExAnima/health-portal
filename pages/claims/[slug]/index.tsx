@@ -10,15 +10,14 @@ import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
-import { getBySlug } from 'lib/db';
-import { staticPathsFromSlugs } from 'lib/static-helpers';
+import { staticPathsFromSlugs, staticPropsSlug } from 'lib/static-helpers';
 import numberFormat from 'lib/number-format';
 import { claimStatus } from 'lib/strings';
-
-import type { GetStaticPaths, GetStaticProps } from 'next';
-import type { SinglePageProps } from 'global-types';
-import { Claim } from 'lib/db/entities';
 import { useClaimQuery } from 'lib/apollo/queries/claims.graphql';
+
+import type { GetStaticPaths } from 'next';
+import type { SinglePageProps } from 'global-types';
+import type { Claim } from 'lib/db/entities';
 
 const ClaimPage: React.FC<SinglePageProps> = ( { id, slug } ) => {
 	const { data, loading } = useClaimQuery( { variables: { slug } } );
@@ -58,25 +57,10 @@ const ClaimPage: React.FC<SinglePageProps> = ( { id, slug } ) => {
 
 export const getStaticPaths: GetStaticPaths = async () => staticPathsFromSlugs( 'Claim', 'claims' );
 
-export const getStaticProps: GetStaticProps<SinglePageProps> = async ( { params } ) => {
-	if ( ! params ) {
-		return {
-			notFound: true,
-		};
-	}
-	const claim = await getBySlug<Claim>( 'Claim', params );
-	if ( ! claim ) {
-		return {
-			notFound: true,
-		};
-	}
-	return {
-		props: {
-			id: claim.id,
-			title: `Claim # ${ claim.number }`,
-			slug: claim.slug,
-		},
-	};
-};
+export const getStaticProps = staticPropsSlug<Claim>( 'Claim', ( claim ) => ( {
+	id: claim.id,
+	title: `Claim # ${ claim.number }`,
+	slug: claim.slug,
+} ) );
 
 export default ClaimPage;

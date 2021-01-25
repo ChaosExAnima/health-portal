@@ -1,5 +1,5 @@
 import { SinglePageProps } from 'global-types';
-import initDb from 'lib/db';
+import initDb, { getBySlug } from 'lib/db';
 
 import type {
 	GetStaticPaths,
@@ -52,6 +52,29 @@ export const staticPathsNoData = ( data?: unknown ): GetStaticPathsResult | null
 	}
 	return null;
 };
+
+export function staticPropsSlug<E, T = SinglePageProps>(
+	entity: string,
+	props: ( item: E ) => T,
+): GetStaticProps<T> {
+	const cb: GetStaticProps<T> = async ( { params } ) => {
+		if ( ! params ) {
+			return {
+				notFound: true,
+			};
+		}
+		const item = await getBySlug<E>( entity, params );
+		if ( ! item ) {
+			return {
+				notFound: true,
+			};
+		}
+		return {
+			props: props( item ),
+		};
+	};
+	return cb;
+}
 
 export async function staticPropsEdit<T extends SinglePageProps = SinglePageProps>(
 	root: GetStaticProps<T>,
