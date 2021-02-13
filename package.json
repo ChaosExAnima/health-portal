@@ -25,6 +25,7 @@
     "apollo-datasource": "^0.7.2",
     "apollo-server-micro": "^2.19.0",
     "clsx": "^1.1.1",
+    "csv-parser": "^3.0.0",
     "dataloader": "^2.0.0",
     "dayjs": "^1.9.7",
     "graphql": "^15.4.0",

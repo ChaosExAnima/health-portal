@@ -27,3 +27,14 @@ export function claimStatus( status: string ): string {
 	} as const;
 	return statuses[ status ] || 'Unknown';
 }
+
+export function priceToNumber( price?: string ): number | null {
+	if ( ! price ) {
+		return null;
+	}
+	const parsedPrice = Number.parseFloat( price.replace( /[ \$]*/g, '' ) );
+	if ( Number.isNaN( parsedPrice ) ) {
+		return null;
+	}
+	return parsedPrice;
+}
