@@ -49,13 +49,13 @@ export default class Claim extends BaseSlugEntity {
 		return 0;
 	}
 
-	@ManyToOne( () => Claim, ( claim ) => claim.children, { nullable: true } )
+	@ManyToOne( () => Claim, ( claim ) => claim.children, { nullable: true, onDelete: 'SET NULL' } )
 	parent?: Promise<Claim>;
 
 	@OneToMany( () => Claim, ( claim ) => claim.parent )
 	children: Promise<Claim[]>;
 
-	@ManyToOne( () => Provider, ( provider ) => provider.claims, { nullable: true } )
+	@ManyToOne( () => Provider, ( provider ) => provider.claims, { nullable: true, onDelete: 'SET NULL' } )
 	provider?: Promise<Provider>;
 
 	@ManyToMany( () => Appeal, ( appeal ) => appeal.claims )
