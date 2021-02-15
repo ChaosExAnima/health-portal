@@ -42,6 +42,5 @@ mutation UploadClaims( $file: Upload! ) {
 	uploadClaims( file: $file ) {
 		success
 		claimsProcessed
-		errors
 	}
 }

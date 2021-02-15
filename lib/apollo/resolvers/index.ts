@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+import { GraphQLScalarType } from 'graphql';
+
 import Appeal from './appeal';
 import Call from './call';
 import Claim from './claim';
@@ -12,8 +15,6 @@ import type {
 	DateScalarConfig,
 	DateTimeScalarConfig,
 } from 'lib/apollo/schema/index.graphqls';
-import { GraphQLScalarType } from 'graphql';
-import dayjs from 'dayjs';
 
 export type QueryResolver<T extends keyof QueryResolvers<ResolverContext>> = QueryResolvers<ResolverContext>[T];
 export type MutationResolver<T extends keyof MutationResolvers<ResolverContext>> = MutationResolvers<ResolverContext>[T];

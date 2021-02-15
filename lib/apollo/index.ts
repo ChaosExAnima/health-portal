@@ -2,9 +2,9 @@ import {
 	ApolloClient,
 	InMemoryCache,
 	NormalizedCacheObject,
-	HttpLink,
 } from '@apollo/client';
 import { offsetLimitPagination } from '@apollo/client/utilities';
+import { createUploadLink } from 'apollo-upload-client';
 
 import type { dataSources } from './datasources';
 import type { IncomingMessage, ServerResponse } from 'http';
@@ -28,7 +28,7 @@ export function createApolloClient( context?: ResolverContext ): ApolloClient<No
 		const schema = makeSchema();
 		link = new SchemaLink( { context, schema } );
 	} else {
-		link = new HttpLink( {
+		link = createUploadLink( {
 			uri: '/api/graphql',
 			credentials: 'same-origin',
 		} );

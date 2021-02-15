@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
+import { query } from 'lib/db';
 
-import Claim from 'lib/db/entities/claim';
-import { priceToNumber } from 'lib/strings';
+import type { Claim, Provider } from 'lib/db/entities';
+import { priceToNumber, slugify } from 'lib/strings';
 
 type RawClaim = {
 	'Claim Type': string;
@@ -22,26 +23,50 @@ type RawClaim = {
 	'Your Cost': string;
 }
 
-export function isAnthemClaim( claim: Record< string, string > ): boolean {
-	return 'Claim Recieved' in claim;
+export function isAnthemClaim( claim: Record< string, string > ): claim is RawClaim {
+	return 'Claim Received' in claim;
 }
 
-export function parseAnthemClaim( rawClaim: Partial< RawClaim > ): Claim {
-	let status = 'pending';
+export async function getProviderFromAnthemClaim( rawClaim: RawClaim ): Promise< Provider | undefined > {
+	let provider: Provider | undefined;
+	const em = await query();
+	if ( rawClaim[ 'Provided By' ] ) {
+		const providerSlug = slugify( rawClaim[ 'Provided By' ] );
+		provider = await em.findOne< Provider >( 'Provider', { where: { slug: providerSlug } } );
+		if ( ! provider ) {
+			provider = em.create< Provider >( 'Provider', {
+				name: rawClaim[ 'Provided By' ],
+				slug: providerSlug,
+			} );
+			provider = await provider.save();
+		}
+	}
+	return provider;
+}
+
+export async function parseAnthemClaim( rawClaim: RawClaim, providers: Provider[] ): Promise< Claim > {
+	let status = 'PENDING';
 	if ( rawClaim.Status ) {
 		if ( rawClaim.Status === 'Approved' ) {
-			status = 'approved';
+			status = 'APPROVED';
 		} else if ( rawClaim.Status === 'Denied' ) {
-			status = 'denied';
+			status = 'DENIED';
 		}
 	}
 
-	const claim = new Claim();
-	claim.number = rawClaim[ 'Claim Number' ];
-	claim.type = rawClaim[ 'Claim Type' ] === 'Pharmacy' ? 'pharmacy' : 'medical';
-	claim.serviceDate = dayjs( rawClaim[ 'Service Date' ] ).toDate();
-	claim.status = status;
-	claim.billed = priceToNumber( rawClaim.Billed ) || 0;
-	claim.cost = priceToNumber( rawClaim[ 'Your Cost' ] ) || 0;
+	const em = await query();
+	const claim = em.create< Claim >( 'Claim', {
+		number: rawClaim[ 'Claim Number' ],
+		slug: slugify( rawClaim[ 'Claim Number' ] || 'unknown' ),
+		type: rawClaim[ 'Claim Type' ] === 'Pharmacy' ? 'PHARMACY' : 'INNETWORK',
+		serviceDate: dayjs( rawClaim[ 'Service Date' ] ).toDate(),
+		status,
+		billed: priceToNumber( rawClaim.Billed ) || 0,
+		cost: priceToNumber( rawClaim[ 'Your Cost' ] ) || 0,
+	} );
+
+	// See: https://github.com/typeorm/typeorm/issues/2276
+	const provider = providers.find( ( { slug } ) => slugify( rawClaim[ 'Provided By' ] ) === slug );
+	claim.provider = provider && Promise.resolve( provider );
 	return claim;
 }

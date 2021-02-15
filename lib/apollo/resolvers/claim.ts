@@ -1,11 +1,12 @@
+import Claim from 'lib/db/entities/claim';
+import parseCSV from 'lib/parser';
+
 import type {
 	QueryResolver,
 	MutationResolver,
 	TypeResolver,
 } from './index';
-
 import type {
-	Claim,
 	Note,
 	Provider,
 } from 'lib/db/entities';
@@ -24,13 +25,30 @@ const claim: QueryResolver<'claim'> = async ( parent, { slug }, { dataSources: {
 	return db.findBySlug( 'Claim', slug );
 };
 
-const uploadClaims: MutationResolver<'uploadClaims'> = async () => {
-	return {
-		code: 'success',
-		success: true,
-		claimsProcessed: 0,
-		error: [],
-	};
+const uploadClaims: MutationResolver<'uploadClaims'> = async ( parent, { file } ) => {
+	try {
+		const { createReadStream } = await file;
+		const stream = createReadStream();
+		const claims = await parseCSV( stream );
+
+		return {
+			code: 'success',
+			success: true,
+			claimsProcessed: claims.length,
+		};
+	} catch ( err ) {
+		// eslint-disable-next-line no-console
+		console.error( err );
+		let code = 'unknown';
+		if ( err instanceof Error ) {
+			code = err.name;
+		}
+		return {
+			code,
+			success: false,
+			claimsProcessed: 0,
+		};
+	}
 };
 
 const Resolver: TypeResolver<'Claim'> = ( {

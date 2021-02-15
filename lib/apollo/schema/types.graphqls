@@ -40,7 +40,7 @@ type Claim {
 	claim: String
 	slug: Slug!
 	date: Date!
-	provider: Provider!
+	provider: Provider
 	type: ClaimType
 	billed: Float
 	cost: Float

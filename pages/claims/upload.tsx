@@ -1,6 +1,7 @@
 import {
 	Box,
 	Breadcrumbs,
+	Button,
 	Container,
 	createStyles,
 	LinearProgress,
@@ -64,6 +65,9 @@ const useStyles = makeStyles( ( { palette, shape, spacing }: Theme ) => createSt
 		borderWidth: 4,
 		padding: spacing( 6 ),
 	},
+	resetButton: {
+		marginLeft: spacing( 1 ),
+	},
 } ) );
 
 const ClaimUploadPage: React.FC<ClaimUploadPageProps> = () => {
@@ -125,6 +129,7 @@ const ClaimUploadPage: React.FC<ClaimUploadPageProps> = () => {
 						</Paper>
 						<Box my={ 4 }>
 							<ButtonLink href="/claims" color="primary">Go back to claims</ButtonLink>
+							<Button color="secondary" className={ classes.resetButton }>Upload another file</Button>
 						</Box>
 					</>
 				)
