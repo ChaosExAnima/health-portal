@@ -1,5 +1,5 @@
 import { SinglePageProps } from 'global-types';
-import initDb, { getBySlug } from 'lib/db';
+import { getBySlug, query } from 'lib/db';
 
 import type {
 	GetStaticPaths,
@@ -18,8 +18,8 @@ export async function staticPathsFromSlugs(
 	entity: string,
 	prefix: string,
 ): Promise<GetStaticPathsResult> {
-	const db = await initDb();
-	const objects = await db.createEntityManager().find( entity, { select: [ 'slug' ] } );
+	const em = await query();
+	const objects = await em.find( entity, { select: [ 'slug' ] } );
 	if ( ! objects.length ) {
 		return {
 			paths: [],
@@ -63,7 +63,8 @@ export function staticPropsSlug<E, T = SinglePageProps>(
 				notFound: true,
 			};
 		}
-		const item = await getBySlug<E>( entity, params );
+		const { slug } = params;
+		const item = await getBySlug<E>( entity, slug as string );
 		if ( ! item ) {
 			return {
 				notFound: true,

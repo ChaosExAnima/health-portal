@@ -12,6 +12,7 @@ import React from 'react';
 type Detail = {
 	name: React.ReactNode;
 	detail: React.ReactNode;
+	empty?: React.ReactNode;
 }
 
 type DetailsBoxProps = {
@@ -32,7 +33,7 @@ const DetailsBox: React.FC<DetailsBoxProps> = ( { details } ) => {
 	return (
 		<Box my={ 4 }>
 			<Grid component={ Paper } container className={ classes.detailsContainer } spacing={ 2 }>
-				{ details.map( ( { name, detail: status }, index ) => (
+				{ details.map( ( { name, detail: status, empty = 'Unknown' }, index ) => (
 					<Grid container item key={ index }>
 						<Grid item className={ classes.detailsName }>
 							<Typography variant="body1">
@@ -40,8 +41,8 @@ const DetailsBox: React.FC<DetailsBoxProps> = ( { details } ) => {
 							</Typography>
 						</Grid>
 						<Grid item>
-							<Typography variant="body1">
-								{ status }
+							<Typography variant="body1" color={ status ? 'textPrimary' : 'textSecondary' }>
+								{ status || empty }
 							</Typography>
 						</Grid>
 					</Grid>

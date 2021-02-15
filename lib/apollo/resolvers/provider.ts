@@ -1,13 +1,11 @@
-import { Provider } from 'lib/db/entities';
-import {
+import type {
 	QueryResolver,
 	TypeResolver,
 } from './index';
-
-import type { FindManyOptions } from 'typeorm';
+import type { Provider } from 'lib/db/entities';
 
 const getProviders: QueryResolver<'getProviders'> = async ( parent, { offset = 0, limit = 100 }, { dataSources: { db } } ) => {
-	const [ providers, totalCount ] = await db.get().findAndCount( 'Provider', { skip: offset, take: limit } as FindManyOptions );
+	const [ providers, totalCount ] = await db.findAndCount< Provider >( 'Provider', offset, limit );
 	return {
 		providers,
 		totalCount,
@@ -16,14 +14,11 @@ const getProviders: QueryResolver<'getProviders'> = async ( parent, { offset = 0
 	};
 };
 
-const provider: QueryResolver<'provider'> = async ( parent, { slug } ) => {
-	return Provider.findOneOrFail( undefined, { where: { slug } } );
+const provider: QueryResolver<'provider'> = async ( parent, { slug }, { dataSources: { db } } ) => {
+	return db.findBySlug< Provider >( 'Provider', slug );
 };
 
 const Resolver: TypeResolver<'Provider'> = ( {
-	async notes( parent ) {
-		return parent.notes;
-	},
 } );
 
 export default {
