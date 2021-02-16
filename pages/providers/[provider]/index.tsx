@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-	Box,
-	Container,
-	LinearProgress,
-} from '@material-ui/core';
+import { Box, Container, LinearProgress } from '@material-ui/core';
 
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
@@ -17,7 +13,7 @@ import type { GetStaticPaths, GetStaticProps } from 'next';
 import type { SinglePageProps } from 'global-types';
 import type Provider from 'lib/db/entities/provider';
 
-const ProviderPage: React.FC<SinglePageProps> = ( { id, slug } ) => {
+const ProviderPage: React.FC< SinglePageProps > = ( { id, slug } ) => {
 	const { data, loading } = useProviderQuery( { variables: { slug } } );
 	if ( ! slug ) {
 		return null;
@@ -34,20 +30,32 @@ const ProviderPage: React.FC<SinglePageProps> = ( { id, slug } ) => {
 	}
 	return (
 		<Container maxWidth="md">
-			<Breadcrumbs breadcrumbs={ [
-				{ href: '/providers', name: 'Providers' },
-				provider.name,
-			] } />
-			<Header title={ provider.name } buttonsBelow actions={ [
-				{ action: 'Add Event', icon: 'add' },
-				{ action: 'Edit', href: `/providers/${ slug }/edit`, icon: 'edit' },
-			] } />
-			<DetailsBox details={ [
-				{ name: 'Phone Number', detail: provider.phone },
-				{ name: 'Email', detail: provider.email },
-				{ name: 'Address', detail: provider.address },
-				{ name: 'Website', detail: provider.website },
-			] } />
+			<Breadcrumbs
+				breadcrumbs={ [
+					{ href: '/providers', name: 'Providers' },
+					provider.name,
+				] }
+			/>
+			<Header
+				title={ provider.name }
+				buttonsBelow
+				actions={ [
+					{ action: 'Add Event', icon: 'add' },
+					{
+						action: 'Edit',
+						href: `/providers/${ slug }/edit`,
+						icon: 'edit',
+					},
+				] }
+			/>
+			<DetailsBox
+				details={ [
+					{ name: 'Phone Number', detail: provider.phone },
+					{ name: 'Email', detail: provider.email },
+					{ name: 'Address', detail: provider.address },
+					{ name: 'Website', detail: provider.website },
+				] }
+			/>
 			<Box my={ 4 }>
 				<HistoryTable type="provider" id={ id } />
 			</Box>
@@ -58,7 +66,10 @@ const ProviderPage: React.FC<SinglePageProps> = ( { id, slug } ) => {
 export const getStaticPaths: GetStaticPaths = async () =>
 	staticPathsFromSlugs( 'Provider', 'providers' );
 
-export const getStaticProps: GetStaticProps<SinglePageProps, { provider: string }> = async ( { params } ) => {
+export const getStaticProps: GetStaticProps<
+	SinglePageProps,
+	{ provider: string }
+> = async ( { params } ) => {
 	if ( ! params ) {
 		return {
 			notFound: true,
@@ -66,7 +77,9 @@ export const getStaticProps: GetStaticProps<SinglePageProps, { provider: string 
 	}
 	const { provider: providerSlug } = params;
 	const em = await query();
-	const provider = await em.findOne< Provider >( 'Provider', { slug: providerSlug } );
+	const provider = await em.findOne< Provider >( 'Provider', {
+		slug: providerSlug,
+	} );
 	if ( ! provider ) {
 		return {
 			notFound: true,

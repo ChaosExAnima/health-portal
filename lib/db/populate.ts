@@ -15,13 +15,24 @@ import {
 } from './entities';
 import { slugify } from '../strings';
 
-type DBTypes = Appeal | Call | Claim | Note | Payment | Provider | File | Representative;
+type DBTypes =
+	| Appeal
+	| Call
+	| Claim
+	| Note
+	| Payment
+	| Provider
+	| File
+	| Representative;
 
 function dateThisYear(): Date {
 	return casual.moment.year( 2020 ).toDate();
 }
 
-function pickManyFromArray<T extends DBTypes | string>( array: T[], number = 1 ): T[] {
+function pickManyFromArray< T extends DBTypes | string >(
+	array: T[],
+	number = 1
+): T[] {
 	let len = array.length;
 	const result = new Array( number );
 	const taken = new Array( len );
@@ -36,17 +47,19 @@ function pickManyFromArray<T extends DBTypes | string>( array: T[], number = 1 )
 	return result;
 }
 
-function pickFromArray<T extends DBTypes | string>( array: T[] ): T {
-	return pickManyFromArray<T>( array )[ 0 ];
+function pickFromArray< T extends DBTypes | string >( array: T[] ): T {
+	return pickManyFromArray< T >( array )[ 0 ];
 }
 
-async function run( size: number ): Promise<void> {
+async function run( size: number ): Promise< void > {
 	await init();
 	const numToAssign = Math.floor( size / 2 );
 
 	for ( let index = 0; index < size; index++ ) {
 		const provider = new Provider();
-		provider.name = casual.coin_flip ? casual.company_name : `Dr. ${ casual.last_name }`;
+		provider.name = casual.coin_flip
+			? casual.company_name
+			: `Dr. ${ casual.last_name }`;
 		provider.slug = slugify( provider.name );
 		provider.email = casual.email;
 		provider.phone = casual.phone;
@@ -59,7 +72,10 @@ async function run( size: number ): Promise<void> {
 	console.log( `Inserted ${ providers.length } providers.` );
 
 	for ( let index = 0; index < size; index++ ) {
-		const rep = new Representative( casual.first_name, pickFromArray( providers ) );
+		const rep = new Representative(
+			casual.first_name,
+			pickFromArray( providers )
+		);
 		await rep.save();
 	}
 	const reps = await Representative.find();
@@ -68,9 +84,13 @@ async function run( size: number ): Promise<void> {
 	for ( let index = 0; index < size; index++ ) {
 		const call = new Call();
 		call.created = dateThisYear();
-		const provider = pickFromArray<Provider>( providers );
+		const provider = pickFromArray< Provider >( providers );
 		call.provider = Promise.resolve( provider );
-		call.slug = slugify( `Call on ${ dayjs( call.created ).format( 'D/M' ) } with ${ provider?.name || 'Unknown' }` );
+		call.slug = slugify(
+			`Call on ${ dayjs( call.created ).format( 'D/M' ) } with ${
+				provider?.name || 'Unknown'
+			}`
+		);
 		call.reps = Promise.resolve( pickManyFromArray( reps ) );
 		await call.save();
 	}
@@ -87,13 +107,10 @@ async function run( size: number ): Promise<void> {
 		claim.slug = slugify( claim.number );
 		claim.provider = Promise.resolve( pickFromArray( providers ) );
 
-		const status = pickFromArray<string>( [
-			'APPROVED',
-			'PENDING',
-		] );
+		const status = pickFromArray< string >( [ 'APPROVED', 'PENDING' ] );
 		claim.status = status || 'APPROVED';
 
-		const type = pickFromArray<string>( [
+		const type = pickFromArray< string >( [
 			'INNETWORK',
 			'OUTOFNETWORK',
 			'PHARMACY',
@@ -113,8 +130,12 @@ async function run( size: number ): Promise<void> {
 		const appeal = new Appeal();
 		appeal.created = dateThisYear();
 		appeal.name = `Appeal for ${ casual.word }`;
-		appeal.slug = slugify( `${ dayjs( appeal.created ).format( 'DD/MM/YYYY' ) } - ${ appeal.name }` );
-		const status = pickFromArray<string>( [
+		appeal.slug = slugify(
+			`${ dayjs( appeal.created ).format( 'DD/MM/YYYY' ) } - ${
+				appeal.name
+			}`
+		);
+		const status = pickFromArray< string >( [
 			'NEW',
 			'PENDING',
 			'CLOSED',
@@ -149,10 +170,12 @@ async function run( size: number ): Promise<void> {
 		const payment = new Payment();
 		payment.created = dateThisYear();
 		payment.method = 'check';
-		payment.details = `Deposited ${ dayjs( dateThisYear() ).format( 'D/M/YYYY' ) }, check # ${ casual.card_number() }`;
+		payment.details = `Deposited ${ dayjs( dateThisYear() ).format(
+			'D/M/YYYY'
+		) }, check # ${ casual.card_number() }`;
 		payment.receipt = Promise.resolve( pickFromArray( files ) );
 
-		const claim = pickFromArray<Claim>( claims );
+		const claim = pickFromArray< Claim >( claims );
 		payment.amount = casual.integer( 1, claim.cost || 50 );
 		payment.claims = Promise.resolve( [ claim ] );
 		await payment.save();
@@ -163,7 +186,11 @@ async function run( size: number ): Promise<void> {
 		note.created = dateThisYear();
 		note.description = casual.text;
 
-		const type = pickFromArray<string>( [ 'claim', 'appeal', 'provider' ] );
+		const type = pickFromArray< string >( [
+			'claim',
+			'appeal',
+			'provider',
+		] );
 		if ( type === 'claim' ) {
 			note.claim = Promise.resolve( pickFromArray( claims ) );
 		} else if ( type === 'appeal' ) {

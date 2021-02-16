@@ -6,10 +6,6 @@ import type {
 	DataTableRowData,
 } from './types';
 
-export type {
-	DataTableColumn,
-	DataTableFilter,
-	DataTableRowData,
-};
+export type { DataTableColumn, DataTableFilter, DataTableRowData };
 
 export default DataTable;

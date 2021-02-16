@@ -1,7 +1,4 @@
-import {
-	Column,
-	Index,
-} from 'typeorm';
+import { Column, Index } from 'typeorm';
 
 import BaseEntity from './base';
 

@@ -1,10 +1,4 @@
-import {
-	Column,
-	OneToMany,
-	ManyToMany,
-	Entity,
-	JoinTable,
-} from 'typeorm';
+import { Column, OneToMany, ManyToMany, Entity, JoinTable } from 'typeorm';
 
 import Appeal from './appeal';
 import Claim from './claim';
@@ -33,15 +27,15 @@ export default class Provider extends BaseSlugEntity {
 	email?: string;
 
 	@ManyToMany( () => Note, ( note ) => note.providers )
-	notes: Promise<Note[]>;
+	notes: Promise< Note[] >;
 
 	@OneToMany( () => Claim, ( claim ) => claim.provider )
-	claims: Promise<Claim[]>;
+	claims: Promise< Claim[] >;
 
 	@ManyToMany( () => Appeal )
 	@JoinTable()
-	appeals: Promise<Appeal[]>;
+	appeals: Promise< Appeal[] >;
 
 	@OneToMany( () => Representative, ( rep ) => rep.provider )
-	representatives: Promise<Representative[]>;
+	representatives: Promise< Representative[] >;
 }

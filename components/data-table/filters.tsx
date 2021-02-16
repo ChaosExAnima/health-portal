@@ -21,17 +21,22 @@ type DataTableFiltersProps = {
 	hasDates: boolean;
 };
 
-const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
-	formControl: {
-		margin: theme.spacing( 1 ),
-		minWidth: 120,
-	},
-	filterHeader: {
-		marginRight: theme.spacing( 6 ),
-	},
-} ) );
+const useStyles = makeStyles( ( theme: Theme ) =>
+	createStyles( {
+		formControl: {
+			margin: theme.spacing( 1 ),
+			minWidth: 120,
+		},
+		filterHeader: {
+			marginRight: theme.spacing( 6 ),
+		},
+	} )
+);
 
-const DataTableFilters: React.FC<DataTableFiltersProps> = ( { filters, hasDates } ) => {
+const DataTableFilters: React.FC< DataTableFiltersProps > = ( {
+	filters,
+	hasDates,
+} ) => {
 	const classes = useStyles();
 	const filterComponents: React.ReactNode[] = [];
 
@@ -67,12 +72,24 @@ const DataTableFilters: React.FC<DataTableFiltersProps> = ( { filters, hasDates 
 		if ( filter.type === 'select' ) {
 			filterComponents.push(
 				<FormControl className={ classes.formControl }>
-					<InputLabel id={ `${ filter.key }-label` }>{ filter.label }</InputLabel>
-					<Select labelId={ `${ filter.key }-label` } autoWidth defaultValue={ filter.default || 'all' }>
-						{ ! filter.noAll && <MenuItem value="all">All</MenuItem> }
-						{ Object.entries( filter.values ).map( ( [ key, value ] ) => (
-							<MenuItem value={ key } key={ key }>{ value }</MenuItem>
-						) ) }
+					<InputLabel id={ `${ filter.key }-label` }>
+						{ filter.label }
+					</InputLabel>
+					<Select
+						labelId={ `${ filter.key }-label` }
+						autoWidth
+						defaultValue={ filter.default || 'all' }
+					>
+						{ ! filter.noAll && (
+							<MenuItem value="all">All</MenuItem>
+						) }
+						{ Object.entries( filter.values ).map(
+							( [ key, value ] ) => (
+								<MenuItem value={ key } key={ key }>
+									{ value }
+								</MenuItem>
+							)
+						) }
 					</Select>
 				</FormControl>
 			);
@@ -85,7 +102,11 @@ const DataTableFilters: React.FC<DataTableFiltersProps> = ( { filters, hasDates 
 
 	return (
 		<Toolbar>
-			<Typography variant="h5" component="p" className={ classes.filterHeader }>
+			<Typography
+				variant="h5"
+				component="p"
+				className={ classes.filterHeader }
+			>
 				Filter
 				<FilterListIcon />
 			</Typography>

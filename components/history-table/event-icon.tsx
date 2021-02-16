@@ -11,22 +11,24 @@ import { typeToPath } from 'lib/apollo/utils';
 type EventIconProps = {
 	type?: string;
 	slug?: string;
-}
+};
 
-const EventIconLink: React.FC<EventIconProps> = ( { type, slug } ) => {
+const EventIconLink: React.FC< EventIconProps > = ( { type, slug } ) => {
 	if ( ! type ) {
 		return <EventIcon type="note" />;
 	} else if ( slug ) {
 		return (
 			<Link href={ typeToPath( type, slug ) }>
-				<IconButton><EventIcon type={ type } /></IconButton>
+				<IconButton>
+					<EventIcon type={ type } />
+				</IconButton>
 			</Link>
 		);
 	}
 	return <EventIcon type={ type.toLowerCase() } />;
 };
 
-const EventIcon: React.FC<{ type: string }> = ( { type } ) => {
+const EventIcon: React.FC< { type: string } > = ( { type } ) => {
 	switch ( type.toLowerCase() ) {
 		case 'payment':
 			return (

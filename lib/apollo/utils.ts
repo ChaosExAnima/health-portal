@@ -1,8 +1,12 @@
-export function removeNull<TValue>( value: TValue | null | undefined ): value is TValue {
+export function removeNull< TValue >(
+	value: TValue | null | undefined
+): value is TValue {
 	return value !== null && value !== undefined;
 }
 
-export function slugToPath( link: { __typename?: string; slug?: string | null; } | undefined | null ): string | null {
+export function slugToPath(
+	link: { __typename?: string; slug?: string | null } | undefined | null
+): string | null {
 	return ( link && typeToPath( link.__typename, link.slug ) ) || null;
 }
 

@@ -21,18 +21,24 @@ type RawClaim = {
 	Copay: string;
 	'Not covered': string;
 	'Your Cost': string;
-}
+};
 
-export function isAnthemClaim( claim: Record< string, string > ): claim is RawClaim {
+export function isAnthemClaim(
+	claim: Record< string, string >
+): claim is RawClaim {
 	return 'Claim Received' in claim;
 }
 
-export async function getProviderFromAnthemClaim( rawClaim: RawClaim ): Promise< Provider | undefined > {
+export async function getProviderFromAnthemClaim(
+	rawClaim: RawClaim
+): Promise< Provider | undefined > {
 	let provider: Provider | undefined;
 	const em = await query();
 	if ( rawClaim[ 'Provided By' ] ) {
 		const providerSlug = slugify( rawClaim[ 'Provided By' ] );
-		provider = await em.findOne< Provider >( 'Provider', { where: { slug: providerSlug } } );
+		provider = await em.findOne< Provider >( 'Provider', {
+			where: { slug: providerSlug },
+		} );
 		if ( ! provider ) {
 			provider = em.create< Provider >( 'Provider', {
 				name: rawClaim[ 'Provided By' ],
@@ -44,7 +50,10 @@ export async function getProviderFromAnthemClaim( rawClaim: RawClaim ): Promise<
 	return provider;
 }
 
-export async function parseAnthemClaim( rawClaim: RawClaim, providers: Provider[] ): Promise< Claim > {
+export async function parseAnthemClaim(
+	rawClaim: RawClaim,
+	providers: Provider[]
+): Promise< Claim > {
 	let status = 'PENDING';
 	if ( rawClaim.Status ) {
 		if ( rawClaim.Status === 'Approved' ) {
@@ -58,7 +67,8 @@ export async function parseAnthemClaim( rawClaim: RawClaim, providers: Provider[
 	const claim = em.create< Claim >( 'Claim', {
 		number: rawClaim[ 'Claim Number' ],
 		slug: slugify( rawClaim[ 'Claim Number' ] || 'unknown' ),
-		type: rawClaim[ 'Claim Type' ] === 'Pharmacy' ? 'PHARMACY' : 'INNETWORK',
+		type:
+			rawClaim[ 'Claim Type' ] === 'Pharmacy' ? 'PHARMACY' : 'INNETWORK',
 		serviceDate: dayjs( rawClaim[ 'Service Date' ] ).toDate(),
 		status,
 		billed: priceToNumber( rawClaim.Billed ) || 0,
@@ -66,7 +76,9 @@ export async function parseAnthemClaim( rawClaim: RawClaim, providers: Provider[
 	} );
 
 	// See: https://github.com/typeorm/typeorm/issues/2276
-	const provider = providers.find( ( { slug } ) => slugify( rawClaim[ 'Provided By' ] ) === slug );
+	const provider = providers.find(
+		( { slug } ) => slugify( rawClaim[ 'Provided By' ] ) === slug
+	);
 	claim.provider = provider && Promise.resolve( provider );
 	return claim;
 }

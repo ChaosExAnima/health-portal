@@ -25,7 +25,7 @@ export type SearchOption = {
 	title: string;
 	href: string;
 	type?: string;
-}
+};
 
 const useStyles = makeStyles( ( theme: Theme ) =>
 	createStyles( {
@@ -78,21 +78,25 @@ const useStyles = makeStyles( ( theme: Theme ) =>
 		inputPopper: {
 			width: '100% !important',
 		},
-	} ),
+	} )
 );
 
-const SearchBar: React.FC<SearchBarProps> = ( { minimized = false, inputId = 'search', options } ) => {
+const SearchBar: React.FC< SearchBarProps > = ( {
+	minimized = false,
+	inputId = 'search',
+	options,
+} ) => {
 	const classes = useStyles();
 	const [ open, setOpen ] = useState( false );
 	const loading = open && options.length === 0;
 
 	if ( minimized ) {
-		return (
-			<MinimizedSearchBar />
-		);
+		return <MinimizedSearchBar />;
 	}
 
-	const PopperComponent = ( props: PopperProps ) => <Popper placement="bottom-start" { ...props } />;
+	const PopperComponent = ( props: PopperProps ) => (
+		<Popper placement="bottom-start" { ...props } />
+	);
 
 	return (
 		<div className={ classes.search }>
@@ -105,7 +109,6 @@ const SearchBar: React.FC<SearchBarProps> = ( { minimized = false, inputId = 'se
 				options={ options }
 				clearOnEscape
 				getOptionLabel={ ( { title } ) => title }
-
 				// Popper
 				PopperComponent={ PopperComponent }
 				disablePortal
@@ -115,7 +118,6 @@ const SearchBar: React.FC<SearchBarProps> = ( { minimized = false, inputId = 'se
 				classes={ {
 					popper: classes.inputPopper,
 				} }
-
 				// Input
 				id={ inputId }
 				renderInput={ ( params ) => (
@@ -125,12 +127,20 @@ const SearchBar: React.FC<SearchBarProps> = ( { minimized = false, inputId = 'se
 						margin="none"
 						placeholder="Search…"
 						className={ classes.inputRoot }
-						inputProps={ { ...params.inputProps, className: classes.inputInput } }
+						inputProps={ {
+							...params.inputProps,
+							className: classes.inputInput,
+						} }
 						InputProps={ {
 							...params.InputProps,
 							endAdornment: (
 								<>
-									{ loading && <CircularProgress color="inherit" size="20" /> }
+									{ loading && (
+										<CircularProgress
+											color="inherit"
+											size="20"
+										/>
+									) }
 									{ params.InputProps.endAdornment }
 								</>
 							),
@@ -150,7 +160,11 @@ const MinimizedSearchBar: React.FC = () => {
 			<IconButton onClick={ () => setSearchOpen( true ) }>
 				<SearchIcon />
 			</IconButton>
-			<Drawer anchor="top" open={ searchOpen } onClose={ () => setSearchOpen( false ) }>
+			<Drawer
+				anchor="top"
+				open={ searchOpen }
+				onClose={ () => setSearchOpen( false ) }
+			>
 				<div className={ classes.search }>
 					<div className={ classes.searchIcon }>
 						<SearchIcon />

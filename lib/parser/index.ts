@@ -51,21 +51,27 @@ async function getProviders( rawClaims: RawClaim[] ): Promise< Provider[] > {
 	return providers;
 }
 
-export default async function parseCSV( readStream: ReadStream ): Promise< Claim[] > {
+export default async function parseCSV(
+	readStream: ReadStream
+): Promise< Claim[] > {
 	const em = await query();
 	const rawClaims = await readCSV( readStream );
 	const providers = await getProviders( rawClaims );
-	const claims = await Promise.all( rawClaims.map( ( rawClaim ) => {
-		if ( isAnthemClaim( rawClaim ) ) {
-			return parseAnthemClaim( rawClaim, providers );
-		}
-		throw new Error( 'Unknown claim type found!' );
-	} ) );
-
-	const oldClaims = await em.find< Claim >(
-		'Claim',
-		{ where: { parent: null, number: In( claims.map( ( { number } ) => number ) ) } }
+	const claims = await Promise.all(
+		rawClaims.map( ( rawClaim ) => {
+			if ( isAnthemClaim( rawClaim ) ) {
+				return parseAnthemClaim( rawClaim, providers );
+			}
+			throw new Error( 'Unknown claim type found!' );
+		} )
 	);
+
+	const oldClaims = await em.find< Claim >( 'Claim', {
+		where: {
+			parent: null,
+			number: In( claims.map( ( { number } ) => number ) ),
+		},
+	} );
 
 	if ( ! oldClaims.length ) {
 		return Promise.all( claims.map( ( claim ) => claim.save() ) );
@@ -73,7 +79,9 @@ export default async function parseCSV( readStream: ReadStream ): Promise< Claim
 
 	const newClaims = [];
 	for ( let claim of claims ) {
-		const oldClaim = oldClaims.find( ( { number } ) => claim.number === number );
+		const oldClaim = oldClaims.find(
+			( { number } ) => claim.number === number
+		);
 		if ( isClaimSame( claim, oldClaim ) ) {
 			continue;
 		}

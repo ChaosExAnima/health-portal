@@ -16,12 +16,19 @@ type DataTableRowProps = {
 };
 
 type DataTableCellProps = DataTableColumn & {
-	value: React.ReactNode | number | string | Record<string, unknown>;
+	value: React.ReactNode | number | string | Record< string, unknown >;
 	slug?: string;
 	__typename?: string;
-}
+};
 
-const DataTableCell: React.FC<DataTableCellProps> = ( { value, link, slug, __typename, format, ...props } ) => {
+const DataTableCell: React.FC< DataTableCellProps > = ( {
+	value,
+	link,
+	slug,
+	__typename,
+	format,
+	...props
+} ) => {
 	let text = value;
 	if ( value && format && ! React.isValidElement( value ) ) {
 		if ( format === 'currency' ) {
@@ -30,10 +37,17 @@ const DataTableCell: React.FC<DataTableCellProps> = ( { value, link, slug, __typ
 			text = format( value );
 		}
 	}
-	if ( ! React.isValidElement( value ) && typeof value === 'object' && value ) {
+	if (
+		! React.isValidElement( value ) &&
+		typeof value === 'object' &&
+		value
+	) {
 		if ( isLinkObject( value ) ) {
 			text = (
-				<Link color="inherit" href={ typeToPath( value.__typename, value.slug ) }>
+				<Link
+					color="inherit"
+					href={ typeToPath( value.__typename, value.slug ) }
+				>
 					{ value.name }
 				</Link>
 			);
@@ -41,18 +55,24 @@ const DataTableCell: React.FC<DataTableCellProps> = ( { value, link, slug, __typ
 	}
 	return (
 		<TableCell { ...props }>
-			<OptionalLink href={ link ? typeToPath( __typename, slug ) : '' } color="inherit">
+			<OptionalLink
+				href={ link ? typeToPath( __typename, slug ) : '' }
+				color="inherit"
+			>
 				{ text }
 			</OptionalLink>
 		</TableCell>
 	);
 };
 
-const DataTableRow: React.FC<DataTableRowProps> = ( { rowData, columns } ) => {
+const DataTableRow: React.FC< DataTableRowProps > = ( {
+	rowData,
+	columns,
+} ) => {
 	const cells: DataTableCellProps[] = useMemo( () => {
 		return columns.map( ( column ) => ( {
 			...column,
-			value: ( rowData[ column.key ] ),
+			value: rowData[ column.key ],
 			slug: rowData.slug,
 			__typename: rowData.__typename,
 		} ) );
@@ -60,7 +80,9 @@ const DataTableRow: React.FC<DataTableRowProps> = ( { rowData, columns } ) => {
 
 	return (
 		<TableRow>
-			{ cells.map( ( cell ) => <DataTableCell { ...cell } key={ cell.key } /> ) }
+			{ cells.map( ( cell ) => (
+				<DataTableCell { ...cell } key={ cell.key } />
+			) ) }
 		</TableRow>
 	);
 };

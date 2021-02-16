@@ -40,7 +40,7 @@ const useStyles = makeStyles( ( theme: Theme ) =>
 type NavigationProps = {
 	title: string;
 	maxWidth?: 'md' | 'lg';
-}
+};
 
 const placeholderData: SearchOption[] = [
 	{
@@ -53,7 +53,10 @@ const placeholderData: SearchOption[] = [
 	},
 ];
 
-const Navigation: React.FC<NavigationProps> = ( { title, maxWidth = 'md' } ) => {
+const Navigation: React.FC< NavigationProps > = ( {
+	title,
+	maxWidth = 'md',
+} ) => {
 	const classes = useStyles();
 	const { breakpoints } = useTheme();
 	const isXSmall = useMediaQuery( breakpoints.only( 'xs' ) );
@@ -70,8 +73,17 @@ const Navigation: React.FC<NavigationProps> = ( { title, maxWidth = 'md' } ) => 
 							</Link>
 						</Typography>
 					) }
-					<SearchBar options={ placeholderData } minimized={ isXSmall } />
-					{ navigation.map( ( navItem ) => <NavItem { ...navItem } key={ navItem.href } path={ pathname } /> ) }
+					<SearchBar
+						options={ placeholderData }
+						minimized={ isXSmall }
+					/>
+					{ navigation.map( ( navItem ) => (
+						<NavItem
+							{ ...navItem }
+							key={ navItem.href }
+							path={ pathname }
+						/>
+					) ) }
 				</Toolbar>
 			</Container>
 		</AppBar>

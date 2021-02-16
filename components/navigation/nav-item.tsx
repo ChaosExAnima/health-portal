@@ -12,18 +12,25 @@ type NavItemLinkProps = {
 	href: string;
 	icon: React.ReactNode;
 	path: string;
-}
+};
 
-const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
-	inactive: {
-		color: theme.palette.primary.light,
-		'&:hover': {
-			color: 'inherit',
+const useStyles = makeStyles( ( theme: Theme ) =>
+	createStyles( {
+		inactive: {
+			color: theme.palette.primary.light,
+			'&:hover': {
+				color: 'inherit',
+			},
 		},
-	},
-} ) );
+	} )
+);
 
-const NavItem: React.FC<NavItemLinkProps> = ( { name, icon, href, path } ) => {
+const NavItem: React.FC< NavItemLinkProps > = ( {
+	name,
+	icon,
+	href,
+	path,
+} ) => {
 	const classes = useStyles();
 	let active = false;
 	if ( href === '/' ) {
@@ -34,7 +41,10 @@ const NavItem: React.FC<NavItemLinkProps> = ( { name, icon, href, path } ) => {
 	return (
 		<Link href={ href }>
 			<Tooltip title={ name }>
-				<IconButton aria-label={ name } className={ active ? '' : classes.inactive }>
+				<IconButton
+					aria-label={ name }
+					className={ active ? '' : classes.inactive }
+				>
 					{ icon }
 				</IconButton>
 			</Tooltip>
@@ -43,4 +53,3 @@ const NavItem: React.FC<NavItemLinkProps> = ( { name, icon, href, path } ) => {
 };
 
 export default NavItem;
-

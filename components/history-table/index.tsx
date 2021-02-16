@@ -11,10 +11,7 @@ import {
 	Typography,
 } from '@material-ui/core';
 
-import {
-	Type,
-	useHistoryQuery,
-} from './query.graphql';
+import { Type, useHistoryQuery } from './query.graphql';
 import EventRow from './event-row';
 
 type HistoryTableProps = {
@@ -26,20 +23,24 @@ function stringIsType( type: string ): type is Type {
 	return [ 'CLAIM', 'APPEAL', 'PROVIDER' ].includes( type );
 }
 
-const HistoryTable: React.FC<HistoryTableProps> = ( { type: lowerType, id } ) => {
+const HistoryTable: React.FC< HistoryTableProps > = ( {
+	type: lowerType,
+	id,
+} ) => {
 	const type = lowerType.toUpperCase();
 	if ( ! stringIsType( type ) ) {
 		return null;
 	}
-	const { data, loading, fetchMore } = useHistoryQuery( { variables: { type, id, offset: 0 } } );
+	const { data, loading, fetchMore } = useHistoryQuery( {
+		variables: { type, id, offset: 0 },
+	} );
 
 	if ( loading || ! data?.history ) {
-		return (
-			<LinearProgress />
-		);
+		return <LinearProgress />;
 	}
 	const events = data.history;
-	const loadMore = () => fetchMore( { variables: { offset: events.length } } );
+	const loadMore = () =>
+		fetchMore( { variables: { offset: events.length } } );
 
 	return (
 		<>
@@ -56,13 +57,17 @@ const HistoryTable: React.FC<HistoryTableProps> = ( { type: lowerType, id } ) =>
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{ events.map( ( event ) => <EventRow key={ event.id } { ...event } /> ) }
+						{ events.map( ( event ) => (
+							<EventRow key={ event.id } { ...event } />
+						) ) }
 					</TableBody>
 				</Table>
 			</TableContainer>
 			{ events.length % 20 === 0 && (
 				<Box my={ 2 }>
-					<Button color="secondary" onClick={ loadMore }>Load more</Button>
+					<Button color="secondary" onClick={ loadMore }>
+						Load more
+					</Button>
 				</Box>
 			) }
 		</>

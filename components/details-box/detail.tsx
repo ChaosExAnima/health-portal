@@ -1,9 +1,5 @@
 import React, { useContext } from 'react';
-import {
-	Grid,
-	TextField,
-	Typography,
-} from '@material-ui/core';
+import { Grid, TextField, Typography } from '@material-ui/core';
 
 import { DetailsContext } from './index';
 import { onChangeFunc } from 'global-types';
@@ -14,12 +10,13 @@ type DetailCommonProps = {
 	type?: 'tel' | 'email' | 'url';
 };
 
-type DetailProps = DetailCommonProps & (
-	| { onChange: onChangeFunc; id?: never }
-	| { onChange?: never; id: string }
-);
+type DetailProps = DetailCommonProps &
+	(
+		| { onChange: onChangeFunc; id?: never }
+		| { onChange?: never; id: string }
+	 );
 
-const DetailText: React.FC< Omit<DetailProps, 'name'> > = ( {
+const DetailText: React.FC< Omit< DetailProps, 'name' > > = ( {
 	children,
 	empty = 'Unknown',
 	type = 'text',
@@ -29,7 +26,10 @@ const DetailText: React.FC< Omit<DetailProps, 'name'> > = ( {
 	const { edit, onChange: onChangeRoot } = useContext( DetailsContext );
 	if ( ! edit ) {
 		return (
-			<Typography variant="body1" color={ status ? 'textPrimary' : 'textSecondary' }>
+			<Typography
+				variant="body1"
+				color={ status ? 'textPrimary' : 'textSecondary' }
+			>
 				{ children || empty }
 			</Typography>
 		);
@@ -54,12 +54,10 @@ const DetailText: React.FC< Omit<DetailProps, 'name'> > = ( {
 	);
 };
 
-const Detail: React.FC<DetailProps> = ( { name, ...props } ) => (
+const Detail: React.FC< DetailProps > = ( { name, ...props } ) => (
 	<Grid container item>
 		<Grid item md={ 2 }>
-			<Typography variant="body1">
-				{ name }
-			</Typography>
+			<Typography variant="body1">{ name }</Typography>
 		</Grid>
 		<Grid item md={ 10 }>
 			<DetailText { ...props } />

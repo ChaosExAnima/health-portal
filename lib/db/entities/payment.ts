@@ -27,8 +27,8 @@ export default class Payment extends BaseEntity {
 
 	@ManyToMany( () => Claim, ( claim ) => claim.payments )
 	@JoinTable()
-	claims: Promise<Claim[]>;
+	claims: Promise< Claim[] >;
 
 	@ManyToOne( () => File, { nullable: true } )
-	receipt?: Promise<File>;
+	receipt?: Promise< File >;
 }

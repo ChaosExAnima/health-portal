@@ -16,8 +16,8 @@ export function isSSR(): boolean {
 
 export async function staticPathsFromSlugs(
 	entity: string,
-	prefix: string,
-): Promise<GetStaticPathsResult> {
+	prefix: string
+): Promise< GetStaticPathsResult > {
 	const em = await query();
 	const objects = await em.find( entity, { select: [ 'slug' ] } );
 	if ( ! objects.length ) {
@@ -34,16 +34,20 @@ export async function staticPathsFromSlugs(
 
 export async function staticPathsEdit(
 	root: GetStaticPaths,
-	context: GetStaticPathsContext,
-): Promise<GetStaticPathsResult> {
+	context: GetStaticPathsContext
+): Promise< GetStaticPathsResult > {
 	const rootStaticPaths = await root( context );
 	if ( Array.isArray( rootStaticPaths.paths ) ) {
-		rootStaticPaths.paths = rootStaticPaths.paths.map( ( path ) => `${ path }/edit` );
+		rootStaticPaths.paths = rootStaticPaths.paths.map(
+			( path ) => `${ path }/edit`
+		);
 	}
 	return rootStaticPaths;
 }
 
-export const staticPathsNoData = ( data?: unknown ): GetStaticPathsResult | null => {
+export const staticPathsNoData = (
+	data?: unknown
+): GetStaticPathsResult | null => {
 	if ( ! data ) {
 		return {
 			paths: [],
@@ -53,18 +57,18 @@ export const staticPathsNoData = ( data?: unknown ): GetStaticPathsResult | null
 	return null;
 };
 
-export function staticPropsSlug<E, T = SinglePageProps>(
+export function staticPropsSlug< E, T = SinglePageProps >(
 	entity: string,
-	props: ( item: E ) => T,
-): GetStaticProps<T> {
-	const cb: GetStaticProps<T> = async ( { params } ) => {
+	props: ( item: E ) => T
+): GetStaticProps< T > {
+	const cb: GetStaticProps< T > = async ( { params } ) => {
 		if ( ! params ) {
 			return {
 				notFound: true,
 			};
 		}
 		const { slug } = params;
-		const item = await getBySlug<E>( entity, slug as string );
+		const item = await getBySlug< E >( entity, slug as string );
 		if ( ! item ) {
 			return {
 				notFound: true,
@@ -77,10 +81,12 @@ export function staticPropsSlug<E, T = SinglePageProps>(
 	return cb;
 }
 
-export async function staticPropsEdit<T extends SinglePageProps = SinglePageProps>(
-	root: GetStaticProps<T>,
-	context: GetStaticPropsContext,
-): Promise<GetStaticPropsResult<T>> {
+export async function staticPropsEdit<
+	T extends SinglePageProps = SinglePageProps
+>(
+	root: GetStaticProps< T >,
+	context: GetStaticPropsContext
+): Promise< GetStaticPropsResult< T > > {
 	const rootProps = await root( context );
 	if ( 'props' in rootProps ) {
 		rootProps.props.title = `Editing ${ rootProps.props.title }`;

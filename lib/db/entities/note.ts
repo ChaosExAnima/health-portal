@@ -27,18 +27,20 @@ export default class Note extends BaseEntity {
 	@Column( { type: 'boolean', default: false } )
 	resolved = false;
 
-	@ManyToMany( () => Provider, ( provider ) => provider.notes, { nullable: true } )
+	@ManyToMany( () => Provider, ( provider ) => provider.notes, {
+		nullable: true,
+	} )
 	@JoinTable()
-	providers: Promise<Provider[]> | Provider[];
+	providers: Promise< Provider[] > | Provider[];
 
 	@ManyToMany( () => Claim, ( claim ) => claim.notes, { nullable: true } )
 	@JoinTable()
-	claims: Promise<Claim[]> | Claim[];
+	claims: Promise< Claim[] > | Claim[];
 
 	@ManyToMany( () => Appeal, ( appeal ) => appeal.notes, { nullable: true } )
 	@JoinTable()
-	appeals: Promise<Appeal[]> | Appeal[];
+	appeals: Promise< Appeal[] > | Appeal[];
 
 	@OneToMany( () => File, ( file ) => file.note )
-	files: Promise<File[]>;
+	files: Promise< File[] >;
 }

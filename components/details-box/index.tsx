@@ -13,22 +13,23 @@ type DetailsContextType = {
 	edit: boolean;
 	onChange?: onChangeRootFunc;
 };
-type DetailsBoxProps = (
-	| { edit?: never; onChange?: never; }
-	| { edit: true; onChange: onChangeRootFunc; }
-);
+type DetailsBoxProps =
+	| { edit?: never; onChange?: never }
+	| { edit: true; onChange: onChangeRootFunc };
 
-export const DetailsContext = React.createContext<DetailsContextType>( {
+export const DetailsContext = React.createContext< DetailsContextType >( {
 	edit: false,
 } );
 
-const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
-	detailsContainer: {
-		padding: theme.spacing( 2 ),
-	},
-} ) );
+const useStyles = makeStyles( ( theme: Theme ) =>
+	createStyles( {
+		detailsContainer: {
+			padding: theme.spacing( 2 ),
+		},
+	} )
+);
 
-const DetailsBox: React.FC<DetailsBoxProps> = ( {
+const DetailsBox: React.FC< DetailsBoxProps > = ( {
 	edit,
 	children,
 	onChange,
@@ -40,7 +41,12 @@ const DetailsBox: React.FC<DetailsBoxProps> = ( {
 	};
 	return (
 		<Box my={ 4 }>
-			<Grid component={ Paper } container className={ classes.detailsContainer } spacing={ 2 }>
+			<Grid
+				component={ Paper }
+				container
+				className={ classes.detailsContainer }
+				spacing={ 2 }
+			>
 				<DetailsContext.Provider value={ context }>
 					{ children }
 				</DetailsContext.Provider>

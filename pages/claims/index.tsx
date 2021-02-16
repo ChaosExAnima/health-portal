@@ -6,15 +6,20 @@ import Footer from 'components/footer';
 import { useClaimsIndexQuery } from 'lib/apollo/queries/claims.graphql';
 
 import type { PageProps } from 'global-types';
-import DataTable, { DataTableColumn, DataTableFilter } from 'components/data-table';
+import DataTable, {
+	DataTableColumn,
+	DataTableFilter,
+} from 'components/data-table';
 import { capitalize, claimType } from 'lib/strings';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;
 };
 
-const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
-	const { loading, data } = useClaimsIndexQuery( { variables: { offset: currentPage * 20 } } );
+const Claims: React.FC< ClaimsProps > = ( { currentPage } ) => {
+	const { loading, data } = useClaimsIndexQuery( {
+		variables: { offset: currentPage * 20 },
+	} );
 
 	const actions: ActionItem[] = [
 		{
@@ -92,24 +97,26 @@ const Claims: React.FC<ClaimsProps> = ( { currentPage } ) => {
 		},
 	];
 
-	return <>
-		<Container maxWidth="md">
-			<Header title="Claims" actions={ actions } />
-		</Container>
-		<DataTable
-			basePath="/claims"
-			currentPage={ currentPage }
-			totalCount={ data?.getClaims.totalCount }
-			columns={ columns }
-			rows={ data?.getClaims.claims }
-			filters={ filters }
-			loading={ loading }
-		/>
-		<Footer wrap />
-	</>;
+	return (
+		<>
+			<Container maxWidth="md">
+				<Header title="Claims" actions={ actions } />
+			</Container>
+			<DataTable
+				basePath="/claims"
+				currentPage={ currentPage }
+				totalCount={ data?.getClaims.totalCount }
+				columns={ columns }
+				rows={ data?.getClaims.claims }
+				filters={ filters }
+				loading={ loading }
+			/>
+			<Footer wrap />
+		</>
+	);
 };
 
-export async function getStaticProps(): Promise<{ props: ClaimsProps }> {
+export async function getStaticProps(): Promise< { props: ClaimsProps } > {
 	return {
 		props: {
 			title: 'Claims',

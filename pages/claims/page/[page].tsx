@@ -11,7 +11,10 @@ export const getStaticPaths: GetStaticPaths = async () => ( {
 	fallback: true,
 } );
 
-export const getStaticProps: GetStaticProps<ClaimsProps, { page: string }> = async ( { params } ) => {
+export const getStaticProps: GetStaticProps<
+	ClaimsProps,
+	{ page: string }
+> = async ( { params } ) => {
 	let currentPage = 1;
 	if ( params && params.page ) {
 		currentPage = Number.parseInt( params.page ) - 1;

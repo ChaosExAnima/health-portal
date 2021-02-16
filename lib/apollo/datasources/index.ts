@@ -19,29 +19,50 @@ class TypeORM extends DataSource {
 		this.entityManager = connection.createEntityManager();
 	}
 
-	findAndCount<P>( entity: string, skip: number | null, pick: number | null ): Promise<[P[], number]> {
-		return this.entityManager.findAndCount<P>( entity, { skip, pick } as FindManyOptions );
+	findAndCount< P >(
+		entity: string,
+		skip: number | null,
+		pick: number | null
+	): Promise< [ P[], number ] > {
+		return this.entityManager.findAndCount< P >( entity, {
+			skip,
+			pick,
+		} as FindManyOptions );
 	}
 
-	async findBySlug<P>( entity: string, slug: string ): Promise<P> {
-		return this.entityManager.findOneOrFail<P>( entity, { where: { slug } } );
+	async findBySlug< P >( entity: string, slug: string ): Promise< P > {
+		return this.entityManager.findOneOrFail< P >( entity, {
+			where: { slug },
+		} );
 	}
 
-	private batchFn<P, L>( entity: string, column: keyof P ): BatchLoadFn<number, L> {
+	private batchFn< P, L >(
+		entity: string,
+		column: keyof P
+	): BatchLoadFn< number, L > {
 		return async ( keys ) => {
-			const items: P[] = await this.entityManager.findByIds<P>(
+			const items: P[] = await this.entityManager.findByIds< P >(
 				entity,
 				keys as number[],
-				{ relations: [ column ] } as unknown as FindConditions<P>
+				( { relations: [ column ] } as unknown ) as FindConditions< P >
 			);
-			return items.map( ( item ) => item[ column ] as unknown as L );
+			return items.map( ( item ) => ( item[ column ] as unknown ) as L );
 		};
 	}
 
-	loader<P, L>( entity: string, column: keyof P, cb?: BatchLoadFn<number, L> ): DataLoader<number, L> {
+	loader< P, L >(
+		entity: string,
+		column: keyof P,
+		cb?: BatchLoadFn< number, L >
+	): DataLoader< number, L > {
 		const name = `${ entity }-${ column }`;
 		if ( ! this.loaders.has( name ) ) {
-			this.loaders.set( name, new DataLoader<number, L>( cb || this.batchFn<P, L>( entity, column ) ) );
+			this.loaders.set(
+				name,
+				new DataLoader< number, L >(
+					cb || this.batchFn< P, L >( entity, column )
+				)
+			);
 		}
 		return this.loaders.get( name );
 	}
@@ -59,7 +80,9 @@ export type dataSources = {
 	db: TypeORM;
 };
 
-export default function getDataSources( connection: Connection ): Record<string, DataSource> {
+export default function getDataSources(
+	connection: Connection
+): Record< string, DataSource > {
 	return {
 		db: new TypeORM( connection ),
 	} as const;

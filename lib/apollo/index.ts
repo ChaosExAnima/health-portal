@@ -9,7 +9,7 @@ import { createUploadLink } from 'apollo-upload-client';
 import type { dataSources } from './datasources';
 import type { IncomingMessage, ServerResponse } from 'http';
 
-let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
+let apolloClient: ApolloClient< NormalizedCacheObject > | undefined;
 
 export type ResolverContext = {
 	req?: IncomingMessage;
@@ -17,7 +17,9 @@ export type ResolverContext = {
 	dataSources: dataSources;
 };
 
-export function createApolloClient( context?: ResolverContext ): ApolloClient<NormalizedCacheObject> {
+export function createApolloClient(
+	context?: ResolverContext
+): ApolloClient< NormalizedCacheObject > {
 	let link;
 
 	if ( typeof window === 'undefined' ) {
@@ -54,7 +56,7 @@ export function createApolloClient( context?: ResolverContext ): ApolloClient<No
 export function initializeApollo(
 	initialState: NormalizedCacheObject | null = null,
 	context?: ResolverContext
-): ApolloClient<NormalizedCacheObject> {
+): ApolloClient< NormalizedCacheObject > {
 	const _apolloClient = apolloClient ?? createApolloClient( context );
 	if ( initialState ) {
 		_apolloClient.cache.restore( initialState );

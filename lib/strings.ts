@@ -1,5 +1,5 @@
 export function capitalize( word: string ): string {
-	return ( word.substr( 0, 1 ).toUpperCase() ) + ( word.substr( 1 ).toLowerCase() );
+	return word.substr( 0, 1 ).toUpperCase() + word.substr( 1 ).toLowerCase();
 }
 
 export function slugify( text: string ): string {
@@ -12,7 +12,7 @@ export function slugify( text: string ): string {
 }
 
 export function claimType( type: string ): string {
-	const types: Record<string, string> = {
+	const types: Record< string, string > = {
 		DENTAL: 'Dental',
 		OUTOFNETWORK: 'Out of Network',
 		INNETWORK: 'In Network',
@@ -22,7 +22,7 @@ export function claimType( type: string ): string {
 }
 
 export function claimStatus( status: string ): string {
-	const statuses: Record<string, string> = {
+	const statuses: Record< string, string > = {
 		PENDING: 'Pending',
 		APPROVED: 'Approved',
 		DENIED: 'Denied',

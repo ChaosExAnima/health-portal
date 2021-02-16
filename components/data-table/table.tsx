@@ -33,7 +33,7 @@ type DataTableProps = {
 	hasDates?: true;
 };
 
-const DataTable: React.FC<DataTableProps> = ( {
+const DataTable: React.FC< DataTableProps > = ( {
 	basePath,
 	columns,
 	currentPage,
@@ -64,7 +64,13 @@ const DataTable: React.FC<DataTableProps> = ( {
 				<Table>
 					<DataTableHead columns={ columns } />
 					<TableBody>
-						{ rows.map( ( row ) => <DataTableRow key={ row.id } rowData={ row } columns={ columns } /> ) }
+						{ rows.map( ( row ) => (
+							<DataTableRow
+								key={ row.id }
+								rowData={ row }
+								columns={ columns }
+							/>
+						) ) }
 					</TableBody>
 					<TableFooter>
 						<TableRow>
@@ -73,7 +79,11 @@ const DataTable: React.FC<DataTableProps> = ( {
 								rowsPerPageOptions={ [ rowsPerPage ] }
 								count={ totalCount }
 								page={ currentPage }
-								onChangePage={ ( event, page ) => router.push( `${ basePath }/page/${ page + 1 }` ) }
+								onChangePage={ ( event, page ) =>
+									router.push(
+										`${ basePath }/page/${ page + 1 }`
+									)
+								}
 							/>
 						</TableRow>
 					</TableFooter>

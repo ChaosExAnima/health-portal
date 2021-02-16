@@ -21,7 +21,10 @@ import React from 'react';
 
 type ActionItemIcon = 'add' | 'edit' | 'save' | 'cancel' | React.ReactElement;
 
-export type ActionItem = Omit<ButtonBaseProps, 'href' | 'color' | 'action'> & {
+export type ActionItem = Omit<
+	ButtonBaseProps,
+	'href' | 'color' | 'action'
+> & {
 	href?: string;
 	action: string;
 	icon: ActionItemIcon;
@@ -36,13 +39,15 @@ type HeaderProps = {
 	onChange?: ( value: string ) => void;
 };
 
-const useStyles = makeStyles( ( theme: Theme ) => createStyles( {
-	editTitle: {
-		fontSize: theme.typography.h4.fontSize,
-	},
-} ) );
+const useStyles = makeStyles( ( theme: Theme ) =>
+	createStyles( {
+		editTitle: {
+			fontSize: theme.typography.h4.fontSize,
+		},
+	} )
+);
 
-const ActionIcon: React.FC<{ icon: ActionItemIcon }> = ( { icon } ) => {
+const ActionIcon: React.FC< { icon: ActionItemIcon } > = ( { icon } ) => {
 	if ( icon === 'add' ) {
 		return <AddIcon />;
 	} else if ( icon === 'edit' ) {
@@ -55,14 +60,19 @@ const ActionIcon: React.FC<{ icon: ActionItemIcon }> = ( { icon } ) => {
 	return icon;
 };
 
-const HeaderTitle: React.FC<Pick<HeaderProps, 'title' | 'edit' | 'onChange'>> = ( { title, edit, onChange } ) => {
+const HeaderTitle: React.FC< Pick<
+	HeaderProps,
+	'title' | 'edit' | 'onChange'
+> > = ( { title, edit, onChange } ) => {
 	const classes = useStyles();
 	if ( edit ) {
 		return (
 			<TextField
 				error={ ! title }
 				fullWidth
-				onChange={ ( event ) => onChange && onChange( event.target.value ) }
+				onChange={ ( event ) =>
+					onChange && onChange( event.target.value )
+				}
 				placeholder="Title"
 				value={ title }
 				InputProps={ { className: classes.editTitle } }
@@ -76,22 +86,38 @@ const HeaderTitle: React.FC<Pick<HeaderProps, 'title' | 'edit' | 'onChange'>> = 
 	);
 };
 
-const HeaderButton: React.FC<ActionItem> = ( { href, icon, action, color = 'primary', ...props } ) => (
-	href
-		? <ButtonLink
+const HeaderButton: React.FC< ActionItem > = ( {
+	href,
+	icon,
+	action,
+	color = 'primary',
+	...props
+} ) =>
+	href ? (
+		<ButtonLink
 			href={ href }
 			startIcon={ <ActionIcon icon={ icon } /> }
 			color={ color }
 			{ ...props }
-		>{ action }</ButtonLink>
-		: <Button
+		>
+			{ action }
+		</ButtonLink>
+	) : (
+		<Button
 			startIcon={ <ActionIcon icon={ icon } /> }
 			color={ color }
 			{ ...props }
-		>{ action }</Button>
-);
+		>
+			{ action }
+		</Button>
+	);
 
-const HeaderButtonsBelow: React.FC<HeaderProps> = ( { actions, title, edit, onChange } ) => (
+const HeaderButtonsBelow: React.FC< HeaderProps > = ( {
+	actions,
+	title,
+	edit,
+	onChange,
+} ) => (
 	<>
 		<HeaderTitle title={ title } edit={ edit } onChange={ onChange } />
 		<Box mt={ 3 }>
@@ -106,7 +132,12 @@ const HeaderButtonsBelow: React.FC<HeaderProps> = ( { actions, title, edit, onCh
 	</>
 );
 
-const HeaderFab: React.FC<ActionItem> = ( { icon, action, color = 'primary', ...props } ) => (
+const HeaderFab: React.FC< ActionItem > = ( {
+	icon,
+	action,
+	color = 'primary',
+	...props
+} ) => (
 	<Tooltip title={ action }>
 		<Fab aria-label={ action } color={ color } { ...props }>
 			<ActionIcon icon={ icon } />
@@ -114,29 +145,35 @@ const HeaderFab: React.FC<ActionItem> = ( { icon, action, color = 'primary', ...
 	</Tooltip>
 );
 
-const HeaderButtonsSide: React.FC<Pick<HeaderProps, 'actions' | 'title'>> = ( { actions, title } ) => (
+const HeaderButtonsSide: React.FC< Pick<
+	HeaderProps,
+	'actions' | 'title'
+> > = ( { actions, title } ) => (
 	<Grid container spacing={ 4 }>
 		<Grid item>
 			<HeaderTitle title={ title } />
 		</Grid>
 		{ actions.map( ( { href, ...props } ) => (
 			<Grid item key={ props.action }>
-				{
-					href
-						? <Link href={ href }><HeaderFab { ...props } /></Link>
-						: <HeaderFab { ...props } />
-				}
+				{ href ? (
+					<Link href={ href }>
+						<HeaderFab { ...props } />
+					</Link>
+				) : (
+					<HeaderFab { ...props } />
+				) }
 			</Grid>
 		) ) }
 	</Grid>
 );
 
-const Header: React.FC<HeaderProps> = ( { buttonsBelow, ...props } ) => (
+const Header: React.FC< HeaderProps > = ( { buttonsBelow, ...props } ) => (
 	<Box my={ 4 }>
-		{ buttonsBelow
-			? <HeaderButtonsBelow { ...props } />
-			: <HeaderButtonsSide { ...props } />
-		}
+		{ buttonsBelow ? (
+			<HeaderButtonsBelow { ...props } />
+		) : (
+			<HeaderButtonsSide { ...props } />
+		) }
 	</Box>
 );
 

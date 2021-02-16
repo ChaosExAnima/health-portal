@@ -5,7 +5,7 @@ type DataTableFilterBase = {
 	label: string;
 };
 
-type DataTableFilterSelectValues = Record<string, string>;
+type DataTableFilterSelectValues = Record< string, string >;
 
 type DataTableFilterSelect = DataTableFilterBase & {
 	type: 'select';
@@ -27,7 +27,7 @@ export type DataTableRowData = {
 	id: number;
 	slug: string;
 	[ key: string ]: React.ReactNode;
-}
+};
 
 // eslint-disable-next-line no-unused-vars
 export type DataTableFormatter = ( arg0: unknown ) => string | React.ReactNode;
@@ -37,4 +37,4 @@ export type DataTableColumn = TableCellProps & {
 	key: string;
 	format?: 'currency' | DataTableFormatter;
 	link?: boolean;
-}
+};

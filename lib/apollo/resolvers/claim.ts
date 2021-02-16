@@ -1,18 +1,19 @@
 import Claim from 'lib/db/entities/claim';
 import parseCSV from 'lib/parser';
 
-import type {
-	QueryResolver,
-	MutationResolver,
-	TypeResolver,
-} from './index';
-import type {
-	Note,
-	Provider,
-} from 'lib/db/entities';
+import type { QueryResolver, MutationResolver, TypeResolver } from './index';
+import type { Note, Provider } from 'lib/db/entities';
 
-const getClaims: QueryResolver<'getClaims'> = async ( parent, { offset = 0, limit = 100 }, { dataSources: { db } } ) => {
-	const [ claims, totalCount ] = await db.findAndCount<Claim>( 'Claim', offset, limit );
+const getClaims: QueryResolver< 'getClaims' > = async (
+	parent,
+	{ offset = 0, limit = 100 },
+	{ dataSources: { db } }
+) => {
+	const [ claims, totalCount ] = await db.findAndCount< Claim >(
+		'Claim',
+		offset,
+		limit
+	);
 	return {
 		claims,
 		totalCount,
@@ -21,11 +22,18 @@ const getClaims: QueryResolver<'getClaims'> = async ( parent, { offset = 0, limi
 	};
 };
 
-const claim: QueryResolver<'claim'> = async ( parent, { slug }, { dataSources: { db } } ) => {
+const claim: QueryResolver< 'claim' > = async (
+	parent,
+	{ slug },
+	{ dataSources: { db } }
+) => {
 	return db.findBySlug( 'Claim', slug );
 };
 
-const uploadClaims: MutationResolver<'uploadClaims'> = async ( parent, { file } ) => {
+const uploadClaims: MutationResolver< 'uploadClaims' > = async (
+	parent,
+	{ file }
+) => {
 	try {
 		const { createReadStream } = await file;
 		const stream = createReadStream();
@@ -51,14 +59,16 @@ const uploadClaims: MutationResolver<'uploadClaims'> = async ( parent, { file } 
 	}
 };
 
-const Resolver: TypeResolver<'Claim'> = ( {
+const Resolver: TypeResolver< 'Claim' > = {
 	async provider( parent, {}, { dataSources: { db } } ) {
-		return db.loader<Claim, Provider>( 'Claim', 'provider' ).load( parent.id );
+		return db
+			.loader< Claim, Provider >( 'Claim', 'provider' )
+			.load( parent.id );
 	},
 	async notes( parent, {}, { dataSources: { db } } ) {
-		return db.loader<Claim, Note[]>( 'Claim', 'notes' ).load( parent.id );
+		return db.loader< Claim, Note[] >( 'Claim', 'notes' ).load( parent.id );
 	},
-} );
+};
 
 export default {
 	Query: { getClaims, claim },

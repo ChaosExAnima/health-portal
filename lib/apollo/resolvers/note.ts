@@ -1,27 +1,23 @@
 import { FindConditions } from 'typeorm';
 
 import type { BatchLoadFn } from 'dataloader';
-import type {
-	Note,
-	File,
-	Provider,
-	Appeal,
-	Claim,
-} from 'lib/db/entities';
+import type { Note, File, Provider, Appeal, Claim } from 'lib/db/entities';
 import type { TypeResolver } from './index';
 
 type Link = Appeal | Claim | Provider;
 
-const Resolver: TypeResolver<'Note'> = ( {
+const Resolver: TypeResolver< 'Note' > = {
 	async files( parent, {}, { dataSources: { db } } ) {
-		return db.loader<Note, File[]>( 'Note', 'files' ).load( parent.id );
+		return db.loader< Note, File[] >( 'Note', 'files' ).load( parent.id );
 	},
-	async link( parent, {}, { dataSources: { db } } ): Promise<Link[]> {
-		const cb: BatchLoadFn<number, Link[]> = async ( keys ) => {
-			const notes = await db.em.findByIds<Note>(
+	async link( parent, {}, { dataSources: { db } } ): Promise< Link[] > {
+		const cb: BatchLoadFn< number, Link[] > = async ( keys ) => {
+			const notes = await db.em.findByIds< Note >(
 				'Note',
 				keys as number[],
-				{ relations: [ 'providers', 'claims', 'appeals' ] } as FindConditions<Note>
+				{
+					relations: [ 'providers', 'claims', 'appeals' ],
+				} as FindConditions< Note >
 			);
 			return notes.map( ( note ): Link[] => {
 				return [
@@ -31,18 +27,18 @@ const Resolver: TypeResolver<'Note'> = ( {
 				];
 			} );
 		};
-		const loader = db.loader<Note, Link[]>( 'Note', 'providers', cb );
+		const loader = db.loader< Note, Link[] >( 'Note', 'providers', cb );
 		return loader.load( parent.id );
 	},
-} );
+};
 
-const FileResolver: TypeResolver<'File'> = ( {
+const FileResolver: TypeResolver< 'File' > = {
 	type( parent ) {
 		return parent.filetype;
 	},
-} );
+};
 
-const LinkResolver: TypeResolver<'NoteLink'> = ( {
+const LinkResolver: TypeResolver< 'NoteLink' > = {
 	async __resolveType( parent ) {
 		if ( 'involvedProviders' in parent ) {
 			return 'Appeal';
@@ -53,7 +49,7 @@ const LinkResolver: TypeResolver<'NoteLink'> = ( {
 		}
 		return null;
 	},
-} );
+};
 
 export default {
 	Query: {},

@@ -3,14 +3,22 @@ import React from 'react';
 
 import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
-import DataTable, { DataTableColumn, DataTableFilter } from 'components/data-table';
+import DataTable, {
+	DataTableColumn,
+	DataTableFilter,
+} from 'components/data-table';
 import { useAppealsIndexQuery } from 'lib/apollo/queries/appeals.graphql';
 import { capitalize } from 'lib/strings';
 
 import type { PaginatedPageProps } from 'global-types';
 
-const AppealsPage: React.FC<PaginatedPageProps> = ( { title, currentPage } ) => {
-	const { data, loading } = useAppealsIndexQuery( { variables: { offset: 0 } } );
+const AppealsPage: React.FC< PaginatedPageProps > = ( {
+	title,
+	currentPage,
+} ) => {
+	const { data, loading } = useAppealsIndexQuery( {
+		variables: { offset: 0 },
+	} );
 
 	const actions: ActionItem[] = [
 		{
@@ -75,7 +83,9 @@ const AppealsPage: React.FC<PaginatedPageProps> = ( { title, currentPage } ) => 
 	);
 };
 
-export async function getStaticProps(): Promise<{ props: PaginatedPageProps }> {
+export async function getStaticProps(): Promise< {
+	props: PaginatedPageProps;
+} > {
 	return {
 		props: {
 			title: 'Appeals',

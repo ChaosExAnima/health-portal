@@ -1,22 +1,21 @@
-import {
-	Connection,
-	EntityManager,
-	getConnectionManager,
-} from 'typeorm';
+import { Connection, EntityManager, getConnectionManager } from 'typeorm';
 import 'reflect-metadata';
 
 import connectionOptions from 'ormconfig';
 
-export async function query(): Promise<EntityManager> {
+export async function query(): Promise< EntityManager > {
 	return ( await init() ).createEntityManager();
 }
 
-export async function getBySlug<T>( entity: string, slug: string ): Promise<T | undefined> {
+export async function getBySlug< T >(
+	entity: string,
+	slug: string
+): Promise< T | undefined > {
 	const em = await query();
-	return em.findOne<T>( entity, { where: { slug } } );
+	return em.findOne< T >( entity, { where: { slug } } );
 }
 
-async function init( name = 'default' ): Promise<Connection> {
+async function init( name = 'default' ): Promise< Connection > {
 	if ( typeof window !== 'undefined' ) {
 		throw new Error( 'Loading SQL in client context' );
 	}

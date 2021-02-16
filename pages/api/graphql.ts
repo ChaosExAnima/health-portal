@@ -13,7 +13,10 @@ export const config = {
 	},
 };
 
-export default async function handler( req: NextApiRequest, res: NextApiResponse ): Promise<void> {
+export default async function handler(
+	req: NextApiRequest,
+	res: NextApiResponse
+): Promise< void > {
 	const connection = await initOrm();
 	const apolloServer = new ApolloServer( {
 		schema,

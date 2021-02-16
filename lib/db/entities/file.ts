@@ -1,9 +1,4 @@
-import {
-	Entity,
-	Column,
-	CreateDateColumn,
-	ManyToOne,
-} from 'typeorm';
+import { Entity, Column, CreateDateColumn, ManyToOne } from 'typeorm';
 import { Note } from '.';
 
 import BaseEntity from './base';
@@ -23,5 +18,5 @@ export default class File extends BaseEntity {
 	path: string;
 
 	@ManyToOne( () => Note, { nullable: true } )
-	note?: Promise<Note>;
+	note?: Promise< Note >;
 }

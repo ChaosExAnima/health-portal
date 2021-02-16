@@ -16,11 +16,17 @@ import type {
 	DateTimeScalarConfig,
 } from 'lib/apollo/schema/index.graphqls';
 
-export type QueryResolver<T extends keyof QueryResolvers<ResolverContext>> = QueryResolvers<ResolverContext>[T];
-export type MutationResolver<T extends keyof MutationResolvers<ResolverContext>> = MutationResolvers<ResolverContext>[T];
-export type TypeResolver<T extends keyof Resolvers<ResolverContext>> = Resolvers<ResolverContext>[T];
+export type QueryResolver<
+	T extends keyof QueryResolvers< ResolverContext >
+> = QueryResolvers< ResolverContext >[ T ];
+export type MutationResolver<
+	T extends keyof MutationResolvers< ResolverContext >
+> = MutationResolvers< ResolverContext >[ T ];
+export type TypeResolver<
+	T extends keyof Resolvers< ResolverContext >
+> = Resolvers< ResolverContext >[ T ];
 
-const Query: Required<QueryResolvers<ResolverContext>> = {
+const Query: Required< QueryResolvers< ResolverContext > > = {
 	...Appeal.Query,
 	...Call.Query,
 	...Claim.Query,
@@ -31,7 +37,7 @@ const Query: Required<QueryResolvers<ResolverContext>> = {
 	},
 };
 
-const Mutation: Required<MutationResolvers<ResolverContext>> = {
+const Mutation: Required< MutationResolvers< ResolverContext > > = {
 	...Appeal.Mutation,
 	...Call.Mutation,
 	...Claim.Mutation,

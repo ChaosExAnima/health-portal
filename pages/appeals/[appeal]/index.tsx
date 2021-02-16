@@ -14,7 +14,7 @@ import { capitalize } from 'lib/strings';
 import type { SinglePageProps } from 'global-types';
 import type { GetStaticPaths, GetStaticProps } from 'next';
 
-const AppealPage: React.FC<SinglePageProps> = ( { title, slug, id } ) => {
+const AppealPage: React.FC< SinglePageProps > = ( { title, slug, id } ) => {
 	const { data } = useAppealQuery( { variables: { slug } } );
 	const appeal = data && data.appeal;
 	if ( ! slug || ! id ) {
@@ -22,21 +22,38 @@ const AppealPage: React.FC<SinglePageProps> = ( { title, slug, id } ) => {
 	}
 	return (
 		<Container maxWidth="md">
-			<Breadcrumbs breadcrumbs={ [
-				{ href: '/appeals', name: 'Appeals' },
-				title,
-			] } />
-			<Header title={ title } actions={ [
-				{ action: 'Update', icon: 'add' },
-				{ action: 'Edit appeal', href: `/appeals/${ slug }/edit`, icon: 'edit', color: 'secondary' },
-			] } />
+			<Breadcrumbs
+				breadcrumbs={ [ { href: '/appeals', name: 'Appeals' }, title ] }
+			/>
+			<Header
+				title={ title }
+				actions={ [
+					{ action: 'Update', icon: 'add' },
+					{
+						action: 'Edit appeal',
+						href: `/appeals/${ slug }/edit`,
+						icon: 'edit',
+						color: 'secondary',
+					},
+				] }
+			/>
 			{ appeal && (
-				<DetailsBox details={ [
-					{ name: 'Status', detail: capitalize( status ) },
-					{ name: 'For provider', detail: <ProviderLink provider={ appeal.provider } color="inherit" /> },
-					{ name: 'Last updated', detail: appeal.created },
-					{ name: 'Update due', detail: appeal.created },
-				] } />
+				<DetailsBox
+					details={ [
+						{ name: 'Status', detail: capitalize( status ) },
+						{
+							name: 'For provider',
+							detail: (
+								<ProviderLink
+									provider={ appeal.provider }
+									color="inherit"
+								/>
+							),
+						},
+						{ name: 'Last updated', detail: appeal.created },
+						{ name: 'Update due', detail: appeal.created },
+					] }
+				/>
 			) }
 			<Box my={ 4 }>
 				<HistoryTable type="appeal" id={ id } />
@@ -45,11 +62,16 @@ const AppealPage: React.FC<SinglePageProps> = ( { title, slug, id } ) => {
 	);
 };
 
-export const getStaticPaths: GetStaticPaths = async () => staticPathsFromSlugs( Appeal, 'appeals' );
+export const getStaticPaths: GetStaticPaths = async () =>
+	staticPathsFromSlugs( Appeal, 'appeals' );
 
-export const getStaticProps: GetStaticProps<SinglePageProps, { appeal: string; }> = async ( { params } ) => {
+export const getStaticProps: GetStaticProps<
+	SinglePageProps,
+	{ appeal: string }
+> = async ( { params } ) => {
 	const db = await initDb();
-	const appeal = params && await db.em.findOne( Appeal, { slug: params.appeal } );
+	const appeal =
+		params && ( await db.em.findOne( Appeal, { slug: params.appeal } ) );
 	if ( ! appeal ) {
 		return {
 			notFound: true,

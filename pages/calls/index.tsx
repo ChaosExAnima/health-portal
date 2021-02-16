@@ -1,7 +1,10 @@
 import { Container } from '@material-ui/core';
 import React from 'react';
 
-import DataTable, { DataTableColumn, DataTableFilter } from 'components/data-table';
+import DataTable, {
+	DataTableColumn,
+	DataTableFilter,
+} from 'components/data-table';
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
 
@@ -9,8 +12,10 @@ import type { PaginatedPageProps } from 'global-types';
 import { useCallsIndexQuery } from 'lib/apollo/queries/calls.graphql';
 import { Note } from 'lib/db/entities';
 
-const CallsPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
-	const { data, loading } = useCallsIndexQuery( { variables: { offset: 0 } } );
+const CallsPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
+	const { data, loading } = useCallsIndexQuery( {
+		variables: { offset: 0 },
+	} );
 
 	const actions: ActionItem[] = [
 		{
@@ -40,9 +45,8 @@ const CallsPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 			link: true,
 			name: 'Representative',
 			width: 200,
-			format: ( values: string[] | null ) => values && values.length
-				? values.join( ', ' )
-				: 'Unknown',
+			format: ( values: string[] | null ) =>
+				values && values.length ? values.join( ', ' ) : 'Unknown',
 		},
 		{
 			key: 'provider',
@@ -52,7 +56,7 @@ const CallsPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 			key: 'note',
 			link: true,
 			name: 'Description',
-			format: ( note: Pick<Note, 'description'> ) => note.description,
+			format: ( note: Pick< Note, 'description' > ) => note.description,
 		},
 	];
 
@@ -76,7 +80,9 @@ const CallsPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 	);
 };
 
-export async function getStaticProps(): Promise<{ props: PaginatedPageProps }> {
+export async function getStaticProps(): Promise< {
+	props: PaginatedPageProps;
+} > {
 	return {
 		props: {
 			title: 'Calls',

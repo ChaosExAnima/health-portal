@@ -9,8 +9,10 @@ import { toString } from 'lib/casting';
 
 import type { PaginatedPageProps } from 'global-types';
 
-const ProvidersPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
-	const { data, loading } = useProvidersIndexQuery( { variables: { offset: 0 } } );
+const ProvidersPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
+	const { data, loading } = useProvidersIndexQuery( {
+		variables: { offset: 0 },
+	} );
 
 	const actions: ActionItem[] = [
 		{
@@ -28,7 +30,11 @@ const ProvidersPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 		{
 			key: 'phone',
 			name: 'Phone Number',
-			format: ( value ) => ( <Link href={ `tel:${ value }` } color="inherit">{ toString( value ) }</Link> ),
+			format: ( value ) => (
+				<Link href={ `tel:${ value }` } color="inherit">
+					{ toString( value ) }
+				</Link>
+			),
 		},
 	];
 
@@ -50,7 +56,9 @@ const ProvidersPage: React.FC<PaginatedPageProps> = ( { currentPage } ) => {
 	);
 };
 
-export async function getStaticProps(): Promise<{ props: PaginatedPageProps }> {
+export async function getStaticProps(): Promise< {
+	props: PaginatedPageProps;
+} > {
 	return {
 		props: {
 			title: 'Providers',

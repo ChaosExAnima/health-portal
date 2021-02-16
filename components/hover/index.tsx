@@ -1,7 +1,9 @@
 import clsx from 'clsx';
 import { useState } from 'react';
 
-type HoverFC = React.FC<{ hoverClass?: string } & React.HTMLAttributes<HTMLDivElement>>;
+type HoverFC = React.FC<
+	{ hoverClass?: string } & React.HTMLAttributes< HTMLDivElement >
+>;
 
 const Hover: HoverFC = ( { children, hoverClass = 'hover', className } ) => {
 	const [ isHovering, setHover ] = useState( false );
