@@ -61,12 +61,28 @@
     "dotenv": "^8.2.0",
     "eslint": "^7.15.0",
     "eslint-plugin-mui-unused-classes": "^1.0.3",
-    "eslint-plugin-react": "^7.21.5",
     "graphql-let": "^0.16.3",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.2"
   },
   "resolutions": {
     "fs-capacitor": "^6.2.0"
+  },
+  "eslintConfig": {
+    "extends": [ "plugin:@wordpress/eslint-plugin/recommended" ],
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "rules": {
+      "no-unused-vars": "off",
+      "no-console": "warn",
+      "prettier/prettier": "warn"
+    },
+    "ignorePatterns": [
+      "**/*.graphql.d.ts",
+      "**/*.graphqls.d.ts",
+      ".graphql/**"
+    ]
   }
 }
