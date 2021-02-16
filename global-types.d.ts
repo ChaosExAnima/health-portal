@@ -12,3 +12,5 @@ export type SinglePageProps = PageProps & {
 	id: number;
 	slug: string;
 };
+
+export type onChangeFunc = ( value: string ) => void;
