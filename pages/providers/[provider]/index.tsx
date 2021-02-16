@@ -3,7 +3,7 @@ import { Box, Container, LinearProgress } from '@material-ui/core';
 
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
-import DetailsBox from 'components/details-box';
+import DetailsBox, { Detail } from 'components/details-box';
 import HistoryTable from 'components/history-table';
 import { useProviderQuery } from 'lib/apollo/queries/providers.graphql';
 import { staticPathsFromSlugs } from 'lib/static-helpers';
@@ -48,14 +48,12 @@ const ProviderPage: React.FC< SinglePageProps > = ( { id, slug } ) => {
 					},
 				] }
 			/>
-			<DetailsBox
-				details={ [
-					{ name: 'Phone Number', detail: provider.phone },
-					{ name: 'Email', detail: provider.email },
-					{ name: 'Address', detail: provider.address },
-					{ name: 'Website', detail: provider.website },
-				] }
-			/>
+			<DetailsBox>
+				<Detail name="Phone Number">{ provider.phone }</Detail>
+				<Detail name="Email">{ provider.email }</Detail>
+				<Detail name="Address">{ provider.address }</Detail>
+				<Detail name="Website">{ provider.website }</Detail>
+			</DetailsBox>
 			<Box my={ 4 }>
 				<HistoryTable type="provider" id={ id } />
 			</Box>

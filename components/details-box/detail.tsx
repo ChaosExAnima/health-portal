@@ -12,6 +12,7 @@ type DetailCommonProps = {
 
 type DetailProps = DetailCommonProps &
 	(
+		| { onChange?: never; id?: never }
 		| { onChange: onChangeFunc; id?: never }
 		| { onChange?: never; id: string }
 	 );
