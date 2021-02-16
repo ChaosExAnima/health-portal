@@ -38,7 +38,6 @@
     "react-dom": "17.0.1",
     "react-dropzone": "^11.2.4",
     "reflect-metadata": "^0.1.13",
-    "slugify": "^1.4.6",
     "typeorm": "^0.2.30"
   },
   "devDependencies": {
@@ -69,7 +68,14 @@
     "fs-capacitor": "^6.2.0"
   },
   "eslintConfig": {
-    "extends": [ "plugin:@wordpress/eslint-plugin/recommended" ],
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "plugin:@wordpress/eslint-plugin/recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "plugins": [
+      "@typescript-eslint"
+    ],
     "env": {
       "browser": true,
       "node": true
