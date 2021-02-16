@@ -21,3 +21,9 @@ query Provider( $slug: String! ) {
 		email
 	}
 }
+
+mutation ProviderEdit( $provider: ProviderInput! ) {
+	provider(provider: $provider) {
+		success
+	}
+}

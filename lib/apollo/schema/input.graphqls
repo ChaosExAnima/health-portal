@@ -1,0 +1,10 @@
+# import Slug from './scalars.graphqls'
+
+input ProviderInput {
+	name: String!
+	slug: Slug
+	address: String
+	phone: String
+	email: String
+	website: String
+}

@@ -20,3 +20,13 @@ export function typeToPath( type?: string, slug?: string | null ): string {
 			return '';
 	}
 }
+
+export function removeNulls(
+	input: Record< string, null | unknown >
+): Record< string, unknown > {
+	const output: Record< string, unknown > = {};
+	for ( const key in input ) {
+		output[ key ] = input[ key ] === null ? undefined : input[ key ];
+	}
+	return output;
+}
