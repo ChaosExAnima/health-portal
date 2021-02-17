@@ -1,7 +1,8 @@
-import type { MutationResolver, QueryResolver, TypeResolver } from './index';
-import { removeNulls } from '../utils';
-import type { Provider } from 'lib/db/entities';
+import { editAndSave, mutationResponse, removeChars } from '../utils';
 import { slugify } from 'lib/strings';
+
+import type { Provider } from 'lib/db/entities';
+import type { MutationResolver, QueryResolver, TypeResolver } from './index';
 
 const getProviders: QueryResolver< 'getProviders' > = async (
 	parent,
@@ -32,26 +33,17 @@ const editProvider: MutationResolver< 'provider' > = async (
 	{ provider: newProvider },
 	{ dataSources: { db } }
 ) => {
-	const provider = db.em.create< Provider >( 'Provider', {
+	const providerData = {
 		slug: newProvider.slug || slugify( newProvider.name ),
-		...removeNulls( newProvider ),
-	} );
-	if ( newProvider.slug ) {
-		const oldProvider = await db.em.findOne< Provider >(
-			'Provider',
-			undefined,
-			{ select: [ 'id', 'slug' ], where: { slug: newProvider.slug } }
-		);
-		if ( oldProvider ) {
-			provider.id = oldProvider.id;
-			provider.slug = oldProvider.slug;
-		}
-	}
-	await provider.save();
-	return {
-		code: 'Success',
-		success: true,
+		...removeChars( newProvider, [ null, '' ] ),
 	};
+
+	try {
+		await editAndSave< Provider >( 'provider', db, providerData );
+		return mutationResponse();
+	} catch ( error ) {
+		return mutationResponse( error );
+	}
 };
 
 const Resolver: TypeResolver< 'Provider' > = {};

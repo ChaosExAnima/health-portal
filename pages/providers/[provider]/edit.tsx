@@ -72,7 +72,7 @@ const ProviderEditPage: React.FC< SinglePageProps > = ( { slug } ) => {
 						icon: 'save',
 						onClick: async () => {
 							await saveProvider();
-							router.push( `/providers/${ slug }` );
+							// router.push( `/providers/${ slug }` );
 						},
 						disabled: saving,
 					},

@@ -1,13 +1,15 @@
 import { DataSource } from 'apollo-datasource';
 import DataLoader, { BatchLoadFn } from 'dataloader';
-import {
+import type {
 	Connection,
 	EntityManager,
 	FindConditions,
 	FindManyOptions,
+	ObjectLiteral,
+	Repository,
 } from 'typeorm';
 
-class TypeORM extends DataSource {
+export class TypeORM extends DataSource {
 	private readonly connection: Connection;
 	private readonly entityManager: EntityManager;
 
@@ -67,11 +69,17 @@ class TypeORM extends DataSource {
 		return this.loaders.get( name );
 	}
 
-	get em() {
+	get em(): EntityManager {
 		return this.entityManager;
 	}
 
-	get conn() {
+	repo< Entity extends ObjectLiteral >(
+		entity: string
+	): Repository< Entity > {
+		return this.entityManager.getRepository< Entity >( entity );
+	}
+
+	get conn(): Connection {
 		return this.connection;
 	}
 }

@@ -11,6 +11,7 @@ export default {
 	database: process.env.DB_DATABASE || 'health',
 	port: process.env.DB_PORT || 3306,
 	logging: process.env.DEBUG ? 'all' : false,
+	logger: 'debug',
 	entities: [ ...Object.values( entities ) ],
 	cli: {
 		entitiesDir: path.resolve( process.cwd(), 'lib/db/entities' ),
