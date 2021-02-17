@@ -29,7 +29,7 @@ const DetailText: React.FC< Omit< DetailProps, 'name' > > = ( {
 		return (
 			<Typography
 				variant="body1"
-				color={ status ? 'textPrimary' : 'textSecondary' }
+				color={ children ? 'textPrimary' : 'textSecondary' }
 			>
 				{ children || empty }
 			</Typography>
