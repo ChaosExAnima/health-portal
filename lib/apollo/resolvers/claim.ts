@@ -32,17 +32,18 @@ const claim: QueryResolver< 'claim' > = async (
 
 const uploadClaims: MutationResolver< 'uploadClaims' > = async (
 	parent,
-	{ file }
+	{ file },
+	{ dataSources: { db } }
 ) => {
 	try {
 		const { createReadStream } = await file;
 		const stream = createReadStream();
-		const claims = await parseCSV( stream );
+		const claimsProcessed = await parseCSV( stream, db.em );
 
 		return {
 			code: 'success',
 			success: true,
-			claimsProcessed: claims.length,
+			claimsProcessed,
 		};
 	} catch ( err ) {
 		// eslint-disable-next-line no-console

@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
-import { query } from 'lib/db';
+import { priceToNumber, slugify } from 'lib/strings';
 
 import type { Claim, Provider } from 'lib/db/entities';
-import { priceToNumber, slugify } from 'lib/strings';
+import type { DeepPartial } from 'typeorm';
 
 type RawClaim = {
 	'Claim Type': string;
@@ -29,31 +29,14 @@ export function isAnthemClaim(
 	return 'Claim Received' in claim;
 }
 
-export async function getProviderFromAnthemClaim(
-	rawClaim: RawClaim
-): Promise< Provider | undefined > {
-	let provider: Provider | undefined;
-	const em = await query();
-	if ( rawClaim[ 'Provided By' ] ) {
-		const providerSlug = slugify( rawClaim[ 'Provided By' ] );
-		provider = await em.findOne< Provider >( 'Provider', {
-			where: { slug: providerSlug },
-		} );
-		if ( ! provider ) {
-			provider = em.create< Provider >( 'Provider', {
-				name: rawClaim[ 'Provided By' ],
-				slug: providerSlug,
-			} );
-			provider = await provider.save();
-		}
-	}
-	return provider;
+export function getProviderFromClaim( rawClaim: RawClaim ): string {
+	return rawClaim[ 'Provided By' ];
 }
 
-export async function parseAnthemClaim(
+export function parseAnthemClaim(
 	rawClaim: RawClaim,
 	providers: Provider[]
-): Promise< Claim > {
+): DeepPartial< Claim > {
 	let status = 'PENDING';
 	if ( rawClaim.Status ) {
 		if ( rawClaim.Status === 'Approved' ) {
@@ -63,21 +46,20 @@ export async function parseAnthemClaim(
 		}
 	}
 
-	const em = await query();
-	const claim = em.create< Claim >( 'Claim', {
+	const claim: DeepPartial< Claim > = {
 		number: rawClaim[ 'Claim Number' ],
-		slug: slugify( rawClaim[ 'Claim Number' ] || 'unknown' ),
+		slug: slugify( rawClaim[ 'Claim Number' ] || '' ),
 		type:
 			rawClaim[ 'Claim Type' ] === 'Pharmacy' ? 'PHARMACY' : 'INNETWORK',
 		serviceDate: dayjs( rawClaim[ 'Service Date' ] ).toDate(),
 		status,
 		billed: priceToNumber( rawClaim.Billed ) || 0,
 		cost: priceToNumber( rawClaim[ 'Your Cost' ] ) || 0,
-	} );
+	};
 
 	// See: https://github.com/typeorm/typeorm/issues/2276
 	const provider = providers.find(
-		( { slug } ) => slugify( rawClaim[ 'Provided By' ] ) === slug
+		( { slug } ) => slug === slugify( getProviderFromClaim( rawClaim ) )
 	);
 	claim.provider = provider && Promise.resolve( provider );
 	return claim;

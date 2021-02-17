@@ -5,17 +5,23 @@ import {
 	ManyToOne,
 	OneToMany,
 	ManyToMany,
+	Unique,
 } from 'typeorm';
 
 import Appeal from './appeal';
 import Call from './call';
+import Import from './import';
 import Note from './note';
 import Payment from './payment';
 import Provider from './provider';
-import BaseSlugEntity from './slug';
+import BaseEntity from './base';
 
 @Entity()
-export default class Claim extends BaseSlugEntity {
+@Unique( [ 'slug', 'parent' ] )
+export default class Claim extends BaseEntity {
+	@Column()
+	slug: string;
+
 	@Column( { nullable: true } )
 	number?: string;
 
@@ -75,4 +81,9 @@ export default class Claim extends BaseSlugEntity {
 
 	@ManyToMany( () => Call, ( call ) => call.claims )
 	calls: Promise< Call[] >;
+
+	@ManyToOne( () => Import, ( importClaims ) => importClaims.claims, {
+		nullable: true,
+	} )
+	'import'?: Promise< Import >;
 }
