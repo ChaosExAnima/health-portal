@@ -26,7 +26,7 @@ const ProviderEditPage: React.FC< SinglePageProps > = ( { slug } ) => {
 	const [ saveProvider, { loading: saving } ] = useProviderEditMutation( {
 		variables: {
 			provider: {
-				name: provider?.name || '',
+				name: provider?.name || 'Unknown',
 				slug,
 				website: provider?.website,
 				email: provider?.email,
