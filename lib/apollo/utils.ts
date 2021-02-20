@@ -5,7 +5,7 @@ import type { TypeORM } from 'lib/apollo/datasources';
 import type { MutationResponse } from 'lib/apollo/schema/index.graphqls';
 import type BaseSlugEntity from 'lib/db/entities/slug';
 
-export const log = debug( 'apollo' );
+export const log = debug( 'app:apollo' );
 
 export function removeNull< TValue >(
 	value: TValue | null | undefined

@@ -1,3 +1,4 @@
+import { log } from 'lib/apollo/utils';
 import Claim from 'lib/db/entities/claim';
 import parseCSV from 'lib/parser';
 
@@ -47,7 +48,7 @@ const uploadClaims: MutationResolver< 'uploadClaims' > = async (
 		};
 	} catch ( err ) {
 		// eslint-disable-next-line no-console
-		console.error( err );
+		log( err );
 		let code = 'unknown';
 		if ( err instanceof Error ) {
 			code = err.name;

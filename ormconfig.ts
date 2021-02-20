@@ -10,7 +10,7 @@ export default {
 	password: process.env.DB_PASS || 'password',
 	database: process.env.DB_DATABASE || 'health',
 	port: process.env.DB_PORT || 3306,
-	logging: process.env.DEBUG ? 'all' : false,
+	logging: process.env.DEBUG === 'true' ? 'all' : false,
 	logger: 'debug',
 	entities: [ ...Object.values( entities ) ],
 	cli: {

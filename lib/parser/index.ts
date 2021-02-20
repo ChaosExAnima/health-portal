@@ -45,7 +45,8 @@ export function getHash(
 
 async function getAndInsertProviders(
 	rawClaims: RawClaim[],
-	em: EntityManager
+	em: EntityManager,
+	importEntity: Import
 ): Promise< Provider[] > {
 	const providerRepo = em.getRepository< Provider >( 'Provider' );
 
@@ -70,16 +71,15 @@ async function getAndInsertProviders(
 		}
 
 		// Create a new provider and add it to array to be created.
+		const newProvider = providerRepo.create( {
+			slug: slugify( name ),
+			name,
+		} );
+		newProvider.import = Promise.resolve( importEntity );
 		providerNames.push( name );
-		newProviders.push(
-			providerRepo.create( {
-				slug: slugify( name ),
-				name,
-			} )
-		);
+		newProviders.push( newProvider );
 	}
-	await providerRepo.insert( newProviders );
-	return await providerRepo.find();
+	return await providerRepo.save( newProviders );
 }
 
 export default async function parseCSV(
@@ -88,19 +88,32 @@ export default async function parseCSV(
 ): Promise< number > {
 	// Read CSV and check if this is a dupe.
 	const rawClaims: RawClaim[] = await readCSV( readStream );
-	const claimsHash = getHash( rawClaims );
+	const claimsHash = getHash( rawClaims, 0 );
 	const importRepo = em.getRepository< Import >( 'Import' );
 	if ( await importRepo.findOne( { where: { hash: claimsHash } } ) ) {
 		throw new Error( 'Claims have been previously uploaded.' );
 	}
+	const importEntity = await importRepo.save( {
+		hash: claimsHash,
+	} );
 
-	const providers = await getAndInsertProviders( rawClaims, em );
+	const providers = await getAndInsertProviders(
+		rawClaims,
+		em,
+		importEntity
+	);
 
 	// Extract claim data.
 	const claimRepo = em.getRepository< Claim >( 'Claim' );
 	const claims = rawClaims.map( ( rawClaim ) => {
+		let claim: Claim | undefined;
 		if ( isAnthemClaim( rawClaim ) ) {
-			return claimRepo.create( parseAnthemClaim( rawClaim, providers ) );
+			claim = claimRepo.create( parseAnthemClaim( rawClaim, providers ) );
+		}
+
+		if ( claim ) {
+			claim.import = Promise.resolve( importEntity );
+			return claim;
 		}
 		throw new Error( 'Unknown claim type found!' );
 	} );
@@ -124,9 +137,6 @@ export default async function parseCSV(
 
 	// Iterate over claims and find new ones.
 	let newClaims: Claim[] = [];
-	const importEntity = await importRepo.save( {
-		hash: claimsHash,
-	} );
 	for ( const claim of claims ) {
 		const oldClaim = oldClaims.find(
 			( { number } ) => claim.number === number
