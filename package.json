@@ -60,7 +60,6 @@
     "@typescript-eslint/parser": "^4.9.1",
     "@wordpress/eslint-plugin": "^7.3.0",
     "babel-jest": "^26.6.3",
-    "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-transform-typescript-metadata": "^0.3.1",
     "casual": "^1.6.2",
     "dotenv": "^8.2.0",
@@ -99,9 +98,6 @@
       "**/*.graphqls.d.ts",
       ".graphql/**"
     ]
-  },
-  "babel": {
-    "plugins": ["rewire"]
   },
   "jest": {
     "preset": "ts-jest",
