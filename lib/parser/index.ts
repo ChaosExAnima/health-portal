@@ -43,7 +43,7 @@ export function getHash(
 	return end ? digest.slice( 0, end ) : digest;
 }
 
-async function getAndInsertProviders(
+export async function getAndInsertProviders(
 	rawClaims: RawClaim[],
 	em: EntityManager,
 	importEntity: Import
@@ -79,7 +79,8 @@ async function getAndInsertProviders(
 		providerNames.push( name );
 		newProviders.push( newProvider );
 	}
-	return await providerRepo.save( newProviders );
+	await providerRepo.save( newProviders );
+	return providerRepo.find();
 }
 
 export default async function parseCSV(
