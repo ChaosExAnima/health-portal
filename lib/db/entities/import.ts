@@ -20,9 +20,9 @@ export default class Import extends BaseEntity {
 	@JoinColumn()
 	file: File;
 
-	@Column( { type: 'smallint' } )
-	updated: number;
+	@Column( { type: 'smallint', nullable: true } )
+	updated?: number;
 
-	@Column( { type: 'smallint' } )
-	inserted: number;
+	@Column( { type: 'smallint', nullable: true } )
+	inserted?: number;
 }

@@ -20,10 +20,10 @@ export default class Provider extends BaseSlugEntity {
 	@Column( { type: 'text', nullable: true } )
 	details?: string;
 
-	@Column( { type: 'varchar', nullable: true } )
+	@Column( { type: 'varchar', nullable: true, length: 50 } )
 	website?: string;
 
-	@Column( { type: 'varchar', nullable: true } )
+	@Column( { type: 'varchar', nullable: true, length: 40 } )
 	email?: string;
 
 	@ManyToMany( () => Note, ( note ) => note.providers )
