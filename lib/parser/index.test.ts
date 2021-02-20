@@ -1,7 +1,8 @@
 import { createConnection, EntityManager, getConnection } from 'typeorm';
-import { getAndInsertProviders } from './index';
 
+import { getAndInsertProviders, getImportOrThrow } from './index';
 import * as entities from 'lib/db/entities';
+
 import type Import from 'lib/db/entities/import';
 import type Provider from 'lib/db/entities/provider';
 
@@ -33,6 +34,22 @@ beforeEach( () => {
 afterEach( () => {
 	const conn = getConnection( 'test' );
 	return conn.close();
+} );
+
+describe( 'readCSV', () => {
+	test.todo( 'converts readable stream to CSV' );
+	test.todo( 'rejects on invalid format' );
+} );
+
+describe( 'isClaimSame', () => {
+	test.todo( 'returns true on identical claims' );
+	test.todo( 'returns false on different claims' );
+} );
+
+describe( 'getHash', () => {
+	test.todo( 'gets correct hash for empty array' );
+	test.todo( 'gets correct hash with dummy data' );
+	test.todo( 'returns length from second arg' );
 } );
 
 describe( 'getAndInsertProviders', () => {
@@ -112,12 +129,32 @@ describe( 'getAndInsertProviders', () => {
 	} );
 } );
 
-describe( 'parseCSV', () => {
-	test.todo( 'it creates an import row' );
-	test.todo( 'throws if identical hash provided' );
-	test.todo( 'gets providers' );
+describe( 'getImportOrThrow', () => {
+	test( 'it creates an import row', async () => {
+		const em = getEntityManager();
+		await getImportOrThrow( [], em );
+		const imports = await em.find( 'Import' );
+		expect( imports ).toHaveLength( 1 );
+	} );
+
+	test( 'throws if identical hash provided', async () => {
+		const em = getEntityManager();
+		const importRepo = em.getRepository< Import >( 'Import' );
+		await importRepo.save( {
+			hash: 'd751713988987e9331980363e24189ce',
+		} );
+		expect( () => getImportOrThrow( [], em ) ).rejects.toThrow(
+			'Claims have been previously uploaded'
+		);
+		expect( await importRepo.find() ).toHaveLength( 1 );
+	} );
+} );
+
+describe( 'saveClaims', () => {
+	test.todo( 'rejects when unknown format is imported' );
 	test.todo( 'gets old claims and just inserts if none' );
 	test.todo( 'inserts new claims' );
+	test.todo( 'sets import entity to claims' );
 	test.todo( 'skips identical claims' );
 	test.todo( 'inserts updated claim' );
 	test.todo( 'updates old claim' );

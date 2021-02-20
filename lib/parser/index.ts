@@ -9,13 +9,13 @@ import {
 } from './anthem';
 import { slugify } from 'lib/strings';
 
-import type { ReadStream } from 'fs';
+import type { Readable } from 'stream';
 import { Claim, Import, Provider } from 'lib/db/entities';
 
 type RawClaim = Record< string, string >;
 type MaybeArray< T > = T | T[];
 
-function readCSV( readStream: ReadStream ): Promise< RawClaim[] > {
+export function readCSV( readStream: Readable ): Promise< RawClaim[] > {
 	const rawClaims: RawClaim[] = [];
 	const stream = readStream
 		.pipe( csv() )
@@ -29,13 +29,13 @@ function readCSV( readStream: ReadStream ): Promise< RawClaim[] > {
 	} );
 }
 
-function isClaimSame( newClaim: Claim, oldClaim?: Claim ): boolean {
+export function isClaimSame( newClaim: Claim, oldClaim?: Claim ): boolean {
 	return !! oldClaim && newClaim.slug === oldClaim.slug;
 }
 
 export function getHash(
 	input: MaybeArray< Record< string, unknown > >,
-	end = 10
+	end?: number
 ): string {
 	const hash = createHash( 'md5' );
 	hash.update( JSON.stringify( input ) );
@@ -83,28 +83,26 @@ export async function getAndInsertProviders(
 	return providerRepo.find();
 }
 
-export default async function parseCSV(
-	readStream: ReadStream,
+export async function getImportOrThrow(
+	rawClaims: RawClaim[],
 	em: EntityManager
-): Promise< number > {
-	// Read CSV and check if this is a dupe.
-	const rawClaims: RawClaim[] = await readCSV( readStream );
-	const claimsHash = getHash( rawClaims, 0 );
+): Promise< Import > {
+	const claimsHash = getHash( rawClaims );
 	const importRepo = em.getRepository< Import >( 'Import' );
 	if ( await importRepo.findOne( { where: { hash: claimsHash } } ) ) {
-		throw new Error( 'Claims have been previously uploaded.' );
+		throw new Error( 'Claims have been previously uploaded' );
 	}
-	const importEntity = await importRepo.save( {
+	return importRepo.save( {
 		hash: claimsHash,
 	} );
+}
 
-	const providers = await getAndInsertProviders(
-		rawClaims,
-		em,
-		importEntity
-	);
-
-	// Extract claim data.
+export async function saveClaims(
+	rawClaims: RawClaim[],
+	providers: Provider[],
+	importEntity: Import,
+	em: EntityManager
+): Promise< { inserted: number; updated: number } > {
 	const claimRepo = em.getRepository< Claim >( 'Claim' );
 	const claims = rawClaims.map( ( rawClaim ) => {
 		let claim: Claim | undefined;
@@ -130,10 +128,11 @@ export default async function parseCSV(
 
 	// Insert it all and exit.
 	if ( ! oldClaims.length ) {
-		await Promise.all(
-			claims.map( ( claim ) => claimRepo.insert( claim ) )
-		);
-		return claims.length;
+		await claimRepo.insert( claims );
+		return {
+			inserted: claims.length,
+			updated: 0,
+		};
 	}
 
 	// Iterate over claims and find new ones.
@@ -168,7 +167,33 @@ export default async function parseCSV(
 		updated++;
 	}
 
-	await importRepo.update( importEntity.id, { inserted, updated } );
+	return { inserted, updated };
+}
 
-	return newClaims.length;
+export default async function parseCSV(
+	readStream: Readable,
+	em: EntityManager
+): Promise< number > {
+	// Read CSV and check if this is a dupe.
+	const rawClaims: RawClaim[] = await readCSV( readStream );
+	const importEntity = await getImportOrThrow( rawClaims, em );
+
+	const providers = await getAndInsertProviders(
+		rawClaims,
+		em,
+		importEntity
+	);
+
+	// Extract claim data.
+	const { inserted, updated } = await saveClaims(
+		rawClaims,
+		providers,
+		importEntity,
+		em
+	);
+	importEntity.inserted = inserted;
+	importEntity.updated = updated;
+	await importEntity.save();
+
+	return inserted;
 }
