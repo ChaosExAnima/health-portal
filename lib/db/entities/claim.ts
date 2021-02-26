@@ -6,6 +6,7 @@ import {
 	OneToMany,
 	ManyToMany,
 	Unique,
+	DeepPartial,
 } from 'typeorm';
 
 import Appeal from './appeal';
@@ -19,6 +20,11 @@ import BaseEntity from './base';
 @Entity()
 @Unique( [ 'slug', 'parent' ] )
 export default class Claim extends BaseEntity {
+	constructor( props: DeepPartial< Claim > = {} ) {
+		super();
+		Object.assign( this, props );
+	}
+
 	@Column()
 	slug: string;
 

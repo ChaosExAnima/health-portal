@@ -1,40 +1,31 @@
-import { createConnection, EntityManager, getConnection } from 'typeorm';
-
-import { getAndInsertProviders, getImportOrThrow } from './index';
-import * as entities from 'lib/db/entities';
+import {
+	getAndInsertProviders,
+	getImportOrThrow,
+	isClaimSame,
+	saveClaims,
+} from './index';
+import Claim from 'lib/db/entities/claim';
 
 import type Import from 'lib/db/entities/import';
 import type Provider from 'lib/db/entities/provider';
+import { createTestDB, getEntityManager, resetTestDB } from 'lib/db/test-utils';
+import { getImportEntity } from './test-utils';
 
-function getEntityManager(): EntityManager {
-	return getConnection( 'test' ).createEntityManager();
-}
-
-async function getImportEntity( em: EntityManager ): Promise< Import > {
-	const importRepo = em.getRepository< Import >( 'Import' );
-	return importRepo.save( {
-		hash: 'test1234',
-	} );
-}
-
-beforeEach( () => {
-	return createConnection( {
-		name: 'test',
-		type: 'sqlite',
-		database: ':memory:',
-		dropSchema: true,
-		entities: [
-			...( ( Object.values( entities ) as unknown[] ) as string[] ),
-		],
-		synchronize: true,
-		logging: false,
-	} );
-} );
-
-afterEach( () => {
-	const conn = getConnection( 'test' );
-	return conn.close();
-} );
+const baseClaim = {
+	slug: 'test',
+	number: '1234',
+	status: 'pending',
+	serviceDate: new Date(),
+	type: 'test',
+	billed: 1.23,
+	cost: 1.23,
+} as const;
+const rawClaim = {
+	...baseClaim,
+	serviceDate: '2021-01-01 12:00:00',
+	billed: '1.23',
+	cost: '1.23',
+} as const;
 
 describe( 'readCSV', () => {
 	test.todo( 'converts readable stream to CSV' );
@@ -42,8 +33,37 @@ describe( 'readCSV', () => {
 } );
 
 describe( 'isClaimSame', () => {
-	test.todo( 'returns true on identical claims' );
-	test.todo( 'returns false on different claims' );
+	test( 'returns true on identical claims', () => {
+		const claim1 = new Claim( baseClaim );
+		const claim2 = new Claim( baseClaim );
+		expect( isClaimSame( claim1, claim2 ) ).toBeTruthy();
+	} );
+
+	function getDiffOnKey(
+		claimKey: keyof typeof baseClaim
+	): string | Date | number {
+		switch ( typeof baseClaim[ claimKey ] ) {
+			case 'string':
+				return 'changed';
+			case 'object':
+				return new Date( 2020, 1 );
+			case 'number':
+				return 4.56;
+		}
+	}
+
+	Object.keys( baseClaim ).forEach( ( claimKey ) => {
+		test( `returns false on claim with different ${ claimKey }`, () => {
+			const claim1 = new Claim( { ...baseClaim } );
+			const claim2 = new Claim( {
+				...baseClaim,
+				[ claimKey ]: getDiffOnKey(
+					claimKey as keyof typeof baseClaim
+				),
+			} );
+			expect( isClaimSame( claim1, claim2 ) ).toBeFalsy();
+		} );
+	} );
 } );
 
 describe( 'getHash', () => {
@@ -53,6 +73,9 @@ describe( 'getHash', () => {
 } );
 
 describe( 'getAndInsertProviders', () => {
+	beforeEach( createTestDB );
+	afterEach( resetTestDB );
+
 	test( 'will return providers', async () => {
 		const em = getEntityManager();
 		const importEntity = await getImportEntity( em );
@@ -130,6 +153,9 @@ describe( 'getAndInsertProviders', () => {
 } );
 
 describe( 'getImportOrThrow', () => {
+	beforeEach( createTestDB );
+	afterEach( resetTestDB );
+
 	test( 'it creates an import row', async () => {
 		const em = getEntityManager();
 		await getImportOrThrow( [], em );
@@ -151,11 +177,26 @@ describe( 'getImportOrThrow', () => {
 } );
 
 describe( 'saveClaims', () => {
+	beforeEach( createTestDB );
+	afterEach( resetTestDB );
+
 	test.todo( 'rejects when unknown format is imported' );
 	test.todo( 'gets old claims and just inserts if none' );
 	test.todo( 'inserts new claims' );
 	test.todo( 'sets import entity to claims' );
-	test.todo( 'skips identical claims' );
+	test( 'skips identical claims', async () => {
+		const em = getEntityManager();
+		const saveResult = await saveClaims(
+			[ rawClaim, rawClaim ],
+			[],
+			await getImportEntity( em ),
+			em
+		);
+		expect( saveResult ).toMatchObject( {
+			inserted: 1,
+			updated: 0,
+		} );
+	} );
 	test.todo( 'inserts updated claim' );
 	test.todo( 'updates old claim' );
 } );

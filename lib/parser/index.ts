@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import csv from 'csv-parser';
-import { EntityManager, In } from 'typeorm';
+import { DeepPartial, EntityManager, In } from 'typeorm';
 
 import {
 	getProviderFromClaim,
@@ -11,6 +11,7 @@ import { slugify } from 'lib/strings';
 
 import type { Readable } from 'stream';
 import { Claim, Import, Provider } from 'lib/db/entities';
+import { isTestClaim, parseTestClaim } from './test-utils';
 
 type RawClaim = Record< string, string >;
 type MaybeArray< T > = T | T[];
@@ -30,7 +31,16 @@ export function readCSV( readStream: Readable ): Promise< RawClaim[] > {
 }
 
 export function isClaimSame( newClaim: Claim, oldClaim?: Claim ): boolean {
-	return !! oldClaim && newClaim.slug === oldClaim.slug;
+	return (
+		!! oldClaim &&
+		newClaim.slug === oldClaim.slug &&
+		newClaim.number === oldClaim.number &&
+		newClaim.status === oldClaim.status &&
+		newClaim.serviceDate.getTime() === oldClaim.serviceDate.getTime() &&
+		newClaim.type === oldClaim.type &&
+		newClaim.billed === oldClaim.billed &&
+		newClaim.cost === oldClaim.cost
+	);
 }
 
 export function getHash(
@@ -105,16 +115,18 @@ export async function saveClaims(
 ): Promise< { inserted: number; updated: number } > {
 	const claimRepo = em.getRepository< Claim >( 'Claim' );
 	const claims = rawClaims.map( ( rawClaim ) => {
-		let claim: Claim | undefined;
+		let claimData: DeepPartial< Claim > | undefined;
 		if ( isAnthemClaim( rawClaim ) ) {
-			claim = claimRepo.create( parseAnthemClaim( rawClaim, providers ) );
+			claimData = parseAnthemClaim( rawClaim, providers );
+		} else if ( isTestClaim( rawClaim ) ) {
+			claimData = parseTestClaim( rawClaim );
 		}
-
-		if ( claim ) {
-			claim.import = Promise.resolve( importEntity );
-			return claim;
+		if ( ! claimData ) {
+			throw new Error( 'Unknown claim type found!' );
 		}
-		throw new Error( 'Unknown claim type found!' );
+		const claim = claimRepo.create( claimData );
+		claim.import = Promise.resolve( importEntity );
+		return claim;
 	} );
 
 	// Get all old claims.
