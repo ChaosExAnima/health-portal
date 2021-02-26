@@ -180,12 +180,55 @@ describe( 'saveClaims', () => {
 	beforeEach( createTestDB );
 	afterEach( resetTestDB );
 
-	test.todo( 'rejects when unknown format is imported' );
-	test.todo( 'gets old claims and just inserts if none' );
-	test.todo( 'inserts new claims' );
-	test.todo( 'sets import entity to claims' );
-	test( 'skips identical claims', async () => {
+	async function getEntityManagerWithClaim() {
 		const em = getEntityManager();
+		await em.insert( 'Claim', {
+			...baseClaim,
+			slug: 'test1',
+		} );
+		return em;
+	}
+
+	test.todo( 'rejects when unknown format is imported' );
+	test( 'gets old claims and just inserts if none', async () => {
+		const em = await getEntityManager();
+		const saveResult = await saveClaims(
+			[ rawClaim ],
+			[],
+			await getImportEntity( em ),
+			em
+		);
+		expect( saveResult ).toMatchObject( {
+			inserted: 1,
+			updated: 0,
+		} );
+		expect( ( await em.find( 'Claim' ) ).length ).toEqual( 1 );
+	} );
+	test( 'inserts new claims', async () => {
+		const em = await getEntityManagerWithClaim();
+		const saveResult = await saveClaims(
+			[ rawClaim ],
+			[],
+			await getImportEntity( em ),
+			em
+		);
+		expect( saveResult ).toMatchObject( {
+			inserted: 1,
+			updated: 0,
+		} );
+		expect( ( await em.find( 'Claim' ) ).length ).toEqual( 2 );
+	} );
+	test( 'sets import entity on claims', async () => {
+		const em = await getEntityManager();
+		const importEntity = await getImportEntity( em );
+		await saveClaims( [ rawClaim ], [], importEntity, em );
+
+		const claim = await em.findOne< Claim >( 'Claim' );
+		expect( claim ).not.toBeFalsy();
+		expect( claim?.import ).resolves.toEqual( importEntity );
+	} );
+	test( 'skips identical claims', async () => {
+		const em = await getEntityManagerWithClaim();
 		const saveResult = await saveClaims(
 			[ rawClaim, rawClaim ],
 			[],
@@ -196,7 +239,32 @@ describe( 'saveClaims', () => {
 			inserted: 1,
 			updated: 0,
 		} );
+		expect( await em.find( 'Claim' ) ).toHaveLength( 3 );
 	} );
-	test.todo( 'inserts updated claim' );
+	test( 'inserts updated claim', async () => {
+		const em = await getEntityManagerWithClaim();
+		const updatedClaim = {
+			...rawClaim,
+			slug: 'test1',
+			status: 'denied',
+		};
+		const saveResult = await saveClaims(
+			[ updatedClaim ],
+			[],
+			await getImportEntity( em ),
+			em
+		);
+		expect( saveResult ).toMatchObject( {
+			inserted: 0,
+			updated: 1,
+		} );
+		expect( await em.find( 'Claim' ) ).toHaveLength( 2 );
+		expect(
+			await em.findOne( 'Claim', {
+				where: { id: 1 },
+				relations: [ 'parent' ],
+			} )
+		).toHaveProperty( 'parent', updatedClaim );
+	} );
 	test.todo( 'updates old claim' );
 } );
