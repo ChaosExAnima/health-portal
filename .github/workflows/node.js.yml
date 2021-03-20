@@ -36,7 +36,7 @@ jobs:
       CI_JOB_NUMBER: 1
     if: github.base_ref
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v1.1
     - uses: artiomtr/jest-coverage-report-action@v1.0
       with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
