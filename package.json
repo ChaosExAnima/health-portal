@@ -13,6 +13,7 @@
     "stop-db": "docker-compose down",
     "load-schema": "yarn orm schema:sync",
     "load-fixtures": "ts-node lib/db/populate.ts",
+    "caniuse": "yarn browserslist --update-db",
     "test": "jest"
   },
   "dependencies": {
