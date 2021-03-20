@@ -15,7 +15,8 @@
     "load-fixtures": "ts-node lib/db/populate.ts",
     "caniuse": "yarn browserslist --update-db",
     "test": "jest",
-    "test:ci": "yarn jest --json --outputFile='jest.results.json'"
+    "test:ci": "yarn jest --json --outputFile='jest.results.json'",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@apollo/client": "^3.3.6",
