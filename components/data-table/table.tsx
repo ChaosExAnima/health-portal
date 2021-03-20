@@ -8,6 +8,7 @@ import {
 	TableFooter,
 	TablePagination,
 	TableRow,
+	Typography,
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 
@@ -47,14 +48,20 @@ const DataTable: React.FC< DataTableProps > = ( {
 	const router = useRouter();
 	if ( loading || ! rows ) {
 		return (
-			<Container maxWidth="lg">
+			<Container maxWidth="md">
 				<LinearProgress />
 			</Container>
 		);
 	}
 
 	if ( ! totalCount ) {
-		return <p>Nothing here yet.</p>;
+		return (
+			<Container maxWidth="md">
+				<Typography variant="h5" component="p">
+					Nothing here yet.
+				</Typography>
+			</Container>
+		);
 	}
 
 	return (
