@@ -15,7 +15,7 @@
     "load-fixtures": "ts-node lib/db/populate.ts",
     "caniuse": "yarn browserslist --update-db",
     "test": "jest",
-    "test:ci": "yarn jest --json --outputFile='jest.results.json'",
+    "test:ci": "yarn jest --ci",
     "lint": "eslint ."
   },
   "dependencies": {
