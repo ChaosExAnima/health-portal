@@ -5,7 +5,7 @@ import parseCSV, {
 	readCSV,
 	saveClaims,
 } from './index';
-import { getImportEntity } from './test-utils';
+import { getEntityManagerWithClaim, getImportEntity } from './test-utils';
 import Claim from 'lib/db/entities/claim';
 import { createTestDB, getEntityManager, resetTestDB } from 'lib/db/test-utils';
 
@@ -16,13 +16,6 @@ const rootClaim = {
 	number: '1234',
 	status: 'pending',
 	type: 'test',
-} as const;
-const baseClaim = {
-	...rootClaim,
-	slug: 'test',
-	serviceDate: new Date( 2021, 0, 1, 12 ),
-	billed: 1.23,
-	cost: 1.23,
 } as const;
 const rawClaim = {
 	...rootClaim,
@@ -40,7 +33,7 @@ describe( 'readCSV', () => {
 	test( 'converts readable stream to CSV', async () => {
 		const stream = arrToStream( [ 'key1', 'key2' ], [ 'val1', 'val2' ] );
 		const csv = readCSV( stream );
-		expect( csv ).resolves.toEqual( [
+		await expect( csv ).resolves.toEqual( [
 			{
 				key1: 'val1',
 				key2: 'val2',
@@ -178,15 +171,6 @@ describe( 'saveClaims', () => {
 	beforeEach( createTestDB );
 	afterEach( resetTestDB );
 
-	async function getEntityManagerWithClaim() {
-		const em = getEntityManager();
-		await em.insert( 'Claim', {
-			...baseClaim,
-			slug: 'test1',
-		} );
-		return em;
-	}
-
 	test( 'rejects when unknown format is imported', async () => {
 		const em = await getEntityManager();
 		const saveResult = saveClaims(
@@ -222,7 +206,7 @@ describe( 'saveClaims', () => {
 			inserted: 1,
 			updated: 0,
 		} );
-		expect( ( await em.find( 'Claim' ) ).length ).toEqual( 1 );
+		await expect( em.find( 'Claim' ) ).resolves.toHaveLength( 1 );
 	} );
 	test( 'inserts new claims', async () => {
 		const em = await getEntityManagerWithClaim();
@@ -236,7 +220,7 @@ describe( 'saveClaims', () => {
 			inserted: 1,
 			updated: 0,
 		} );
-		expect( ( await em.find( 'Claim' ) ).length ).toEqual( 2 );
+		await expect( em.find( 'Claim' ) ).resolves.toHaveLength( 2 );
 	} );
 	test( 'sets import entity on claims', async () => {
 		const em = await getEntityManager();
@@ -245,7 +229,7 @@ describe( 'saveClaims', () => {
 
 		const claim = await em.findOne< Claim >( 'Claim' );
 		expect( claim ).not.toBeFalsy();
-		expect( claim?.import ).resolves.toEqual( importEntity );
+		await expect( claim?.import ).resolves.toEqual( importEntity );
 	} );
 	test( 'skips duplicate input claims', async () => {
 		const em = await getEntityManager();
@@ -294,8 +278,10 @@ describe( 'saveClaims', () => {
 		expect( await em.find( 'Claim' ) ).toHaveLength( 2 );
 		const savedClaim = await em.findOne< Claim >( 'Claim', 1 );
 		expect( savedClaim ).toHaveProperty( 'parent' );
-		const parent = await savedClaim?.parent;
-		expect( parent ).toHaveProperty( 'status', 'denied' );
+		await expect( savedClaim?.parent ).resolves.toHaveProperty(
+			'status',
+			'denied'
+		);
 	} );
 } );
 

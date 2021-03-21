@@ -1,17 +1,8 @@
 import { isClaimSame } from './utils';
+import { baseClaim } from './test-utils';
 import Claim from 'lib/db/entities/claim';
 
 describe( 'isClaimSame', () => {
-	const baseClaim = {
-		number: '1234',
-		status: 'pending',
-		type: 'test',
-		slug: 'test',
-		serviceDate: new Date( 2021, 0, 1, 12 ),
-		billed: 1.23,
-		cost: 1.23,
-	} as const;
-
 	test( 'returns true on identical claims', () => {
 		const claim1 = new Claim( baseClaim );
 		const claim2 = new Claim( baseClaim );
