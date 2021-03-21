@@ -304,10 +304,12 @@ describe( 'parseCSV', () => {
 		const csvStream = new Readable();
 
 		const em = getEntityManager();
-		const transactionSpy = jest.spyOn( em, 'transaction' );
+		const transactionSpy = jest
+			.spyOn( em, 'transaction' )
+			.mockImplementation( () => Promise.resolve() );
 
 		const parse = parseCSV( csvStream, em );
-		expect( parse ).resolves.toEqual( 0 );
+		await expect( parse ).resolves.toEqual( 0 );
 
 		expect( transactionSpy ).toHaveBeenCalled();
 	} );
