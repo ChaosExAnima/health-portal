@@ -88,6 +88,8 @@ export async function getAndInsertProviders(
 			name = getProviderFromClaim( rawClaim );
 		} else if ( isTestClaim( rawClaim ) ) {
 			name = getProviderFromTestClaim( rawClaim );
+		} else {
+			continue;
 		}
 
 		// Checks if the name is included.
@@ -184,10 +186,12 @@ export async function saveClaims(
 		upsertClaims.push( claim );
 	}
 
+	// Write to DB.
+	await em.update( 'Import', importEntity.id, { inserted, updated } );
 	if ( upsertClaims.length ) {
-		// Insert new claims and set IDs for prior claims.
 		await claimRepo.save( upsertClaims );
 	}
+
 	return { inserted, updated };
 }
 
@@ -206,15 +210,12 @@ export default async function parseCSV(
 	);
 
 	// Extract claim data.
-	const { inserted, updated } = await saveClaims(
+	const { inserted } = await saveClaims(
 		rawClaims,
 		providers,
 		importEntity,
 		em
 	);
-	importEntity.inserted = inserted;
-	importEntity.updated = updated;
-	await importEntity.save();
 
 	return inserted;
 }

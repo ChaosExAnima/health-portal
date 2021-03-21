@@ -40,6 +40,7 @@ query Claim( $slug: String! ) {
 
 mutation UploadClaims( $file: Upload! ) {
 	uploadClaims( file: $file ) {
+		code
 		success
 		claimsProcessed
 	}

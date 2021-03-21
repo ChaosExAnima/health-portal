@@ -120,7 +120,8 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 			</Box>
 			{ hasUploadError && (
 				<Alert severity="error" className={ classes.uploadError }>
-					There was an error processing your uploads.
+					{ data?.uploadClaims.code ||
+						'There was an error processing your uploads.' }
 				</Alert>
 			) }
 			{ ! loading && ( ! data || hasUploadError ) && (

@@ -264,7 +264,11 @@ describe( 'saveClaims', () => {
 
 		const claim = await em.findOne< Claim >( 'Claim' );
 		expect( claim ).not.toBeFalsy();
-		expect( claim?.import ).resolves.toEqual( importEntity );
+		expect( claim?.import ).resolves.toEqual( {
+			...importEntity,
+			updated: 0,
+			inserted: 1,
+		} );
 	} );
 	test( 'skips duplicate input claims', async () => {
 		const em = await getEntityManager();
@@ -280,7 +284,7 @@ describe( 'saveClaims', () => {
 		} );
 		expect( await em.find( 'Claim' ) ).toHaveLength( 1 );
 	} );
-	test( 'skips inserting identical existing claim', async () => {
+	test( 'does not insert on identical existing claim', async () => {
 		const em = await getEntityManagerWithClaim();
 		const saveResult = await saveClaims(
 			[ rawClaim ],

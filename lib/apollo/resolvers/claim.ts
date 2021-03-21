@@ -47,11 +47,10 @@ const uploadClaims: MutationResolver< 'uploadClaims' > = async (
 			claimsProcessed,
 		};
 	} catch ( err ) {
-		// eslint-disable-next-line no-console
 		log( err );
 		let code = 'unknown';
 		if ( err instanceof Error ) {
-			code = err.name;
+			code = err.message;
 		}
 		return {
 			code,
