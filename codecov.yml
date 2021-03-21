@@ -1,7 +1,7 @@
 codecov:
     require_ci_to_pass: false
-    coverage:
-        status:
-            patch:
-                default:
-                    target: 100%
+coverage:
+    status:
+        patch:
+            default:
+                target: 100%
