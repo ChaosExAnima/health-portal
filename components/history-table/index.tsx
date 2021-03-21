@@ -19,18 +19,18 @@ type HistoryTableProps = {
 	id: number;
 };
 
-function stringIsType( type: string ): type is Type {
-	return [ 'CLAIM', 'APPEAL', 'PROVIDER' ].includes( type );
+function stringToType( type: string ): Type {
+	if ( [ 'claim', 'appeal', 'provider' ].includes( type.toLowerCase() ) ) {
+		return type.toLowerCase() as Type;
+	}
+	throw new Error( `Invalid type: ${ type }` );
 }
 
 const HistoryTable: React.FC< HistoryTableProps > = ( {
-	type: lowerType,
+	type: rawType,
 	id,
 } ) => {
-	const type = lowerType.toUpperCase();
-	if ( ! stringIsType( type ) ) {
-		return null;
-	}
+	const type = stringToType( rawType );
 	const { data, loading, fetchMore } = useHistoryQuery( {
 		variables: { type, id, offset: 0 },
 	} );

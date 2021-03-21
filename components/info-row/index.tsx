@@ -32,7 +32,7 @@ const useStyles = makeStyles( ( theme: Theme ) =>
 	} )
 );
 
-const InfoRow = ( props: InfoRowProps ) => {
+const InfoRow: React.FC< InfoRowProps > = ( props ) => {
 	const { info, value, href } = props;
 	const styles = useStyles( props );
 	return (
