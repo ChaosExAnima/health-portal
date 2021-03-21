@@ -150,10 +150,16 @@ export async function saveClaims(
 	} );
 
 	// Iterate over claims and generate list of changed claims.
-	let upsertClaims: Claim[] = [];
+	const upsertClaims: Claim[] = [];
+	const claimNumbers: string[] = [];
 	let inserted = 0;
 	let updated = 0;
 	for ( const claim of claims ) {
+		if ( claimNumbers.includes( claim.number ) ) {
+			continue;
+		}
+		claimNumbers.push( claim.number );
+
 		const oldClaim = oldClaims.find(
 			( { number } ) => claim.number === number
 		);
@@ -172,27 +178,10 @@ export async function saveClaims(
 		upsertClaims.push( claim );
 	}
 
-	if ( ! upsertClaims.length ) {
-		// Exit as no new claims.
-		return { inserted, updated };
+	if ( upsertClaims.length ) {
+		// Insert new claims and set IDs for prior claims.
+		await claimRepo.save( upsertClaims );
 	}
-
-	// Insert new claims and set IDs for prior claims.
-	upsertClaims = await claimRepo.save( upsertClaims );
-
-	// const parentClaims: Claim[] = [];
-	// for ( const newClaim of upsertClaims ) {
-	// 	if ( ! newClaim.parent ) {
-	// 		inserted++;
-	// 		continue; // Completely new claim.
-	// 	}
-	// 	updated++;
-	// 	const parentClaim = await newClaim.parent;
-	// 	parentClaim.parent = Promise.resolve( newClaim );
-	// 	parentClaims.push( parentClaim );
-	// }
-	// await claimRepo.save( parentClaims );
-
 	return { inserted, updated };
 }
 

@@ -196,7 +196,29 @@ describe( 'saveClaims', () => {
 		return em;
 	}
 
-	test.todo( 'rejects when unknown format is imported' );
+	test( 'rejects when unknown format is imported', async () => {
+		const em = await getEntityManager();
+		const saveResult = saveClaims(
+			[ { test: 'foo' } ],
+			[],
+			await getImportEntity( em ),
+			em
+		);
+		expect( saveResult ).rejects.toThrow();
+	} );
+	test( 'no input is both zeros', async () => {
+		const em = await getEntityManager();
+		const saveResult = await saveClaims(
+			[],
+			[],
+			await getImportEntity( em ),
+			em
+		);
+		expect( saveResult ).toMatchObject( {
+			inserted: 0,
+			updated: 0,
+		} );
+	} );
 	test( 'gets old claims and just inserts if none', async () => {
 		const em = await getEntityManager();
 		const saveResult = await saveClaims(
@@ -234,7 +256,21 @@ describe( 'saveClaims', () => {
 		expect( claim ).not.toBeFalsy();
 		expect( claim?.import ).resolves.toEqual( importEntity );
 	} );
-	test( 'skips inserting existing claim', async () => {
+	test( 'skips duplicate input claims', async () => {
+		const em = await getEntityManager();
+		const saveResult = await saveClaims(
+			[ rawClaim, rawClaim ],
+			[],
+			await getImportEntity( em ),
+			em
+		);
+		expect( saveResult ).toMatchObject( {
+			inserted: 1,
+			updated: 0,
+		} );
+		expect( await em.find( 'Claim' ) ).toHaveLength( 1 );
+	} );
+	test( 'skips inserting identical existing claim', async () => {
 		const em = await getEntityManagerWithClaim();
 		const saveResult = await saveClaims(
 			[ rawClaim ],
@@ -272,5 +308,4 @@ describe( 'saveClaims', () => {
 			'denied'
 		);
 	} );
-	test.todo( 'updates old claim' );
 } );
