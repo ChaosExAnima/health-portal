@@ -1,0 +1,32 @@
+name: Automated Tests and Linting
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 15.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: yarn install --frozen-lockfile
+      name: Install dependencies
+    - run: yarn test:ci
+      name: Run unit tests
+    - name: Linting
+      run: yarn lint
+    - uses: codecov/codecov-action@v1
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -14,7 +14,9 @@
     "load-schema": "yarn orm schema:sync",
     "load-fixtures": "ts-node lib/db/populate.ts",
     "caniuse": "yarn browserslist --update-db",
-    "test": "jest"
+    "test": "jest",
+    "test:ci": "yarn jest --ci --coverage",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@apollo/client": "^3.3.6",
