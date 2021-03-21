@@ -2,7 +2,7 @@ import type { DeepPartial, EntityManager } from 'typeorm';
 import type { Claim, Import } from 'lib/db/entities';
 
 type TestClaim = {
-	slug: string;
+	slug?: string;
 	number: string;
 	status: string;
 	serviceDate: Date;
@@ -16,7 +16,6 @@ export function isTestClaim(
 	rawClaim: Record< string, string >
 ): rawClaim is RawTestClaim {
 	return (
-		'slug' in rawClaim &&
 		'number' in rawClaim &&
 		'status' in rawClaim &&
 		'serviceDate' in rawClaim &&

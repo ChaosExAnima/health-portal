@@ -12,6 +12,7 @@ import { slugify } from 'lib/strings';
 import type { Readable } from 'stream';
 import { Claim, Import, Provider } from 'lib/db/entities';
 import { isTestClaim, parseTestClaim } from './test-utils';
+import dayjs from 'dayjs';
 
 type RawClaim = Record< string, string >;
 type MaybeArray< T > = T | T[];
@@ -33,10 +34,9 @@ export function readCSV( readStream: Readable ): Promise< RawClaim[] > {
 export function isClaimSame( newClaim: Claim, oldClaim?: Claim ): boolean {
 	return (
 		!! oldClaim &&
-		newClaim.slug === oldClaim.slug &&
 		newClaim.number === oldClaim.number &&
 		newClaim.status === oldClaim.status &&
-		newClaim.serviceDate.getTime() === oldClaim.serviceDate.getTime() &&
+		dayjs( newClaim.serviceDate ).isSame( oldClaim.serviceDate ) &&
 		newClaim.type === oldClaim.type &&
 		newClaim.billed === oldClaim.billed &&
 		newClaim.cost === oldClaim.cost
@@ -51,6 +51,16 @@ export function getHash(
 	hash.update( JSON.stringify( input ) );
 	const digest = hash.digest( 'hex' );
 	return end ? digest.slice( 0, end ) : digest;
+}
+
+export function getUniqueSlug( parentSlug: string ): string {
+	const matches = parentSlug.match( /^([a-z0-9-]+)-?(\d+)?$/i );
+	if ( ! matches ) {
+		throw new Error( 'No slug provided.' );
+	} else if ( matches.length === 1 ) {
+		return `${ matches[ 0 ] }-1`;
+	}
+	return `${ matches[ 0 ] }-${ Number.parseInt( matches[ 1 ] ) + 1 }`;
 }
 
 export async function getAndInsertProviders(
@@ -123,6 +133,8 @@ export async function saveClaims(
 		}
 		if ( ! claimData ) {
 			throw new Error( 'Unknown claim type found!' );
+		} else if ( ! claimData.number ) {
+			throw new Error( 'Number field required' );
 		}
 		const claim = claimRepo.create( claimData );
 		claim.import = Promise.resolve( importEntity );
@@ -131,24 +143,16 @@ export async function saveClaims(
 
 	// Get all old claims.
 	const oldClaims = await claimRepo.find( {
-		select: [ 'id', 'number' ],
 		where: {
 			parent: null,
 			number: In( claims.map( ( { number } ) => number ) ),
 		},
 	} );
 
-	// Insert it all and exit.
-	if ( ! oldClaims.length ) {
-		await claimRepo.insert( claims );
-		return {
-			inserted: claims.length,
-			updated: 0,
-		};
-	}
-
-	// Iterate over claims and find new ones.
-	let newClaims: Claim[] = [];
+	// Iterate over claims and generate list of changed claims.
+	let upsertClaims: Claim[] = [];
+	let inserted = 0;
+	let updated = 0;
 	for ( const claim of claims ) {
 		const oldClaim = oldClaims.find(
 			( { number } ) => claim.number === number
@@ -156,28 +160,38 @@ export async function saveClaims(
 		if ( isClaimSame( claim, oldClaim ) ) {
 			continue;
 		}
+		if ( oldClaim ) {
+			oldClaim.parent = Promise.resolve( claim );
+			upsertClaims.push( oldClaim );
+			updated++;
+		} else {
+			inserted++;
+		}
+		claim.slug = getUniqueSlug( oldClaim?.slug || claim.number );
 		claim.import = Promise.resolve( importEntity );
-		newClaims.push( claim );
+		upsertClaims.push( claim );
+	}
+
+	if ( ! upsertClaims.length ) {
+		// Exit as no new claims.
+		return { inserted, updated };
 	}
 
 	// Insert new claims and set IDs for prior claims.
-	newClaims = await claimRepo.save( newClaims );
+	upsertClaims = await claimRepo.save( upsertClaims );
 
-	let inserted = 0;
-	let updated = 0;
-	for ( const newClaim of newClaims ) {
-		const oldRootClaim = oldClaims.find(
-			( { slug } ) => newClaim.slug === slug
-		);
-		if ( ! oldRootClaim ) {
-			inserted++;
-			continue; // Completely new claim.
-		}
-		await claimRepo.update( oldRootClaim.id, {
-			parent: Promise.resolve( newClaim ),
-		} );
-		updated++;
-	}
+	// const parentClaims: Claim[] = [];
+	// for ( const newClaim of upsertClaims ) {
+	// 	if ( ! newClaim.parent ) {
+	// 		inserted++;
+	// 		continue; // Completely new claim.
+	// 	}
+	// 	updated++;
+	// 	const parentClaim = await newClaim.parent;
+	// 	parentClaim.parent = Promise.resolve( newClaim );
+	// 	parentClaims.push( parentClaim );
+	// }
+	// await claimRepo.save( parentClaims );
 
 	return { inserted, updated };
 }

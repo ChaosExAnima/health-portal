@@ -11,17 +11,20 @@ import type Provider from 'lib/db/entities/provider';
 import { createTestDB, getEntityManager, resetTestDB } from 'lib/db/test-utils';
 import { getImportEntity } from './test-utils';
 
-const baseClaim = {
-	slug: 'test',
+const rootClaim = {
 	number: '1234',
 	status: 'pending',
-	serviceDate: new Date(),
 	type: 'test',
+} as const;
+const baseClaim = {
+	...rootClaim,
+	slug: 'test',
+	serviceDate: new Date( 2021, 0, 1, 12 ),
 	billed: 1.23,
 	cost: 1.23,
 } as const;
 const rawClaim = {
-	...baseClaim,
+	...rootClaim,
 	serviceDate: '2021-01-01 12:00:00',
 	billed: '1.23',
 	cost: '1.23',
@@ -46,23 +49,27 @@ describe( 'isClaimSame', () => {
 			case 'string':
 				return 'changed';
 			case 'object':
-				return new Date( 2020, 1 );
+				return new Date( 2000, 1 );
 			case 'number':
 				return 4.56;
+			default:
+				throw new Error(
+					'Unknown type: ' + typeof baseClaim[ claimKey ]
+				);
 		}
 	}
 
-	Object.keys( baseClaim ).forEach( ( claimKey ) => {
-		test( `returns false on claim with different ${ claimKey }`, () => {
-			const claim1 = new Claim( { ...baseClaim } );
-			const claim2 = new Claim( {
-				...baseClaim,
-				[ claimKey ]: getDiffOnKey(
-					claimKey as keyof typeof baseClaim
-				),
+	test( 'returns false on claim with different keys', () => {
+		Object.keys( baseClaim )
+			.filter( ( claimKey ) => ! [ 'slug' ].includes( claimKey ) )
+			.forEach( ( claimKey: keyof typeof baseClaim ) => {
+				const claim1 = new Claim( { ...baseClaim } );
+				const claim2 = new Claim( {
+					...baseClaim,
+					[ claimKey ]: getDiffOnKey( claimKey ),
+				} );
+				expect( isClaimSame( claim1, claim2 ) ).toBeFalsy();
 			} );
-			expect( isClaimSame( claim1, claim2 ) ).toBeFalsy();
-		} );
 	} );
 } );
 
@@ -207,7 +214,7 @@ describe( 'saveClaims', () => {
 	test( 'inserts new claims', async () => {
 		const em = await getEntityManagerWithClaim();
 		const saveResult = await saveClaims(
-			[ rawClaim ],
+			[ { ...rawClaim, number: '2345' } ],
 			[],
 			await getImportEntity( em ),
 			em
@@ -227,25 +234,24 @@ describe( 'saveClaims', () => {
 		expect( claim ).not.toBeFalsy();
 		expect( claim?.import ).resolves.toEqual( importEntity );
 	} );
-	test( 'skips identical claims', async () => {
+	test( 'skips inserting existing claim', async () => {
 		const em = await getEntityManagerWithClaim();
 		const saveResult = await saveClaims(
-			[ rawClaim, rawClaim ],
+			[ rawClaim ],
 			[],
 			await getImportEntity( em ),
 			em
 		);
 		expect( saveResult ).toMatchObject( {
-			inserted: 1,
+			inserted: 0,
 			updated: 0,
 		} );
-		expect( await em.find( 'Claim' ) ).toHaveLength( 3 );
+		expect( await em.find( 'Claim' ) ).toHaveLength( 1 );
 	} );
-	test( 'inserts updated claim', async () => {
+	test( 'updates existing claim', async () => {
 		const em = await getEntityManagerWithClaim();
 		const updatedClaim = {
 			...rawClaim,
-			slug: 'test1',
 			status: 'denied',
 		};
 		const saveResult = await saveClaims(
@@ -259,12 +265,12 @@ describe( 'saveClaims', () => {
 			updated: 1,
 		} );
 		expect( await em.find( 'Claim' ) ).toHaveLength( 2 );
-		expect(
-			await em.findOne( 'Claim', {
-				where: { id: 1 },
-				relations: [ 'parent' ],
-			} )
-		).toHaveProperty( 'parent', updatedClaim );
+		const savedClaim = await em.findOne< Claim >( 'Claim', 1 );
+		expect( savedClaim ).toHaveProperty( 'parent' );
+		expect( savedClaim?.parent ).resolves.toHaveProperty(
+			'status',
+			'denied'
+		);
 	} );
 	test.todo( 'updates old claim' );
 } );

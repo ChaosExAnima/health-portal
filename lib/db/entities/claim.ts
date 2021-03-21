@@ -28,8 +28,8 @@ export default class Claim extends BaseEntity {
 	@Column()
 	slug: string;
 
-	@Column( { nullable: true } )
-	number?: string;
+	@Column()
+	number: string;
 
 	get claim(): string | undefined {
 		return this.number;

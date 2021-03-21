@@ -56,7 +56,7 @@
     "@graphql-tools/mock": "^7.0.0",
     "@types/apollo-upload-client": "^14.1.0",
     "@types/debug": "^4.1.5",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.21",
     "@types/node": "^14.14.11",
     "@types/react": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.9.1",
@@ -67,9 +67,11 @@
     "casual": "^1.6.2",
     "dotenv": "^8.2.0",
     "eslint": "^7.15.0",
+    "eslint-plugin-jest": "^24.3.2",
     "eslint-plugin-mui-unused-classes": "^1.0.3",
     "graphql-let": "^0.16.3",
     "jest": "^26.6.3",
+    "jest-expect-message": "^1.0.2",
     "sqlite3": "^5.0.2",
     "ts-jest": "^26.5.1",
     "ts-node": "^9.1.1",
@@ -85,16 +87,19 @@
       "plugin:@typescript-eslint/recommended"
     ],
     "plugins": [
-      "@typescript-eslint"
+      "@typescript-eslint",
+      "jest"
     ],
     "env": {
       "browser": true,
-      "node": true
+      "node": true,
+      "jest/globals": true
     },
     "rules": {
       "no-unused-vars": "off",
       "no-console": "warn",
-      "prettier/prettier": "warn"
+      "prettier/prettier": "warn",
+      "jest/no-disabled-tests": "warn"
     },
     "ignorePatterns": [
       "**/*.graphql.d.ts",
@@ -105,6 +110,9 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "jest-expect-message"
+    ],
     "modulePaths": [
       "."
     ]
