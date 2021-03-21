@@ -5,7 +5,11 @@ import parseCSV, {
 	readCSV,
 	saveClaims,
 } from './index';
-import { getEntityManagerWithClaim, getImportEntity } from './test-utils';
+import {
+	arrToCSVStream,
+	getEntityManagerWithClaim,
+	getImportEntity,
+} from './test-utils';
 import Claim from 'lib/db/entities/claim';
 import { createTestDB, getEntityManager, resetTestDB } from 'lib/db/test-utils';
 
@@ -25,13 +29,8 @@ const rawClaim = {
 } as const;
 
 describe( 'readCSV', () => {
-	function arrToStream( ...rows: string[][] ): Readable {
-		return Readable.from(
-			rows.map( ( row ) => `"${ row.join( '","' ) }"` ).join( '\n' )
-		);
-	}
 	test( 'converts readable stream to CSV', async () => {
-		const stream = arrToStream( [ 'key1', 'key2' ], [ 'val1', 'val2' ] );
+		const stream = arrToCSVStream( [ 'key1', 'key2' ], [ 'val1', 'val2' ] );
 		const csv = readCSV( stream );
 		await expect( csv ).resolves.toEqual( [
 			{
@@ -41,7 +40,7 @@ describe( 'readCSV', () => {
 		] );
 	} );
 	test( 'rejects on invalid format', async () => {
-		const stream = arrToStream(
+		const stream = arrToCSVStream(
 			[ 'key1', 'key2' ],
 			[ 'val1', 'val2', 'val3' ]
 		);
@@ -286,6 +285,9 @@ describe( 'saveClaims', () => {
 } );
 
 describe( 'parseCSV', () => {
+	beforeEach( createTestDB );
+	afterEach( resetTestDB );
+
 	test( 'uses a transaction', async () => {
 		const csvStream = new Readable();
 
@@ -298,5 +300,44 @@ describe( 'parseCSV', () => {
 		await expect( parse ).resolves.toEqual( 0 );
 
 		expect( transactionSpy ).toHaveBeenCalled();
+	} );
+
+	test( 'sets correct insert on import entity', async () => {
+		const em = await getEntityManager();
+		const rawClaimWithProvider = {
+			...rawClaim,
+			provider: 'Dr. Test',
+		} as const;
+		const csvStream = arrToCSVStream(
+			Object.keys( rawClaimWithProvider ),
+			Object.values( rawClaimWithProvider )
+		);
+		await expect( parseCSV( csvStream, em ) ).resolves.toEqual( 1 );
+
+		const importRepo = em.getRepository< Import >( 'Import' );
+		await expect( importRepo.findOneOrFail() ).resolves.toMatchObject( {
+			inserted: 1,
+			updated: 0,
+		} );
+	} );
+
+	test( 'sets correct update on import entity', async () => {
+		const em = await getEntityManagerWithClaim();
+		const rawClaimWithProvider = {
+			...rawClaim,
+			status: 'DENIED',
+			provider: 'Dr. Test',
+		} as const;
+		const csvStream = arrToCSVStream(
+			Object.keys( rawClaimWithProvider ),
+			Object.values( rawClaimWithProvider )
+		);
+		await expect( parseCSV( csvStream, em ) ).resolves.toEqual( 1 );
+
+		const importRepo = em.getRepository< Import >( 'Import' );
+		await expect( importRepo.findOneOrFail() ).resolves.toMatchObject( {
+			inserted: 0,
+			updated: 1,
+		} );
 	} );
 } );

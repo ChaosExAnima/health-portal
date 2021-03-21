@@ -108,7 +108,7 @@ export async function saveClaims(
 		if ( isAnthemClaim( rawClaim ) ) {
 			claimData = parseAnthemClaim( rawClaim, providers );
 		} else if ( isTestClaim( rawClaim ) ) {
-			claimData = parseTestClaim( rawClaim );
+			claimData = parseTestClaim( rawClaim, providers );
 		}
 		if ( ! claimData ) {
 			throw new Error( 'Unknown claim type found!' );
@@ -174,11 +174,8 @@ export async function saveClaims(
 				oldClaim.parent = Promise.resolve( newClaim );
 			}
 		}
-		await claimRepo.save( oldClaims );
+		await claimRepo.save( parentClaims );
 	}
-	const importRepo = em.getRepository< Import >( 'Import' );
-	importRepo.update( importEntity, { inserted, updated } );
-
 	return { inserted, updated };
 }
 
@@ -221,8 +218,11 @@ export default async function parseCSV(
 				importEntity,
 				emt
 			);
-			log( 'Inserted and updated claims' );
 			returnVal = inserted + updated;
+			log( 'Inserted and updated claims' );
+			const importRepo = emt.getRepository< Import >( 'Import' );
+			await importRepo.update( importEntity.id, { inserted, updated } );
+			log( 'Saves totals to import table' );
 		} catch ( err ) {
 			log( err );
 			throw new Error( 'Error parsing claims' );
