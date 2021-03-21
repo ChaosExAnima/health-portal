@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS='--inspect' DEBUG=app next dev",
+    "dev": "NODE_OPTIONS='--inspect' DEBUG='app:*' next dev",
     "predev": "yarn start-db && yarn gen",
     "build": "next build",
     "start": "next start",
@@ -16,6 +16,7 @@
     "caniuse": "yarn browserslist --update-db",
     "test": "jest",
     "test:ci": "yarn jest --ci --coverage",
+    "test:watch": "yarn jest --watch --watchman",
     "lint": "eslint ."
   },
   "dependencies": {

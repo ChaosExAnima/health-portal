@@ -1,7 +1,9 @@
 codecov:
     require_ci_to_pass: false
+ignore:
+  - './lib/parser/test-utils.ts'
 coverage:
     status:
         patch:
             default:
-                target: 100%
+                target: 60%

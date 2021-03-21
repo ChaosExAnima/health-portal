@@ -1,18 +1,22 @@
 import { createHash } from 'crypto';
 import csv from 'csv-parser';
 import { DeepPartial, EntityManager, In } from 'typeorm';
+import dayjs from 'dayjs';
 
 import {
 	getProviderFromClaim,
 	isAnthemClaim,
 	parseAnthemClaim,
 } from './anthem';
+import {
+	getProviderFromTestClaim,
+	isTestClaim,
+	parseTestClaim,
+} from './test-utils';
+import { Claim, Import, Provider } from 'lib/db/entities';
 import { slugify } from 'lib/strings';
 
 import type { Readable } from 'stream';
-import { Claim, Import, Provider } from 'lib/db/entities';
-import { isTestClaim, parseTestClaim } from './test-utils';
-import dayjs from 'dayjs';
 
 type RawClaim = Record< string, string >;
 type MaybeArray< T > = T | T[];
@@ -20,7 +24,7 @@ type MaybeArray< T > = T | T[];
 export function readCSV( readStream: Readable ): Promise< RawClaim[] > {
 	const rawClaims: RawClaim[] = [];
 	const stream = readStream
-		.pipe( csv() )
+		.pipe( csv( { strict: true } ) )
 		.on( 'data', ( data ) => rawClaims.push( data ) );
 	return new Promise( ( res, rej ) => {
 		stream.on( 'end', () => {
@@ -82,6 +86,10 @@ export async function getAndInsertProviders(
 		let name = '';
 		if ( isAnthemClaim( rawClaim ) ) {
 			name = getProviderFromClaim( rawClaim );
+		} else if ( isTestClaim( rawClaim ) ) {
+			name = getProviderFromTestClaim( rawClaim );
+		} else {
+			continue;
 		}
 
 		// Checks if the name is included.
@@ -99,7 +107,9 @@ export async function getAndInsertProviders(
 		providerNames.push( name );
 		newProviders.push( newProvider );
 	}
-	await providerRepo.save( newProviders );
+	if ( newProviders.length ) {
+		await providerRepo.save( newProviders );
+	}
 	return providerRepo.find();
 }
 
@@ -150,10 +160,16 @@ export async function saveClaims(
 	} );
 
 	// Iterate over claims and generate list of changed claims.
-	let upsertClaims: Claim[] = [];
+	const upsertClaims: Claim[] = [];
+	const claimNumbers: string[] = [];
 	let inserted = 0;
 	let updated = 0;
 	for ( const claim of claims ) {
+		if ( claimNumbers.includes( claim.number ) ) {
+			continue;
+		}
+		claimNumbers.push( claim.number );
+
 		const oldClaim = oldClaims.find(
 			( { number } ) => claim.number === number
 		);
@@ -172,26 +188,11 @@ export async function saveClaims(
 		upsertClaims.push( claim );
 	}
 
-	if ( ! upsertClaims.length ) {
-		// Exit as no new claims.
-		return { inserted, updated };
+	// Write to DB.
+	await em.update( 'Import', importEntity.id, { inserted, updated } );
+	if ( upsertClaims.length ) {
+		await claimRepo.save( upsertClaims );
 	}
-
-	// Insert new claims and set IDs for prior claims.
-	upsertClaims = await claimRepo.save( upsertClaims );
-
-	// const parentClaims: Claim[] = [];
-	// for ( const newClaim of upsertClaims ) {
-	// 	if ( ! newClaim.parent ) {
-	// 		inserted++;
-	// 		continue; // Completely new claim.
-	// 	}
-	// 	updated++;
-	// 	const parentClaim = await newClaim.parent;
-	// 	parentClaim.parent = Promise.resolve( newClaim );
-	// 	parentClaims.push( parentClaim );
-	// }
-	// await claimRepo.save( parentClaims );
 
 	return { inserted, updated };
 }
@@ -211,15 +212,12 @@ export default async function parseCSV(
 	);
 
 	// Extract claim data.
-	const { inserted, updated } = await saveClaims(
+	const { inserted } = await saveClaims(
 		rawClaims,
 		providers,
 		importEntity,
 		em
 	);
-	importEntity.inserted = inserted;
-	importEntity.updated = updated;
-	await importEntity.save();
 
 	return inserted;
 }
