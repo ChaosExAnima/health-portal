@@ -107,7 +107,9 @@ export async function getAndInsertProviders(
 		providerNames.push( name );
 		newProviders.push( newProvider );
 	}
-	await providerRepo.save( newProviders );
+	if ( newProviders.length ) {
+		await providerRepo.save( newProviders );
+	}
 	return providerRepo.find();
 }
 

@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import {
 	getAndInsertProviders,
 	getImportOrThrow,
@@ -8,8 +9,8 @@ import {
 import { getImportEntity } from './test-utils';
 import Claim from 'lib/db/entities/claim';
 import { createTestDB, getEntityManager, resetTestDB } from 'lib/db/test-utils';
-import { Readable } from 'stream';
 
+import type { EntityRepository } from 'typeorm';
 import type Import from 'lib/db/entities/import';
 import type Provider from 'lib/db/entities/provider';
 
@@ -166,6 +167,32 @@ describe( 'getAndInsertProviders', () => {
 		);
 		const importEntityLoaded = await providers.pop()?.import;
 		expect( importEntityLoaded ).toMatchObject( importEntity );
+	} );
+
+	test( 'will skip unparsable claims', async () => {
+		const em = getEntityManager();
+		const importEntity = await getImportEntity( em );
+		const providers = await getAndInsertProviders(
+			[ { test: 'foo' } ],
+			em,
+			importEntity
+		);
+		expect( providers ).toHaveLength( 0 );
+	} );
+
+	test( 'will not try and save if no providers added', async () => {
+		const em = getEntityManager();
+		const providerRepo = em.getRepository( 'Provider' );
+		const importEntity = await getImportEntity( em );
+
+		const createSpy = jest.spyOn( providerRepo, 'create' );
+		const saveSpy = jest.spyOn( providerRepo, 'save' );
+		jest.spyOn( em, 'getRepository' ).mockReturnValueOnce( providerRepo );
+
+		const providers = await getAndInsertProviders( [], em, importEntity );
+		expect( providers ).toHaveLength( 0 );
+		expect( createSpy ).not.toHaveBeenCalled();
+		expect( saveSpy ).not.toHaveBeenCalled();
 	} );
 } );
 
