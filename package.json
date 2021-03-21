@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS='--inspect' DEBUG='app:*' next dev",
+    "dev": "NODE_OPTIONS='--inspect' next dev",
     "predev": "yarn start-db && yarn gen",
     "build": "next build",
     "start": "next start",
@@ -13,6 +13,7 @@
     "stop-db": "docker-compose down",
     "load-schema": "yarn orm schema:sync",
     "load-fixtures": "ts-node lib/db/populate.ts",
+    "reset-db": "yarn orm schema:drop && yarn orm schema:sync",
     "caniuse": "yarn browserslist --update-db",
     "test": "jest",
     "test:ci": "yarn jest --ci --coverage",
