@@ -1,7 +1,5 @@
-import { createHash } from 'crypto';
 import csv from 'csv-parser';
 import { DeepPartial, EntityManager, In } from 'typeorm';
-import dayjs from 'dayjs';
 import debug from 'debug';
 
 import {
@@ -18,9 +16,9 @@ import { Claim, Import, Provider } from 'lib/db/entities';
 import { slugify } from 'lib/strings';
 
 import type { Readable } from 'stream';
+import { getHash, getUniqueSlug, isClaimSame } from './utils';
 
 type RawClaim = Record< string, string >;
-type MaybeArray< T > = T | T[];
 
 const log = debug( 'app:parser' );
 
@@ -36,38 +34,6 @@ export function readCSV( readStream: Readable ): Promise< RawClaim[] > {
 		} );
 		stream.on( 'error', rej );
 	} );
-}
-
-export function isClaimSame( newClaim: Claim, oldClaim?: Claim ): boolean {
-	return (
-		!! oldClaim &&
-		newClaim.number === oldClaim.number &&
-		newClaim.status === oldClaim.status &&
-		dayjs( newClaim.serviceDate ).isSame( oldClaim.serviceDate ) &&
-		newClaim.type === oldClaim.type &&
-		newClaim.billed === oldClaim.billed &&
-		newClaim.cost === oldClaim.cost
-	);
-}
-
-export function getHash(
-	input: MaybeArray< Record< string, unknown > >,
-	end?: number
-): string {
-	const hash = createHash( 'md5' );
-	hash.update( JSON.stringify( input ) );
-	const digest = hash.digest( 'hex' );
-	return end ? digest.slice( 0, end ) : digest;
-}
-
-export function getUniqueSlug( parentSlug: string ): string {
-	const matches = parentSlug.match( /^([a-z0-9-]+)-?(\d+)?$/i );
-	if ( ! matches ) {
-		throw new Error( 'No slug provided.' );
-	} else if ( matches.length === 1 ) {
-		return `${ matches[ 0 ] }-1`;
-	}
-	return `${ matches[ 0 ] }-${ Number.parseInt( matches[ 1 ] ) + 1 }`;
 }
 
 export async function getAndInsertProviders(
