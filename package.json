@@ -16,6 +16,7 @@
     "caniuse": "yarn browserslist --update-db",
     "test": "jest",
     "test:ci": "yarn jest --ci --coverage",
+    "test:watch": "yarn jest --watch --watchman",
     "lint": "eslint ."
   },
   "dependencies": {

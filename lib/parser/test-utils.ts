@@ -1,36 +1,48 @@
 import type { DeepPartial, EntityManager } from 'typeorm';
 import type { Claim, Import } from 'lib/db/entities';
 
-type TestClaim = {
-	slug?: string;
-	number: string;
-	status: string;
-	serviceDate: Date;
-	type: string;
-	billed: number;
-	cost: number;
-};
-type RawTestClaim = Record< keyof TestClaim, string >;
+type RawTestClaim =
+	| {
+			number: string;
+			status: string;
+			type: string;
+			serviceDate: string;
+			billed: string;
+			cost: string;
+	  }
+	| { provider: string };
 
 export function isTestClaim(
-	rawClaim: Record< string, string >
+	rawClaim: Record< string, string | undefined >
 ): rawClaim is RawTestClaim {
 	return (
-		'number' in rawClaim &&
-		'status' in rawClaim &&
-		'serviceDate' in rawClaim &&
-		'type' in rawClaim &&
-		'billed' in rawClaim &&
-		'cost' in rawClaim
+		( 'number' in rawClaim &&
+			'status' in rawClaim &&
+			'serviceDate' in rawClaim &&
+			'type' in rawClaim &&
+			'billed' in rawClaim &&
+			'cost' in rawClaim ) ||
+		'provider' in rawClaim
 	);
 }
 
-export function parseTestClaim( claim: RawTestClaim ): DeepPartial< Claim > {
+export function getProviderFromTestClaim( rawClaim: RawTestClaim ): string {
+	if ( ! ( 'provider' in rawClaim ) ) {
+		throw new Error( 'Invalid test claim type' );
+	}
+	return rawClaim.provider;
+}
+
+export function parseTestClaim( rawClaim: RawTestClaim ): DeepPartial< Claim > {
+	if ( ! ( 'serviceDate' in rawClaim ) ) {
+		throw new Error( 'Invalid test claim type' );
+	}
 	return {
-		...claim,
-		serviceDate: new Date( claim.serviceDate ),
-		billed: Number.parseFloat( claim.billed ),
-		cost: Number.parseFloat( claim.cost ),
+		...rawClaim,
+		serviceDate: new Date( rawClaim.serviceDate ),
+		billed: Number.parseFloat( rawClaim.billed ),
+		cost: Number.parseFloat( rawClaim.cost ),
+		provider: undefined,
 	};
 }
 

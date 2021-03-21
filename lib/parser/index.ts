@@ -1,18 +1,22 @@
 import { createHash } from 'crypto';
 import csv from 'csv-parser';
 import { DeepPartial, EntityManager, In } from 'typeorm';
+import dayjs from 'dayjs';
 
 import {
 	getProviderFromClaim,
 	isAnthemClaim,
 	parseAnthemClaim,
 } from './anthem';
+import {
+	getProviderFromTestClaim,
+	isTestClaim,
+	parseTestClaim,
+} from './test-utils';
+import { Claim, Import, Provider } from 'lib/db/entities';
 import { slugify } from 'lib/strings';
 
 import type { Readable } from 'stream';
-import { Claim, Import, Provider } from 'lib/db/entities';
-import { isTestClaim, parseTestClaim } from './test-utils';
-import dayjs from 'dayjs';
 
 type RawClaim = Record< string, string >;
 type MaybeArray< T > = T | T[];
@@ -20,7 +24,7 @@ type MaybeArray< T > = T | T[];
 export function readCSV( readStream: Readable ): Promise< RawClaim[] > {
 	const rawClaims: RawClaim[] = [];
 	const stream = readStream
-		.pipe( csv() )
+		.pipe( csv( { strict: true } ) )
 		.on( 'data', ( data ) => rawClaims.push( data ) );
 	return new Promise( ( res, rej ) => {
 		stream.on( 'end', () => {
@@ -82,6 +86,8 @@ export async function getAndInsertProviders(
 		let name = '';
 		if ( isAnthemClaim( rawClaim ) ) {
 			name = getProviderFromClaim( rawClaim );
+		} else if ( isTestClaim( rawClaim ) ) {
+			name = getProviderFromTestClaim( rawClaim );
 		}
 
 		// Checks if the name is included.

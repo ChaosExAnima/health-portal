@@ -16,9 +16,7 @@ export function createTestDB(): Promise< Connection > {
 		type: 'sqlite',
 		database: ':memory:',
 		dropSchema: true,
-		entities: [
-			...( ( Object.values( entities ) as unknown[] ) as string[] ),
-		],
+		entities: [ ...Object.values( entities ) ],
 		synchronize: true,
 		logging: false,
 	} );

@@ -2,14 +2,16 @@ import {
 	getAndInsertProviders,
 	getImportOrThrow,
 	isClaimSame,
+	readCSV,
 	saveClaims,
 } from './index';
+import { getImportEntity } from './test-utils';
 import Claim from 'lib/db/entities/claim';
+import { createTestDB, getEntityManager, resetTestDB } from 'lib/db/test-utils';
+import { Readable } from 'stream';
 
 import type Import from 'lib/db/entities/import';
 import type Provider from 'lib/db/entities/provider';
-import { createTestDB, getEntityManager, resetTestDB } from 'lib/db/test-utils';
-import { getImportEntity } from './test-utils';
 
 const rootClaim = {
 	number: '1234',
@@ -31,8 +33,29 @@ const rawClaim = {
 } as const;
 
 describe( 'readCSV', () => {
-	test.todo( 'converts readable stream to CSV' );
-	test.todo( 'rejects on invalid format' );
+	function arrToStream( ...rows: string[][] ): Readable {
+		return Readable.from(
+			rows.map( ( row ) => `"${ row.join( '","' ) }"` ).join( '\n' )
+		);
+	}
+	test( 'converts readable stream to CSV', async () => {
+		const stream = arrToStream( [ 'key1', 'key2' ], [ 'val1', 'val2' ] );
+		const csv = readCSV( stream );
+		expect( csv ).resolves.toEqual( [
+			{
+				key1: 'val1',
+				key2: 'val2',
+			},
+		] );
+	} );
+	test( 'rejects on invalid format', async () => {
+		const stream = arrToStream(
+			[ 'key1', 'key2' ],
+			[ 'val1', 'val2', 'val3' ]
+		);
+		const csv = readCSV( stream );
+		expect( csv ).rejects.toThrow();
+	} );
 } );
 
 describe( 'isClaimSame', () => {
@@ -85,38 +108,25 @@ describe( 'getAndInsertProviders', () => {
 
 	test( 'will return providers', async () => {
 		const em = getEntityManager();
-		const importEntity = await getImportEntity( em );
-		const rawClaims = [
-			{
-				'Claim Received': 'yes',
-				'Provided By': 'Dr. Test',
-			},
-		];
+		const rawClaims = [ { provider: 'Dr. Test' } ];
 		const providers = await getAndInsertProviders(
 			rawClaims,
 			em,
-			importEntity
+			await getImportEntity( em )
 		);
 		expect( providers ).toHaveLength( 1 );
 	} );
 
 	test( 'will not create duplicates', async () => {
 		const em = getEntityManager();
-		const importEntity = await getImportEntity( em );
 		const rawClaims = [
-			{
-				'Claim Received': 'yes',
-				'Provided By': 'Dr. Test',
-			},
-			{
-				'Claim Received': 'yes',
-				'Provided By': 'Dr. Test',
-			},
+			{ provider: 'Dr. Test' },
+			{ provider: 'Dr. Test' },
 		];
 		const providers = await getAndInsertProviders(
 			rawClaims,
 			em,
-			importEntity
+			await getImportEntity( em )
 		);
 		expect( providers ).toHaveLength( 1 );
 	} );
