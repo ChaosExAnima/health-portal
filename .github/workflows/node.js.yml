@@ -25,10 +25,8 @@ jobs:
       name: Install dependencies
     - run: yarn test:ci
       name: Run unit tests
-      continue-on-error: true
     - name: Linting
       run: yarn lint
-      continue-on-error: true
     - uses: codecov/codecov-action@v1
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
