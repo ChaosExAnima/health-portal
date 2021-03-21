@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import {
+import parseCSV, {
 	getAndInsertProviders,
 	getImportOrThrow,
 	isClaimSame,
@@ -10,7 +10,6 @@ import { getImportEntity } from './test-utils';
 import Claim from 'lib/db/entities/claim';
 import { createTestDB, getEntityManager, resetTestDB } from 'lib/db/test-utils';
 
-import type { EntityRepository } from 'typeorm';
 import type Import from 'lib/db/entities/import';
 import type Provider from 'lib/db/entities/provider';
 
@@ -291,11 +290,7 @@ describe( 'saveClaims', () => {
 
 		const claim = await em.findOne< Claim >( 'Claim' );
 		expect( claim ).not.toBeFalsy();
-		expect( claim?.import ).resolves.toEqual( {
-			...importEntity,
-			updated: 0,
-			inserted: 1,
-		} );
+		expect( claim?.import ).resolves.toEqual( importEntity );
 	} );
 	test( 'skips duplicate input claims', async () => {
 		const em = await getEntityManager();
@@ -344,9 +339,21 @@ describe( 'saveClaims', () => {
 		expect( await em.find( 'Claim' ) ).toHaveLength( 2 );
 		const savedClaim = await em.findOne< Claim >( 'Claim', 1 );
 		expect( savedClaim ).toHaveProperty( 'parent' );
-		expect( savedClaim?.parent ).resolves.toHaveProperty(
-			'status',
-			'denied'
-		);
+		const parent = await savedClaim?.parent;
+		expect( parent ).toHaveProperty( 'status', 'denied' );
+	} );
+} );
+
+describe( 'parseCSV', () => {
+	test( 'uses a transaction', async () => {
+		const csvStream = new Readable();
+
+		const em = getEntityManager();
+		const transactionSpy = jest.spyOn( em, 'transaction' );
+
+		const parse = parseCSV( csvStream, em );
+		expect( parse ).resolves.toEqual( 0 );
+
+		expect( transactionSpy ).toHaveBeenCalled();
 	} );
 } );
