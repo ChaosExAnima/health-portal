@@ -27,6 +27,10 @@ export default abstract class InputBase< T extends RawClaim > {
 		return false;
 	}
 
+	public loadProviders( providers: Provider[] ): void {
+		this.providers = providers;
+	}
+
 	public getProviderOrThrow(): Provider {
 		const currentClaim = this.currentClaim;
 		if ( ! currentClaim ) {

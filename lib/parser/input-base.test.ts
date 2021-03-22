@@ -1,9 +1,5 @@
 import { Provider } from 'lib/db/entities';
-import InputBase, {
-	ClaimInsertData,
-	ClaimPartial,
-	RawClaim,
-} from './input-base';
+import InputBase, { ClaimInsertData, RawClaim } from './input-base';
 
 class InputGeneric extends InputBase< RawClaim > {
 	public validate( input: RawClaim ): input is RawClaim {
@@ -14,8 +10,8 @@ class InputGeneric extends InputBase< RawClaim > {
 		return input;
 	}
 
-	get current(): ClaimPartial | undefined {
-		return this.currentClaim;
+	get( key: 'currentClaim' | 'providers' ) {
+		return this[ key ];
 	}
 }
 
@@ -34,7 +30,20 @@ describe( 'InputBase', () => {
 		test( 'assigns claim if validated', () => {
 			const input = new InputGeneric();
 			input.process( testClaim );
-			expect( input.current ).toEqual< typeof testClaim >( testClaim );
+			expect( input.get( 'currentClaim' ) ).toEqual< typeof testClaim >(
+				testClaim
+			);
+		} );
+	} );
+
+	describe( 'loadProviders', () => {
+		test( 'loads providers', () => {
+			const input = new InputGeneric();
+			const testProvider = new Provider();
+			input.loadProviders( [ testProvider ] );
+			const providers = input.get( 'providers' ) as Provider[];
+			expect( providers ).toHaveLength( 1 );
+			expect( providers[ 0 ] ).toBe( testProvider );
 		} );
 	} );
 
