@@ -28,11 +28,12 @@ export function getHash(
 }
 
 export function getUniqueSlug( parentSlug: string ): string {
-	const matches = parentSlug.match( /^([a-z0-9-]+)-?(\d+)?$/i );
-	if ( ! matches ) {
+	if ( ! parentSlug ) {
 		throw new Error( 'No slug provided.' );
-	} else if ( matches.length === 1 ) {
-		return `${ matches[ 0 ] }-1`;
 	}
-	return `${ matches[ 0 ] }-${ Number.parseInt( matches[ 1 ] ) + 1 }`;
+	const matches = parentSlug.match( /^([a-z0-9-]+)-(\d+)$/i );
+	if ( ! matches || matches.length !== 3 ) {
+		return `${ parentSlug }-1`;
+	}
+	return `${ matches[ 1 ] }-${ Number.parseInt( matches[ 2 ] ) + 1 }`;
 }
