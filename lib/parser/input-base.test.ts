@@ -19,6 +19,11 @@ describe( 'InputBase', () => {
 	const testClaim = { test: 'true' } as const;
 
 	describe( 'process', () => {
+		test( 'returns false for invalid input', () => {
+			const input = new InputGeneric();
+			jest.spyOn( input, 'validate' ).mockReturnValue( false );
+			expect( input.process( {} ) ).toStrictEqual( false );
+		} );
 		test( 'validates and converts the input', () => {
 			const input = new InputGeneric();
 			const validateFn = jest.spyOn( input, 'validate' );
@@ -50,17 +55,23 @@ describe( 'InputBase', () => {
 	describe( 'getProviderOrThrow', () => {
 		test( 'throws if claim not set', () => {
 			const input = new InputGeneric();
-			expect( input.getProviderOrThrow ).toThrow();
+			expect( () => input.getProviderOrThrow() ).toThrowError(
+				'No claim set'
+			);
 		} );
 		test( 'throws if claim missing provider', () => {
 			const input = new InputGeneric();
 			input.process( testClaim );
-			expect( input.getProviderOrThrow ).toThrow();
+			expect( () => input.getProviderOrThrow() ).toThrowError(
+				'No provider'
+			);
 		} );
 		test( 'throws if claim provider not found', () => {
 			const input = new InputGeneric();
 			input.process( { ...testClaim, provider: 'test' } );
-			expect( input.getProviderOrThrow ).toThrow();
+			expect( () => input.getProviderOrThrow() ).toThrowError(
+				'Unknown provider'
+			);
 		} );
 		test( 'returns claim provider via slug match', () => {
 			const testProvider = new Provider();

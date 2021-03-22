@@ -31,6 +31,11 @@ describe( 'InputAnthem', () => {
 				billed: 1.23,
 				cost: 4.56,
 			} );
+			expect(
+				input.convert( { ...inputObj, Status: 'Denied' } )
+			).toMatchObject( {
+				status: 'DENIED',
+			} );
 		} );
 	} );
 } );
