@@ -13,7 +13,7 @@ export function slugify( text: string ): string {
 }
 
 export function priceToNumber( price?: string ): number | null {
-	if ( ! price || price.match( /\./g )?.length !== 1 ) {
+	if ( ! price || ( price.match( /\./g ) || [] ).length > 1 ) {
 		return null;
 	}
 	const parsedPrice = Number.parseFloat( price.replace( /[^\d\.]*/g, '' ) );
