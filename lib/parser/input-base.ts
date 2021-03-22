@@ -11,9 +11,7 @@ export type { RawClaim };
 
 export default abstract class InputBase< T extends RawClaim > {
 	protected currentClaim?: ClaimPartial;
-
-	// eslint-disable-next-line no-useless-constructor
-	constructor( protected providers: Provider[] = [] ) {}
+	protected providers: Provider[] = [];
 
 	public abstract validate( input: RawClaim ): input is T;
 
