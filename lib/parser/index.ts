@@ -18,7 +18,7 @@ import { slugify } from 'lib/strings';
 import type { Readable } from 'stream';
 import { getHash, getUniqueSlug, isClaimSame } from './utils';
 
-type RawClaim = Record< string, string >;
+export type RawClaim = Record< string, string >;
 
 const log = debug( 'app:parser' );
 
