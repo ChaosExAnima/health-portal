@@ -10,7 +10,7 @@ import DataTable, {
 	DataTableColumn,
 	DataTableFilter,
 } from 'components/data-table';
-import { capitalize, claimType } from 'lib/strings';
+import { capitalize, formatClaimType } from 'lib/strings';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;
@@ -78,7 +78,7 @@ const Claims: React.FC< ClaimsProps > = ( { currentPage } ) => {
 		{
 			key: 'type',
 			name: 'Type',
-			format: claimType,
+			format: formatClaimType,
 		},
 		{
 			key: 'billed',
