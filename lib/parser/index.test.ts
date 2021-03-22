@@ -1,16 +1,18 @@
 import { Readable } from 'stream';
-import {
+import parseCSV, {
 	getAndInsertProviders,
 	getImportOrThrow,
-	isClaimSame,
 	readCSV,
 	saveClaims,
 } from './index';
-import { getImportEntity } from './test-utils';
+import {
+	arrToCSVStream,
+	getEntityManagerWithClaim,
+	getImportEntity,
+} from './test-utils';
 import Claim from 'lib/db/entities/claim';
 import { createTestDB, getEntityManager, resetTestDB } from 'lib/db/test-utils';
 
-import type { EntityRepository } from 'typeorm';
 import type Import from 'lib/db/entities/import';
 import type Provider from 'lib/db/entities/provider';
 
@@ -18,13 +20,6 @@ const rootClaim = {
 	number: '1234',
 	status: 'pending',
 	type: 'test',
-} as const;
-const baseClaim = {
-	...rootClaim,
-	slug: 'test',
-	serviceDate: new Date( 2021, 0, 1, 12 ),
-	billed: 1.23,
-	cost: 1.23,
 } as const;
 const rawClaim = {
 	...rootClaim,
@@ -34,15 +29,10 @@ const rawClaim = {
 } as const;
 
 describe( 'readCSV', () => {
-	function arrToStream( ...rows: string[][] ): Readable {
-		return Readable.from(
-			rows.map( ( row ) => `"${ row.join( '","' ) }"` ).join( '\n' )
-		);
-	}
 	test( 'converts readable stream to CSV', async () => {
-		const stream = arrToStream( [ 'key1', 'key2' ], [ 'val1', 'val2' ] );
+		const stream = arrToCSVStream( [ 'key1', 'key2' ], [ 'val1', 'val2' ] );
 		const csv = readCSV( stream );
-		expect( csv ).resolves.toEqual( [
+		await expect( csv ).resolves.toEqual( [
 			{
 				key1: 'val1',
 				key2: 'val2',
@@ -50,57 +40,13 @@ describe( 'readCSV', () => {
 		] );
 	} );
 	test( 'rejects on invalid format', async () => {
-		const stream = arrToStream(
+		const stream = arrToCSVStream(
 			[ 'key1', 'key2' ],
 			[ 'val1', 'val2', 'val3' ]
 		);
 		const csv = readCSV( stream );
 		expect( csv ).rejects.toThrow();
 	} );
-} );
-
-describe( 'isClaimSame', () => {
-	test( 'returns true on identical claims', () => {
-		const claim1 = new Claim( baseClaim );
-		const claim2 = new Claim( baseClaim );
-		expect( isClaimSame( claim1, claim2 ) ).toBeTruthy();
-	} );
-
-	function getDiffOnKey(
-		claimKey: keyof typeof baseClaim
-	): string | Date | number {
-		switch ( typeof baseClaim[ claimKey ] ) {
-			case 'string':
-				return 'changed';
-			case 'object':
-				return new Date( 2000, 1 );
-			case 'number':
-				return 4.56;
-			default:
-				throw new Error(
-					'Unknown type: ' + typeof baseClaim[ claimKey ]
-				);
-		}
-	}
-
-	test( 'returns false on claim with different keys', () => {
-		Object.keys( baseClaim )
-			.filter( ( claimKey ) => ! [ 'slug' ].includes( claimKey ) )
-			.forEach( ( claimKey: keyof typeof baseClaim ) => {
-				const claim1 = new Claim( { ...baseClaim } );
-				const claim2 = new Claim( {
-					...baseClaim,
-					[ claimKey ]: getDiffOnKey( claimKey ),
-				} );
-				expect( isClaimSame( claim1, claim2 ) ).toBeFalsy();
-			} );
-	} );
-} );
-
-describe( 'getHash', () => {
-	test.todo( 'gets correct hash for empty array' );
-	test.todo( 'gets correct hash with dummy data' );
-	test.todo( 'returns length from second arg' );
 } );
 
 describe( 'getAndInsertProviders', () => {
@@ -224,15 +170,6 @@ describe( 'saveClaims', () => {
 	beforeEach( createTestDB );
 	afterEach( resetTestDB );
 
-	async function getEntityManagerWithClaim() {
-		const em = getEntityManager();
-		await em.insert( 'Claim', {
-			...baseClaim,
-			slug: 'test1',
-		} );
-		return em;
-	}
-
 	test( 'rejects when unknown format is imported', async () => {
 		const em = await getEntityManager();
 		const saveResult = saveClaims(
@@ -268,7 +205,7 @@ describe( 'saveClaims', () => {
 			inserted: 1,
 			updated: 0,
 		} );
-		expect( ( await em.find( 'Claim' ) ).length ).toEqual( 1 );
+		await expect( em.find( 'Claim' ) ).resolves.toHaveLength( 1 );
 	} );
 	test( 'inserts new claims', async () => {
 		const em = await getEntityManagerWithClaim();
@@ -282,7 +219,7 @@ describe( 'saveClaims', () => {
 			inserted: 1,
 			updated: 0,
 		} );
-		expect( ( await em.find( 'Claim' ) ).length ).toEqual( 2 );
+		await expect( em.find( 'Claim' ) ).resolves.toHaveLength( 2 );
 	} );
 	test( 'sets import entity on claims', async () => {
 		const em = await getEntityManager();
@@ -291,11 +228,7 @@ describe( 'saveClaims', () => {
 
 		const claim = await em.findOne< Claim >( 'Claim' );
 		expect( claim ).not.toBeFalsy();
-		expect( claim?.import ).resolves.toEqual( {
-			...importEntity,
-			updated: 0,
-			inserted: 1,
-		} );
+		await expect( claim?.import ).resolves.toEqual( importEntity );
 	} );
 	test( 'skips duplicate input claims', async () => {
 		const em = await getEntityManager();
@@ -344,9 +277,67 @@ describe( 'saveClaims', () => {
 		expect( await em.find( 'Claim' ) ).toHaveLength( 2 );
 		const savedClaim = await em.findOne< Claim >( 'Claim', 1 );
 		expect( savedClaim ).toHaveProperty( 'parent' );
-		expect( savedClaim?.parent ).resolves.toHaveProperty(
+		await expect( savedClaim?.parent ).resolves.toHaveProperty(
 			'status',
 			'denied'
 		);
+	} );
+} );
+
+describe( 'parseCSV', () => {
+	beforeEach( createTestDB );
+	afterEach( resetTestDB );
+
+	test( 'uses a transaction', async () => {
+		const csvStream = new Readable();
+
+		const em = getEntityManager();
+		const transactionSpy = jest
+			.spyOn( em, 'transaction' )
+			.mockImplementation( () => Promise.resolve() );
+
+		const parse = parseCSV( csvStream, em );
+		await expect( parse ).resolves.toEqual( 0 );
+
+		expect( transactionSpy ).toHaveBeenCalled();
+	} );
+
+	test( 'sets correct insert on import entity', async () => {
+		const em = await getEntityManager();
+		const rawClaimWithProvider = {
+			...rawClaim,
+			provider: 'Dr. Test',
+		} as const;
+		const csvStream = arrToCSVStream(
+			Object.keys( rawClaimWithProvider ),
+			Object.values( rawClaimWithProvider )
+		);
+		await expect( parseCSV( csvStream, em ) ).resolves.toEqual( 1 );
+
+		const importRepo = em.getRepository< Import >( 'Import' );
+		await expect( importRepo.findOneOrFail() ).resolves.toMatchObject( {
+			inserted: 1,
+			updated: 0,
+		} );
+	} );
+
+	test( 'sets correct update on import entity', async () => {
+		const em = await getEntityManagerWithClaim();
+		const rawClaimWithProvider = {
+			...rawClaim,
+			status: 'DENIED',
+			provider: 'Dr. Test',
+		} as const;
+		const csvStream = arrToCSVStream(
+			Object.keys( rawClaimWithProvider ),
+			Object.values( rawClaimWithProvider )
+		);
+		await expect( parseCSV( csvStream, em ) ).resolves.toEqual( 1 );
+
+		const importRepo = em.getRepository< Import >( 'Import' );
+		await expect( importRepo.findOneOrFail() ).resolves.toMatchObject( {
+			inserted: 0,
+			updated: 1,
+		} );
 	} );
 } );

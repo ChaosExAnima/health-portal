@@ -1,7 +1,6 @@
-import { createHash } from 'crypto';
 import csv from 'csv-parser';
 import { DeepPartial, EntityManager, In } from 'typeorm';
-import dayjs from 'dayjs';
+import debug from 'debug';
 
 import {
 	getProviderFromClaim,
@@ -17,9 +16,11 @@ import { Claim, Import, Provider } from 'lib/db/entities';
 import { slugify } from 'lib/strings';
 
 import type { Readable } from 'stream';
+import { getHash, getUniqueSlug, isClaimSame } from './utils';
 
 type RawClaim = Record< string, string >;
-type MaybeArray< T > = T | T[];
+
+const log = debug( 'app:parser' );
 
 export function readCSV( readStream: Readable ): Promise< RawClaim[] > {
 	const rawClaims: RawClaim[] = [];
@@ -33,38 +34,6 @@ export function readCSV( readStream: Readable ): Promise< RawClaim[] > {
 		} );
 		stream.on( 'error', rej );
 	} );
-}
-
-export function isClaimSame( newClaim: Claim, oldClaim?: Claim ): boolean {
-	return (
-		!! oldClaim &&
-		newClaim.number === oldClaim.number &&
-		newClaim.status === oldClaim.status &&
-		dayjs( newClaim.serviceDate ).isSame( oldClaim.serviceDate ) &&
-		newClaim.type === oldClaim.type &&
-		newClaim.billed === oldClaim.billed &&
-		newClaim.cost === oldClaim.cost
-	);
-}
-
-export function getHash(
-	input: MaybeArray< Record< string, unknown > >,
-	end?: number
-): string {
-	const hash = createHash( 'md5' );
-	hash.update( JSON.stringify( input ) );
-	const digest = hash.digest( 'hex' );
-	return end ? digest.slice( 0, end ) : digest;
-}
-
-export function getUniqueSlug( parentSlug: string ): string {
-	const matches = parentSlug.match( /^([a-z0-9-]+)-?(\d+)?$/i );
-	if ( ! matches ) {
-		throw new Error( 'No slug provided.' );
-	} else if ( matches.length === 1 ) {
-		return `${ matches[ 0 ] }-1`;
-	}
-	return `${ matches[ 0 ] }-${ Number.parseInt( matches[ 1 ] ) + 1 }`;
 }
 
 export async function getAndInsertProviders(
@@ -139,7 +108,7 @@ export async function saveClaims(
 		if ( isAnthemClaim( rawClaim ) ) {
 			claimData = parseAnthemClaim( rawClaim, providers );
 		} else if ( isTestClaim( rawClaim ) ) {
-			claimData = parseTestClaim( rawClaim );
+			claimData = parseTestClaim( rawClaim, providers );
 		}
 		if ( ! claimData ) {
 			throw new Error( 'Unknown claim type found!' );
@@ -147,7 +116,9 @@ export async function saveClaims(
 			throw new Error( 'Number field required' );
 		}
 		const claim = claimRepo.create( claimData );
-		claim.import = Promise.resolve( importEntity );
+		if ( claimData.provider ) {
+			claim.provider = claimData.provider as Promise< Provider >;
+		}
 		return claim;
 	} );
 
@@ -160,7 +131,8 @@ export async function saveClaims(
 	} );
 
 	// Iterate over claims and generate list of changed claims.
-	const upsertClaims: Claim[] = [];
+	const insertClaims: Claim[] = [];
+	const parentClaims: Claim[] = [];
 	const claimNumbers: string[] = [];
 	let inserted = 0;
 	let updated = 0;
@@ -173,27 +145,37 @@ export async function saveClaims(
 		const oldClaim = oldClaims.find(
 			( { number } ) => claim.number === number
 		);
-		if ( isClaimSame( claim, oldClaim ) ) {
-			continue;
-		}
 		if ( oldClaim ) {
-			oldClaim.parent = Promise.resolve( claim );
-			upsertClaims.push( oldClaim );
+			if ( isClaimSame( claim, oldClaim ) ) {
+				continue;
+			}
+			parentClaims.push( oldClaim );
 			updated++;
 		} else {
 			inserted++;
 		}
 		claim.slug = getUniqueSlug( oldClaim?.slug || claim.number );
 		claim.import = Promise.resolve( importEntity );
-		upsertClaims.push( claim );
+
+		insertClaims.push( claim );
 	}
 
 	// Write to DB.
-	await em.update( 'Import', importEntity.id, { inserted, updated } );
-	if ( upsertClaims.length ) {
-		await claimRepo.save( upsertClaims );
-	}
+	if ( insertClaims.length ) {
+		log( 'Saving new claims' );
+		await claimRepo.save( insertClaims );
 
+		log( 'Updating parent claims' );
+		for ( const oldClaim of parentClaims ) {
+			const newClaim = insertClaims.find(
+				( { number } ) => oldClaim.number === number
+			);
+			if ( newClaim ) {
+				oldClaim.parent = Promise.resolve( newClaim );
+			}
+		}
+		await claimRepo.save( parentClaims );
+	}
 	return { inserted, updated };
 }
 
@@ -201,23 +183,51 @@ export default async function parseCSV(
 	readStream: Readable,
 	em: EntityManager
 ): Promise< number > {
-	// Read CSV and check if this is a dupe.
-	const rawClaims: RawClaim[] = await readCSV( readStream );
-	const importEntity = await getImportOrThrow( rawClaims, em );
+	let returnVal = 0;
+	log( '===== Starting import' );
+	await em.transaction( async ( emt ) => {
+		let providers;
+		let rawClaims: RawClaim[];
+		try {
+			rawClaims = await readCSV( readStream );
+			log( 'Read CSV' );
+		} catch ( err ) {
+			log( err );
+			throw new Error( 'Error parsing CSV' );
+		}
+		const importEntity = await getImportOrThrow( rawClaims, emt );
+		log( 'Saved import to DB' );
 
-	const providers = await getAndInsertProviders(
-		rawClaims,
-		em,
-		importEntity
-	);
+		try {
+			providers = await getAndInsertProviders(
+				rawClaims,
+				emt,
+				importEntity
+			);
+			log( 'Inserted providers' );
+		} catch ( err ) {
+			log( err );
+			throw new Error( 'Error parsing providers' );
+		}
 
-	// Extract claim data.
-	const { inserted } = await saveClaims(
-		rawClaims,
-		providers,
-		importEntity,
-		em
-	);
+		// Extract claim data.
+		try {
+			const { inserted, updated } = await saveClaims(
+				rawClaims,
+				providers,
+				importEntity,
+				emt
+			);
+			returnVal = inserted + updated;
+			log( 'Inserted and updated claims' );
+			const importRepo = emt.getRepository< Import >( 'Import' );
+			await importRepo.update( importEntity.id, { inserted, updated } );
+			log( 'Saves totals to import table' );
+		} catch ( err ) {
+			log( err );
+			throw new Error( 'Error parsing claims' );
+		}
+	} );
 
-	return inserted;
+	return returnVal;
 }
