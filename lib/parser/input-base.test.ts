@@ -77,7 +77,8 @@ describe( 'InputBase', () => {
 			const testProvider = new Provider();
 			testProvider.id = 1;
 			testProvider.slug = 'dr-test';
-			const input = new InputGeneric( [ testProvider ] );
+			const input = new InputGeneric();
+			input.loadProviders( [ testProvider ] );
 			input.process( { ...testClaim, provider: 'Dr. Test' } );
 			expect( input.getProviderOrThrow() ).toEqual( testProvider );
 		} );
