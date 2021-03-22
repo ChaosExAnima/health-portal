@@ -1,4 +1,5 @@
 export function capitalize( word: string ): string {
+	word = word.trim();
 	return word.substr( 0, 1 ).toUpperCase() + word.substr( 1 ).toLowerCase();
 }
 
@@ -11,7 +12,18 @@ export function slugify( text: string ): string {
 		.replace( /^-|-$/g, '' );
 }
 
-export function claimType( type: string ): string {
+export function priceToNumber( price?: string ): number | null {
+	if ( ! price || ( price.match( /\./g ) || [] ).length > 1 ) {
+		return null;
+	}
+	const parsedPrice = Number.parseFloat( price.replace( /[^\d\.]*/g, '' ) );
+	if ( Number.isNaN( parsedPrice ) ) {
+		return null;
+	}
+	return parsedPrice;
+}
+
+export function formatClaimType( type: string ): string {
 	const types: Record< string, string > = {
 		DENTAL: 'Dental',
 		OUTOFNETWORK: 'Out of Network',
@@ -21,7 +33,7 @@ export function claimType( type: string ): string {
 	return types[ type ] || 'Unknown';
 }
 
-export function claimStatus( status: string ): string {
+export function formatClaimStatus( status: string ): string {
 	const statuses: Record< string, string > = {
 		PENDING: 'Pending',
 		APPROVED: 'Approved',
@@ -29,15 +41,4 @@ export function claimStatus( status: string ): string {
 		DELETED: 'Deleted',
 	} as const;
 	return statuses[ status ] || 'Unknown';
-}
-
-export function priceToNumber( price?: string ): number | null {
-	if ( ! price ) {
-		return null;
-	}
-	const parsedPrice = Number.parseFloat( price.replace( /[ \$]*/g, '' ) );
-	if ( Number.isNaN( parsedPrice ) ) {
-		return null;
-	}
-	return parsedPrice;
 }

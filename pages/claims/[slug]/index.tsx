@@ -8,7 +8,7 @@ import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
 import { staticPathsFromSlugs, staticPropsSlug } from 'lib/static-helpers';
 import numberFormat from 'lib/number-format';
-import { claimStatus } from 'lib/strings';
+import { formatClaimStatus } from 'lib/strings';
 import { useClaimQuery } from 'lib/apollo/queries/claims.graphql';
 
 import type { GetStaticPaths } from 'next';
@@ -42,7 +42,7 @@ const ClaimPage: React.FC< SinglePageProps > = ( { id, slug } ) => {
 			{ claim && (
 				<DetailsBox
 					details={ [
-						{ name: 'Status', detail: claimStatus( claim.status ) },
+						{ name: 'Status', detail: formatClaimStatus( claim.status ) },
 						{ name: 'Date of service', detail: claim.date as Date },
 						{
 							name: 'Provider',
