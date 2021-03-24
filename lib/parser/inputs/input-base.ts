@@ -1,7 +1,7 @@
 import type { Claim, Provider } from 'lib/db/entities';
 import { slugify } from 'lib/strings';
 import type { DeepPartial } from 'typeorm';
-import type { RawClaim } from '.';
+import type { RawClaim } from '..';
 
 export type ClaimInsertData = Omit< DeepPartial< Claim >, 'slug' | 'provider' >;
 export type ClaimPartial = ClaimInsertData & {
