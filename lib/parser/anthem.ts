@@ -33,10 +33,7 @@ export function getProviderFromClaim( rawClaim: RawClaim ): string {
 	return rawClaim[ 'Provided By' ];
 }
 
-export function parseAnthemClaim(
-	rawClaim: RawClaim,
-	providers: Provider[]
-): DeepPartial< Claim > {
+export function parseAnthemClaim( rawClaim: RawClaim ): DeepPartial< Claim > {
 	let status = 'PENDING';
 	if ( rawClaim.Status ) {
 		if ( rawClaim.Status === 'Approved' ) {
@@ -46,7 +43,7 @@ export function parseAnthemClaim(
 		}
 	}
 
-	const claim: DeepPartial< Claim > = {
+	return {
 		number: rawClaim[ 'Claim Number' ],
 		slug: slugify( rawClaim[ 'Claim Number' ] || '' ),
 		type:
@@ -56,11 +53,4 @@ export function parseAnthemClaim(
 		billed: priceToNumber( rawClaim.Billed ) || 0,
 		cost: priceToNumber( rawClaim[ 'Your Cost' ] ) || 0,
 	};
-
-	// See: https://github.com/typeorm/typeorm/issues/2276
-	const provider = providers.find(
-		( { slug } ) => slug === slugify( getProviderFromClaim( rawClaim ) )
-	);
-	claim.provider = provider && Promise.resolve( provider );
-	return claim;
 }

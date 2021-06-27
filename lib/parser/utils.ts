@@ -37,3 +37,12 @@ export function getUniqueSlug( parentSlug: string ): string {
 	}
 	return `${ matches[ 1 ] }-${ Number.parseInt( matches[ 2 ] ) + 1 }`;
 }
+
+export async function awaitMap< O >(
+	inputArray: unknown[],
+	callback: Promise<
+		( value: unknown, index: number, array: unknown[] ) => O
+	>
+): Promise< O[] > {
+	return Promise.all( inputArray.map( await callback ) );
+}

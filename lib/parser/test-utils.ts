@@ -36,10 +36,7 @@ export function getProviderFromTestClaim( rawClaim: RawTestClaim ): string {
 	return rawClaim.provider;
 }
 
-export function parseTestClaim(
-	rawClaim: RawTestClaim,
-	providers: Provider[]
-): DeepPartial< Claim > {
+export function parseTestClaim( rawClaim: RawTestClaim ): DeepPartial< Claim > {
 	if ( ! ( 'serviceDate' in rawClaim ) ) {
 		throw new Error( 'Invalid test claim type' );
 	}
@@ -48,7 +45,7 @@ export function parseTestClaim(
 		serviceDate: new Date( rawClaim.serviceDate ),
 		billed: Number.parseFloat( rawClaim.billed ),
 		cost: Number.parseFloat( rawClaim.cost ),
-		provider: providers && Promise.resolve( providers[ 0 ] ),
+		provider: undefined,
 	};
 }
 

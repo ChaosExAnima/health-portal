@@ -1,6 +1,6 @@
 import { log } from 'lib/apollo/utils';
 import Claim from 'lib/db/entities/claim';
-import parseCSV from 'lib/parser';
+import ImportParser from 'lib/parser';
 
 import type { QueryResolver, MutationResolver, TypeResolver } from './index';
 import type { Note, Provider } from 'lib/db/entities';
@@ -39,12 +39,13 @@ const uploadClaims: MutationResolver< 'uploadClaims' > = async (
 	try {
 		const { createReadStream } = await file;
 		const stream = createReadStream();
-		const claimsProcessed = await parseCSV( stream, db.em );
+		const parser = new ImportParser( db.em );
+		await parser.parse( stream );
 
 		return {
 			code: 'success',
 			success: true,
-			claimsProcessed,
+			claimsProcessed: parser.getTotalUpdated(),
 		};
 	} catch ( err ) {
 		log( err );
