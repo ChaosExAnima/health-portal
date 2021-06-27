@@ -1,6 +1,6 @@
 import { Box, Container } from '@material-ui/core';
 
-import initDb from 'lib/db';
+import { getBySlug } from 'lib/db';
 import Call from 'lib/db/entities/call';
 import { staticPathsFromSlugs } from 'lib/static-helpers';
 
@@ -16,28 +16,24 @@ const CallPage: React.FC< SinglePageProps > = () => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () =>
-	staticPathsFromSlugs( Call, 'calls' );
+	staticPathsFromSlugs( 'Call', 'calls' );
 
 export const getStaticProps: GetStaticProps<
 	SinglePageProps,
 	{ call: string }
 > = async ( { params } ) => {
-	const db = await initDb();
-	const call =
-		params &&
-		( await db.em.findOne( Call, { slug: params.call }, [ 'provider' ] ) );
+	const call = params && ( await getBySlug< Call >( 'Call', params.call ) );
 	if ( ! call ) {
 		return {
 			notFound: true,
 		};
 	}
+	const provider = await call.provider;
 	return {
 		props: {
 			id: call.id,
 			slug: call.slug,
-			title: `Call with ${ call.provider.getProperty( 'name' ) } on ${
-				call.created
-			}`,
+			title: `Call with ${ provider.name } on ${ call.created }`,
 		},
 	};
 };

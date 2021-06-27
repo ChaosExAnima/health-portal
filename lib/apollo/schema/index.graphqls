@@ -5,6 +5,7 @@
 # import Appeal from './types.graphqls'
 # import Upload from './scalars.graphqls'
 # import ProviderInput from './input.graphqls'
+# import CallInput from './input.graphqls'
 
 interface PaginatedQuery {
 	totalCount: Int!
@@ -74,7 +75,14 @@ type EditProviderResponse implements MutationResponse {
 	success: Boolean!
 }
 
+type EditCallResponse implements MutationResponse {
+	code: String!
+	success: Boolean!
+	call: Call!
+}
+
 type Mutation {
 	uploadClaims( file: Upload! ): UploadClaimsResponse!
 	provider( provider: ProviderInput! ): EditProviderResponse!
+	newCall( call: CallInput! ): EditCallResponse!
 }

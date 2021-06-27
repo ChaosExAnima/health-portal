@@ -30,3 +30,12 @@ query Call( $slug: String! ) {
 		}
 	}
 }
+
+mutation CallNew( $call: CallInput! ) {
+	newCall(call: $call) {
+		success
+		call {
+			id
+		}
+	}
+}

@@ -1,3 +1,7 @@
+import dayjs from 'dayjs';
+
+import { slugify } from 'lib/strings';
+
 import type {
 	Appeal,
 	Call,
@@ -6,7 +10,7 @@ import type {
 	Provider,
 	Representative,
 } from 'lib/db/entities';
-import type { QueryResolver, TypeResolver } from './index';
+import type { MutationResolver, QueryResolver, TypeResolver } from './index';
 
 const getCalls: QueryResolver< 'getCalls' > = async (
 	parent,
@@ -32,6 +36,34 @@ const call: QueryResolver< 'call' > = async (
 	{ dataSources: { db } }
 ) => {
 	return db.findBySlug< Call >( 'Call', slug );
+};
+
+const newCall: MutationResolver< 'newCall' > = async (
+	parent,
+	{ call: input },
+	{ dataSources: { db } }
+) => {
+	const em = db.em;
+	const note = em.create< Note >( 'Note', {
+		description: input.results,
+	} );
+	await note.save();
+	const date = dayjs( input.date );
+	const inserted = db.em.create< Call >( 'Call', {
+		slug: slugify( date.toISOString() ),
+		created: date.toDate(),
+		note: Promise.resolve( note ),
+	} );
+
+	await inserted.save();
+
+	console.log( inserted );
+
+	return {
+		code: 'success',
+		success: true,
+		call: inserted,
+	};
 };
 
 const Resolver: TypeResolver< 'Call' > = {
@@ -60,6 +92,6 @@ const Resolver: TypeResolver< 'Call' > = {
 
 export default {
 	Query: { getCalls, call },
-	Mutation: {},
+	Mutation: { newCall },
 	Resolver: { Call: Resolver },
 };

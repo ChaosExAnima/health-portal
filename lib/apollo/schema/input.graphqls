@@ -8,3 +8,12 @@ input ProviderInput {
 	email: String
 	website: String
 }
+
+input CallInput {
+	date: String!
+	providers: [ProviderInput]!
+	reason: String
+	reps: String
+	ref: String
+	results: String!
+}
