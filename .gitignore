@@ -36,6 +36,7 @@ yarn-error.log*
 
 # VSCode
 /.vscode
+*.code-workspace
 
 # Graphql
 *.graphql.d.ts
