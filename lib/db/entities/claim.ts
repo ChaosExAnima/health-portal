@@ -28,7 +28,7 @@ export class ClaimMetaServiceDate extends Meta {
 	}
 
 	set value( val: Date ) {
-		this.rawValue = Date.toString();
+		this.rawValue = val.toString();
 	}
 }
 
