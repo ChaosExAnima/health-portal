@@ -1,4 +1,4 @@
-import { ChildEntity, Column } from 'typeorm';
+import { ChildEntity } from 'typeorm';
 
 import Content from './content';
 
@@ -7,7 +7,4 @@ export default class Appeal extends Content {
 	get name(): string {
 		return this.identifier;
 	}
-
-	@Column()
-	status: string;
 }

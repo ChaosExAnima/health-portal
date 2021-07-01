@@ -9,17 +9,17 @@ import {
 } from 'typeorm';
 
 import BaseEntity from './base';
-import File from './file';
-import Provider from './provider';
 
 import type Claim from './claim';
+import type File from './file';
+import type Provider from './provider';
 
 @Entity()
 export default class Import extends BaseEntity {
 	@OneToMany( 'Claim', 'import' )
 	claims: Promise< Claim[] >;
 
-	@OneToMany( () => Provider, ( provider ) => provider.import )
+	@OneToMany( 'Provider', 'import' )
 	provider: Promise< Provider[] >;
 
 	@CreateDateColumn()
@@ -29,7 +29,7 @@ export default class Import extends BaseEntity {
 	@Index( { unique: true } )
 	hash: string;
 
-	@OneToOne( () => File )
+	@OneToOne( 'File' )
 	@JoinColumn()
 	file: File;
 

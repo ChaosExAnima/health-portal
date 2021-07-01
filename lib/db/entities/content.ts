@@ -25,6 +25,9 @@ export default class Content extends BaseEntity {
 	@Column( { type: 'text', default: '' } )
 	info: string;
 
+	@Column( { type: 'varchar', default: '' } )
+	status: string;
+
 	@CreateDateColumn()
 	@Index()
 	created: Date;

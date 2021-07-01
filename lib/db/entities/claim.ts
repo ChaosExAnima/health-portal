@@ -1,10 +1,10 @@
-import { Column, ChildEntity, ManyToOne, ManyToMany } from 'typeorm';
+import { ChildEntity, ManyToOne, ManyToMany } from 'typeorm';
 
 import Content from './content';
-import Payment from './payment';
+import Meta from './meta';
 
 import type Import from './import';
-import Meta from './meta';
+import type Payment from './payment';
 
 @ChildEntity()
 export default class Claim extends Content {
@@ -12,10 +12,7 @@ export default class Claim extends Content {
 		return this.identifier;
 	}
 
-	@Column()
-	status: string;
-
-	@ManyToMany( () => Payment, ( payment ) => payment.claims )
+	@ManyToMany( 'Payment', 'claims' )
 	payments: Promise< Payment[] >;
 
 	@ManyToOne( 'Import', 'claims', {

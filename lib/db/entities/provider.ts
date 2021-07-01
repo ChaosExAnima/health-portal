@@ -1,12 +1,24 @@
-import { Column, OneToMany, ManyToMany, Entity, ManyToOne } from 'typeorm';
+import {
+	Column,
+	OneToMany,
+	ManyToMany,
+	Entity,
+	ManyToOne,
+	Index,
+} from 'typeorm';
 
-import BaseSlugEntity from './slug';
-import Content from './content';
-import Import from './import';
-import Note from './note';
+import BaseEntity from './base';
+
+import type Content from './content';
+import type Import from './import';
+import type Note from './note';
 
 @Entity()
-export default class Provider extends BaseSlugEntity {
+export default class Provider extends BaseEntity {
+	@Index( { unique: true } )
+	@Column()
+	slug: string;
+
 	@Column( { type: 'varchar' } )
 	name: string;
 
@@ -25,13 +37,13 @@ export default class Provider extends BaseSlugEntity {
 	@Column( { type: 'varchar', nullable: true, length: 40 } )
 	email?: string;
 
-	@ManyToMany( () => Note, ( note ) => note.provider )
+	@ManyToMany( 'Note', 'provider' )
 	notes: Promise< Note[] >;
 
-	@OneToMany( () => Content, ( content ) => content.provider )
+	@OneToMany( 'Content', 'provider' )
 	content: Promise< Content[] >;
 
-	@ManyToOne( () => Import, ( importProvider ) => importProvider.provider, {
+	@ManyToOne( 'Import', 'provider', {
 		nullable: true,
 	} )
 	'import'?: Promise< Import >;

@@ -16,3 +16,5 @@ export {
 	ClaimMetaServiceDate,
 	ClaimMetaType,
 } from './claim';
+export { CallMetaRep } from './call';
+export { NoteMetaDue, NoteMetaResolved } from './note';

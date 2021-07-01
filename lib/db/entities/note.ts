@@ -1,9 +1,9 @@
 import { OneToMany, ChildEntity } from 'typeorm';
 
 import Content from './content';
+import Meta from './meta';
 
 import type File from './file';
-import Meta from './meta';
 
 @ChildEntity()
 export default class Note extends Content {
