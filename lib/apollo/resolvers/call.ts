@@ -43,21 +43,24 @@ const newCall: MutationResolver< 'newCall' > = async (
 	{ call: input },
 	{ dataSources: { db } }
 ) => {
-	const em = db.em;
-	const note = em.create< Note >( 'Note', {
-		description: input.results,
-	} );
-	await note.save();
+	const query = db.em.createQueryBuilder();
+	const notes = await query
+		.insert()
+		.into< Note >( 'Note' )
+		.values(
+			input.notes.map( ( note ) => ( {
+				description: note.description,
+				due: note.due || undefined,
+			} ) )
+		)
+		.execute();
 	const date = dayjs( input.date );
 	const inserted = db.em.create< Call >( 'Call', {
 		slug: slugify( date.toISOString() ),
 		created: date.toDate(),
-		note: Promise.resolve( note ),
 	} );
 
 	await inserted.save();
-
-	console.log( inserted );
 
 	return {
 		code: 'success',
@@ -67,20 +70,12 @@ const newCall: MutationResolver< 'newCall' > = async (
 };
 
 const Resolver: TypeResolver< 'Call' > = {
-	provider( parent, {}, { dataSources: { db } } ) {
+	providers( parent, {}, { dataSources: { db } } ) {
 		return db
-			.loader< Call, Provider >( 'Call', 'provider' )
+			.loader< Call, Provider[] >( 'Call', 'provider' )
 			.load( parent.id );
 	},
-	claims( parent, {}, { dataSources: { db } } ) {
-		return db.loader< Call, Claim[] >( 'Call', 'claims' ).load( parent.id );
-	},
-	appeals( parent, {}, { dataSources: { db } } ) {
-		return db
-			.loader< Call, Appeal[] >( 'Call', 'appeals' )
-			.load( parent.id );
-	},
-	note( parent, {}, { dataSources: { db } } ) {
+	notes( parent, {}, { dataSources: { db } } ) {
 		return db.loader< Call, Note >( 'Call', 'note' ).load( parent.id );
 	},
 	async reps( parent, {}, { dataSources: { db } } ) {

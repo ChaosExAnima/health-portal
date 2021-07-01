@@ -8,7 +8,7 @@ import { useCallNewMutation } from 'lib/apollo/queries/calls.graphql';
 import type { PageProps } from 'global-types';
 
 const NewCallPage: React.FC< PageProps > = ( { title } ) => {
-	const [ newCall, { data, loading, error } ] = useCallNewMutation();
+	const [ newCall ] = useCallNewMutation();
 	return (
 		<Container maxWidth="md">
 			<Box my={ 4 }>
@@ -18,7 +18,11 @@ const NewCallPage: React.FC< PageProps > = ( { title } ) => {
 						const call = {
 							date: values.date,
 							providers: [],
+							notes: [],
 							results: values.results,
+							reps: values.reps
+								.split( ',' )
+								.map( ( rep ) => rep.trim() ),
 						};
 						newCall( { variables: { call } } );
 					} }

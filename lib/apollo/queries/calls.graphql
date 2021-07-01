@@ -6,10 +6,10 @@ query CallsIndex($offset: Int!) {
 			slug
 			date
 			reps
-			note {
+			notes {
 				description
 			}
-			provider {
+			providers {
 				__typename
 				name
 				slug
@@ -23,7 +23,7 @@ query Call( $slug: String! ) {
 		id
 		slug
 		date
-		provider {
+		providers {
 			id
 			name
 			slug

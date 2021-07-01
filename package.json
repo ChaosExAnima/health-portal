@@ -102,7 +102,8 @@
       "no-unused-vars": "off",
       "no-console": "warn",
       "prettier/prettier": "warn",
-      "jest/no-disabled-tests": "warn"
+      "jest/no-disabled-tests": "warn",
+      "@wordpress/no-unused-vars-before-return": "off"
     },
     "ignorePatterns": [
       "**/*.graphql.d.ts",

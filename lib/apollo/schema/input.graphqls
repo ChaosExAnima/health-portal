@@ -1,4 +1,30 @@
 # import Slug from './scalars.graphqls'
+# import Upload from './scalars.graphqls'
+# import AppealStatus from './types.graphqls'
+# import ClaimType from './types.graphqls'
+# import ClaimStatus from './types.graphqls'
+
+input ClaimInput {
+	claim: String
+	date: String!
+	provider: ProviderInput
+	type: ClaimType
+	billed: Float
+	cost: Float
+	owed: Float
+	status: ClaimStatus!
+	notes: [NoteInput!]
+}
+
+input AppealInput {
+	slug: Slug!
+	name: String!
+	status: AppealStatus!
+	provider: ProviderInput!
+	claims: [ClaimInput!]
+	calls: [CallInput!]
+	notes: [NoteInput!]
+}
 
 input ProviderInput {
 	name: String!
@@ -9,11 +35,19 @@ input ProviderInput {
 	website: String
 }
 
+input NoteInput {
+	description: String!
+	due: String
+	resolved: Boolean
+	providers: [ProviderInput!]!
+	claims: [Int!]!
+	appeals: [Int!]!
+	files: [Upload!]!
+}
+
 input CallInput {
 	date: String!
 	providers: [ProviderInput]!
-	reason: String
-	reps: String
-	ref: String
-	results: String!
+	reps: [String]
+	notes: [NoteInput!]!
 }

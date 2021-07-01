@@ -53,14 +53,11 @@ type Claim {
 type Call {
 	id: ID!
 	slug: Slug!
-	provider: Provider!
+	date: DateTime!
+	providers: [Provider!]
 	reps: [String!]
 	callId: String
-	date: DateTime!
-	reason: String
-	note: Note
-	claims: [Claim!]
-	appeals: [Appeal!]
+	notes: [Note!]
 }
 
 type Appeal {

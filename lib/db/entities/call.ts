@@ -1,3 +1,4 @@
+import { MaybePromise } from 'global-types';
 import {
 	Entity,
 	CreateDateColumn,
@@ -23,20 +24,20 @@ export default class Call extends BaseSlugEntity {
 	}
 
 	@ManyToOne( () => Provider )
-	provider: Promise< Provider >;
+	provider: MaybePromise< Provider >;
 
 	@ManyToMany( () => Representative )
 	@JoinTable()
-	reps: Promise< Representative[] >;
+	reps: MaybePromise< Representative[] >;
 
 	@ManyToOne( () => Note, { nullable: true } )
-	note?: Promise< Note >;
+	note?: MaybePromise< Note >;
 
 	@ManyToMany( () => Appeal, ( appeal ) => appeal.calls )
 	@JoinTable()
-	appeals: Promise< Appeal[] >;
+	appeals: MaybePromise< Appeal[] >;
 
 	@ManyToMany( () => Claim, ( claim ) => claim.calls )
 	@JoinTable()
-	claims: Promise< Claim[] >;
+	claims: MaybePromise< Claim[] >;
 }
