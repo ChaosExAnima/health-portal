@@ -78,7 +78,7 @@ async function run( size: number ): Promise< void > {
 		call.created = dateThisYear();
 		const provider = pickFromArray< Provider >( providers );
 		call.provider = Promise.resolve( provider );
-		const rep = new CallMetaRep( casual.first_name );
+		const rep = await new CallMetaRep( casual.first_name ).save();
 		call.meta = [ rep ];
 		await call.save();
 	}
