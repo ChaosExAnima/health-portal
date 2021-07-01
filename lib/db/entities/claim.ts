@@ -1,95 +1,45 @@
-import {
-	Entity,
-	Column,
-	CreateDateColumn,
-	ManyToOne,
-	OneToMany,
-	ManyToMany,
-	Unique,
-	DeepPartial,
-} from 'typeorm';
+import { Column, ChildEntity, ManyToOne, ManyToMany } from 'typeorm';
 
-import Appeal from './appeal';
-import Call from './call';
-import Import from './import';
-import Note from './note';
+import Content from './content';
 import Payment from './payment';
-import Provider from './provider';
-import BaseEntity from './base';
 
-@Entity()
-@Unique( [ 'slug', 'parent' ] )
-export default class Claim extends BaseEntity {
-	constructor( props: DeepPartial< Claim > = {} ) {
-		super();
-		Object.assign( this, props );
-	}
+import type Import from './import';
+import Meta from './meta';
 
-	@Column()
-	slug: string;
-
-	@Column()
-	number: string;
-
+@ChildEntity()
+export default class Claim extends Content {
 	get claim(): string | undefined {
-		return this.number;
-	}
-
-	@CreateDateColumn()
-	created: Date;
-
-	get date(): Date {
-		return this.created;
+		return this.identifier;
 	}
 
 	@Column()
 	status: string;
 
-	@Column()
-	serviceDate: Date;
-
-	@Column()
-	type: string;
-
-	@Column( { type: 'float', nullable: true } )
-	billed?: number;
-
-	@Column( { type: 'float', nullable: true } )
-	cost?: number;
-
-	get owed(): number {
-		return 0;
-	}
-
-	@ManyToOne( () => Claim, ( claim ) => claim.children, {
-		nullable: true,
-		onDelete: 'SET NULL',
-	} )
-	parent?: Promise< Claim >;
-
-	@OneToMany( () => Claim, ( claim ) => claim.parent )
-	children: Promise< Claim[] >;
-
-	@ManyToOne( () => Provider, ( provider ) => provider.claims, {
-		nullable: true,
-		onDelete: 'SET NULL',
-	} )
-	provider?: Promise< Provider >;
-
-	@ManyToMany( () => Appeal, ( appeal ) => appeal.claims )
-	appeals: Promise< Appeal[] >;
-
 	@ManyToMany( () => Payment, ( payment ) => payment.claims )
 	payments: Promise< Payment[] >;
 
-	@ManyToMany( () => Note, ( note ) => note.claims )
-	notes: Promise< Note[] >;
-
-	@ManyToMany( () => Call, ( call ) => call.claims )
-	calls: Promise< Call[] >;
-
-	@ManyToOne( () => Import, ( importClaims ) => importClaims.claims, {
+	@ManyToOne( 'Import', 'claims', {
 		nullable: true,
 	} )
 	'import'?: Promise< Import >;
+}
+
+export class ClaimMetaServiceDate extends Meta< Claim > {
+	@Column( { type: 'varchar' } )
+	value: Date;
+}
+
+export class ClaimMetaStatus extends Meta< Claim > {
+	@Column( { type: 'varchar' } )
+	value: string;
+}
+
+export class ClaimMetaBilled extends Meta< Claim > {
+	@Column( { type: 'varchar' } )
+	value: number;
+}
+
+export class ClaimMetaCost extends Meta< Claim > {
+	@Column( { type: 'varchar' } )
+	value: number;
 }

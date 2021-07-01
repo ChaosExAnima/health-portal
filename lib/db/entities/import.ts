@@ -7,19 +7,20 @@ import {
 	JoinColumn,
 	Index,
 } from 'typeorm';
-import { Provider } from '.';
 
 import BaseEntity from './base';
-import Claim from './claim';
 import File from './file';
+import Provider from './provider';
+
+import type Claim from './claim';
 
 @Entity()
 export default class Import extends BaseEntity {
-	@OneToMany( () => Claim, ( claim ) => claim.import )
+	@OneToMany( 'Claim', 'import' )
 	claims: Promise< Claim[] >;
 
 	@OneToMany( () => Provider, ( provider ) => provider.import )
-	import: Promise< Provider[] >;
+	provider: Promise< Provider[] >;
 
 	@CreateDateColumn()
 	created: Date;
