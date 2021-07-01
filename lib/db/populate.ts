@@ -8,25 +8,24 @@ import {
 	Call,
 	Claim,
 	File,
+	Meta,
 	Note,
 	Payment,
 	Provider,
-	Representative,
 } from './entities';
 import { slugify } from '../strings';
+import { CallMetaRep } from './entities/call';
+import {
+	ClaimMetaBilled,
+	ClaimMetaCost,
+	ClaimMetaServiceDate,
+	ClaimMetaType,
+} from './entities/claim';
 
-type DBTypes =
-	| Appeal
-	| Call
-	| Claim
-	| Note
-	| Payment
-	| Provider
-	| File
-	| Representative;
+type DBTypes = Appeal | Call | Claim | Note | Payment | Provider | File;
 
 function dateThisYear(): Date {
-	return casual.moment.year( 2020 ).toDate();
+	return casual.moment.year( 2021 ).toDate();
 }
 
 function pickManyFromArray< T extends DBTypes | string >(
@@ -51,9 +50,12 @@ function pickFromArray< T extends DBTypes | string >( array: T[] ): T {
 	return pickManyFromArray< T >( array )[ 0 ];
 }
 
+async function saveMeta< T extends Meta >( meta: T ): Promise< T > {
+	return meta.save();
+}
+
 async function run( size: number ): Promise< void > {
 	await init();
-	const numToAssign = Math.floor( size / 2 );
 
 	for ( let index = 0; index < size; index++ ) {
 		const provider = new Provider();
@@ -72,26 +74,12 @@ async function run( size: number ): Promise< void > {
 	console.log( `Inserted ${ providers.length } providers.` );
 
 	for ( let index = 0; index < size; index++ ) {
-		const rep = new Representative(
-			casual.first_name,
-			pickFromArray( providers )
-		);
-		await rep.save();
-	}
-	const reps = await Representative.find();
-	console.log( `Inserted ${ reps.length } reps.` );
-
-	for ( let index = 0; index < size; index++ ) {
 		const call = new Call();
 		call.created = dateThisYear();
 		const provider = pickFromArray< Provider >( providers );
 		call.provider = Promise.resolve( provider );
-		call.slug = slugify(
-			`Call on ${ dayjs( call.created ).format( 'D/M' ) } with ${
-				provider?.name || 'Unknown'
-			}`
-		);
-		call.reps = Promise.resolve( pickManyFromArray( reps ) );
+		const rep = new CallMetaRep( casual.first_name );
+		call.meta = [ rep ];
 		await call.save();
 	}
 	const calls = await Call.find();
@@ -100,41 +88,35 @@ async function run( size: number ): Promise< void > {
 	for ( let index = 0; index < size; index++ ) {
 		const claim = new Claim();
 		claim.created = dateThisYear();
-		claim.number = casual.card_number();
-		claim.billed = casual.integer( 100, 1000 );
-		claim.cost = casual.integer( 0, 50 );
-		claim.serviceDate = dateThisYear();
-		claim.slug = slugify( claim.number );
+		claim.identifier = casual.card_number();
 		claim.provider = Promise.resolve( pickFromArray( providers ) );
 
 		const status = pickFromArray< string >( [ 'APPROVED', 'PENDING' ] );
 		claim.status = status || 'APPROVED';
 
-		const type = pickFromArray< string >( [
-			'INNETWORK',
-			'OUTOFNETWORK',
-			'PHARMACY',
-		] );
-		claim.type = type;
+		claim.meta = await Promise.all(
+			[
+				new ClaimMetaServiceDate( dateThisYear().toString() ),
+				new ClaimMetaType(
+					pickFromArray< string >( [
+						'INNETWORK',
+						'OUTOFNETWORK',
+						'PHARMACY',
+					] )
+				),
+				new ClaimMetaBilled( casual.integer( 100, 1000 ).toString() ),
+				new ClaimMetaCost( casual.integer( 0, 50 ).toString() ),
+			].map( saveMeta )
+		);
 		await claim.save();
 	}
-	const claims = await Claim.find();
-	const claimsToGiveParents = pickManyFromArray( claims, numToAssign );
-	for ( const claim of claimsToGiveParents ) {
-		claim.parent = Promise.resolve( pickFromArray( claims ) );
-		await claim.save();
-	}
-	console.log( `Inserted ${ claims.length } claims.` );
+	const claims = await Claim.find( { relations: [ 'meta' ] } );
+	console.log( `Inserted ${ size } claims.` );
 
 	for ( let index = 0; index < size; index++ ) {
 		const appeal = new Appeal();
 		appeal.created = dateThisYear();
-		appeal.name = `Appeal for ${ casual.word }`;
-		appeal.slug = slugify(
-			`${ dayjs( appeal.created ).format( 'DD/MM/YYYY' ) } - ${
-				appeal.name
-			}`
-		);
+		appeal.identifier = `Appeal for ${ casual.word }`;
 		const status = pickFromArray< string >( [
 			'NEW',
 			'PENDING',
@@ -142,18 +124,16 @@ async function run( size: number ): Promise< void > {
 		] );
 		appeal.status = status;
 		appeal.provider = Promise.resolve( pickFromArray( providers ) );
-		appeal.claims = Promise.resolve( pickManyFromArray( claims ) );
-		appeal.calls = Promise.resolve( pickManyFromArray( calls ) );
+
+		appeal.relations = Promise.resolve( [
+			...pickManyFromArray( claims ),
+			...pickManyFromArray( calls ),
+		] );
 
 		await appeal.save();
 	}
 	const appeals = await Appeal.find();
-	const appealsToGiveParents = pickManyFromArray( appeals, numToAssign );
-	for ( const appeal of appealsToGiveParents ) {
-		appeal.parent = Promise.resolve( pickFromArray( appeals ) );
-		await appeal.save();
-	}
-	console.log( `Inserted ${ appeals.length } appeals.` );
+	console.log( `Inserted ${ size } appeals.` );
 
 	for ( let index = 0; index < size; index++ ) {
 		const file = new File();
@@ -164,7 +144,7 @@ async function run( size: number ): Promise< void > {
 		await file.save();
 	}
 	const files = await File.find();
-	console.log( `Inserted ${ appeals.length } appeals.` );
+	console.log( `Inserted ${ size } appeals.` );
 
 	for ( let index = 0; index < size; index++ ) {
 		const payment = new Payment();
@@ -176,7 +156,10 @@ async function run( size: number ): Promise< void > {
 		payment.receipt = Promise.resolve( pickFromArray( files ) );
 
 		const claim = pickFromArray< Claim >( claims );
-		payment.amount = casual.integer( 1, claim.cost || 50 );
+		const cost = claim.meta
+			.filter( ( meta ) => meta instanceof ClaimMetaCost )
+			.shift() as ClaimMetaCost;
+		payment.amount = casual.integer( 1, cost.value || 50 );
 		payment.claims = Promise.resolve( [ claim ] );
 		await payment.save();
 	}
@@ -184,19 +167,13 @@ async function run( size: number ): Promise< void > {
 	for ( let index = 0; index < size; index++ ) {
 		const note = new Note();
 		note.created = dateThisYear();
-		note.description = casual.text;
+		note.info = casual.text;
 
-		const type = pickFromArray< string >( [
-			'claim',
-			'appeal',
-			'provider',
-		] );
+		const type = pickFromArray< string >( [ 'claim', 'appeal' ] );
 		if ( type === 'claim' ) {
-			note.claim = Promise.resolve( pickFromArray( claims ) );
+			note.relations = Promise.resolve( [ pickFromArray( claims ) ] );
 		} else if ( type === 'appeal' ) {
-			note.appeal = Promise.resolve( pickFromArray( appeals ) );
-		} else if ( type === 'provider' ) {
-			note.provider = Promise.resolve( pickFromArray( providers ) );
+			note.relations = Promise.resolve( [ pickFromArray( appeals ) ] );
 		}
 
 		note.files = Promise.resolve( pickManyFromArray( files ) );

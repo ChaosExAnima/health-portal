@@ -1,7 +1,7 @@
 import { Connection, EntityManager, getConnectionManager } from 'typeorm';
 import 'reflect-metadata';
 
-import connectionOptions from 'ormconfig';
+import connectionOptions from '../../ormconfig';
 
 export async function query(): Promise< EntityManager > {
 	return ( await init() ).createEntityManager();

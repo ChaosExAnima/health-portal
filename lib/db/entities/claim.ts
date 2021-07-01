@@ -8,7 +8,7 @@ import Meta from './meta';
 
 @ChildEntity()
 export default class Claim extends Content {
-	get claim(): string | undefined {
+	get number(): string {
 		return this.identifier;
 	}
 
@@ -24,22 +24,38 @@ export default class Claim extends Content {
 	'import'?: Promise< Import >;
 }
 
-export class ClaimMetaServiceDate extends Meta< Claim > {
-	@Column( { type: 'varchar' } )
-	value: Date;
+@ChildEntity()
+export class ClaimMetaServiceDate extends Meta {
+	get value(): Date {
+		return new Date( this.rawValue );
+	}
+
+	set value( val: Date ) {
+		this.rawValue = Date.toString();
+	}
 }
 
-export class ClaimMetaStatus extends Meta< Claim > {
-	@Column( { type: 'varchar' } )
-	value: string;
+@ChildEntity()
+export class ClaimMetaType extends Meta {}
+
+@ChildEntity()
+export class ClaimMetaBilled extends Meta {
+	get value(): number {
+		return Number.parseFloat( this.rawValue );
+	}
+
+	set value( val: number ) {
+		this.rawValue = val.toString();
+	}
 }
 
-export class ClaimMetaBilled extends Meta< Claim > {
-	@Column( { type: 'varchar' } )
-	value: number;
-}
+@ChildEntity()
+export class ClaimMetaCost extends Meta {
+	get value(): number {
+		return Number.parseFloat( this.rawValue );
+	}
 
-export class ClaimMetaCost extends Meta< Claim > {
-	@Column( { type: 'varchar' } )
-	value: number;
+	set value( val: number ) {
+		this.rawValue = val.toString();
+	}
 }

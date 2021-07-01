@@ -1,4 +1,4 @@
-import { Column, OneToMany, ChildEntity } from 'typeorm';
+import { OneToMany, ChildEntity } from 'typeorm';
 
 import Content from './content';
 
@@ -16,13 +16,23 @@ export default class Note extends Content {
 }
 
 @ChildEntity()
-export class NoteMetaDue extends Meta< Note > {
-	@Column( { type: 'varchar' } )
-	value: Date;
+export class NoteMetaDue extends Meta {
+	get value(): Date {
+		return new Date( this.rawValue );
+	}
+
+	set value( val: Date ) {
+		this.rawValue = Date.toString();
+	}
 }
 
 @ChildEntity()
-export class NoteMetaResolved extends Meta< Note > {
-	@Column( { type: 'varchar' } )
-	value = false;
+export class NoteMetaResolved extends Meta {
+	get value(): boolean {
+		return this.rawValue === 'true';
+	}
+
+	set value( val: boolean ) {
+		this.rawValue = val ? 'true' : 'false';
+	}
 }

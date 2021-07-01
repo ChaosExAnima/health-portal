@@ -10,14 +10,14 @@ import {
 	TableInheritance,
 } from 'typeorm';
 
-import BaseSlugEntity from './slug';
+import BaseEntity from './base';
 
 import type Provider from './provider';
 import type Meta from './meta';
 
 @Entity()
 @TableInheritance( { column: { type: 'varchar', name: 'type' } } )
-export default class Content extends BaseSlugEntity {
+export default class Content extends BaseEntity {
 	@Column( { type: 'varchar', default: '' } )
 	@Index()
 	identifier: string;
@@ -35,7 +35,7 @@ export default class Content extends BaseSlugEntity {
 
 	@ManyToMany( () => Content )
 	@JoinTable()
-	relations: Content[];
+	relations: Promise< Content[] >;
 
 	@ManyToOne( 'Provider', 'content', {
 		nullable: true,
@@ -43,5 +43,5 @@ export default class Content extends BaseSlugEntity {
 	provider?: Promise< Provider >;
 
 	@OneToMany( 'Meta', 'parent' )
-	meta: Meta< Content >[];
+	meta: Meta[];
 }

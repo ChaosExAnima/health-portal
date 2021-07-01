@@ -8,3 +8,11 @@ export { default as Note } from './note';
 export { default as Payment } from './payment';
 export { default as Provider } from './provider';
 export { default as Meta } from './meta';
+
+// Meta
+export {
+	ClaimMetaBilled,
+	ClaimMetaCost,
+	ClaimMetaServiceDate,
+	ClaimMetaType,
+} from './claim';
