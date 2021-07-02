@@ -8,7 +8,6 @@
     "build": "next build",
     "start": "next start",
     "gen": "graphql-let",
-    "orm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "start-db": "docker-compose up -d",
     "stop-db": "docker-compose down",
     "load-schema": "yarn orm schema:sync",
@@ -21,41 +20,42 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.2",
+    "@material-ui/core": "^4.11",
     "@material-ui/icons": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.57",
+    "@material-ui/lab": "^4.0.0-alpha.58",
     "clsx": "^1.1.1",
     "csv-parser": "^3.0.0",
     "dayjs": "^1.9.7",
     "debug": "^4.3.1",
+    "dotenv": "^10.0.0",
+    "knex": "^0.95.6",
     "mysql": "^2.18.1",
-    "next": "10.0.3",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
+    "next": "^11",
+    "react": "^17",
+    "react-dom": "^17",
     "react-dropzone": "^11.2.4",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-decorators": "^7.12.12",
+    "@babel/core": "^7",
     "@types/debug": "^4.1.5",
     "@types/jest": "^26.0.21",
-    "@types/node": "^14.14.11",
+    "@types/node": "^14",
     "@types/react": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.9.1",
     "@typescript-eslint/parser": "^4.9.1",
-    "@wordpress/eslint-plugin": "^7.3.0",
-    "babel-jest": "^26.6.3",
+    "@wordpress/eslint-plugin": "^9",
+    "babel-jest": "^27",
     "babel-plugin-transform-typescript-metadata": "^0.3.1",
     "casual": "^1.6.2",
-    "dotenv": "^8.2.0",
     "eslint": "^7.15.0",
     "eslint-plugin-jest": "^24.3.2",
     "eslint-plugin-mui-unused-classes": "^1.0.3",
-    "jest": "^26.6.3",
+    "jest": "^27",
     "jest-expect-message": "^1.0.2",
     "sqlite3": "^5.0.2",
-    "ts-jest": "^26.5.1",
-    "ts-node": "^9.1.1",
+    "ts-jest": "^27",
+    "ts-node": "^10",
     "typescript": "^4.1.2"
   },
   "resolutions": {
@@ -64,7 +64,12 @@
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
     "extends": [
-      "plugin:@wordpress/eslint-plugin/recommended",
+      "plugin:@wordpress/eslint-plugin/esnext",
+      "plugin:@wordpress/eslint-plugin/jsdoc",
+      "plugin:@wordpress/eslint-plugin/react",
+      "plugin:react/recommended",
+      "plugin:prettier/recommended",
+      "prettier/react",
       "plugin:@typescript-eslint/recommended"
     ],
     "plugins": [
@@ -80,14 +85,15 @@
       "no-unused-vars": "off",
       "no-console": "warn",
       "prettier/prettier": "warn",
-      "jest/no-disabled-tests": "warn"
+      "jest/no-disabled-tests": "warn",
+      "@wordpress/no-unused-vars-before-return": "warn",
+      "@wordpress/no-global-event-listener": "off"
     },
     "ignorePatterns": [
-      "**/*.graphql.d.ts",
-      "**/*.graphqls.d.ts",
-      ".graphql/**"
+      "**/*.d.ts"
     ]
   },
+  "prettier": "@wordpress/prettier-config",
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
