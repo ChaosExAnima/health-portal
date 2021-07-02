@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { TableCell, TableRow } from '@material-ui/core';
 
 import OptionalLink from 'components/optional-link';
-import { typeToPath } from 'lib/apollo/utils';
 import { toInt } from 'lib/casting';
 import numberFormat from 'lib/number-format';
 

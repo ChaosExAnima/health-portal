@@ -1,26 +1,42 @@
 import { Container } from '@material-ui/core';
 import UploadIcon from '@material-ui/icons/CloudUpload';
 
-import Header, { ActionItem } from 'components/header';
-import Footer from 'components/footer';
-import { useClaimsIndexQuery } from 'lib/apollo/queries/claims.graphql';
-
-import type { PageProps } from 'global-types';
 import DataTable, {
 	DataTableColumn,
 	DataTableFilter,
 } from 'components/data-table';
+import Footer from 'components/footer';
+import Header, { ActionItem } from 'components/header';
 import { capitalize, formatClaimType } from 'lib/strings';
+
+import type { PageProps } from 'global-types';
+
+type Claim = {
+	id: number;
+	slug: string;
+	date: Date;
+	claim: string;
+	provider: {
+		name: string;
+		slug: string;
+	};
+	type: string;
+	billed: number;
+	cost: number;
+	status: string;
+};
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;
+	totalPages: number;
+	records: Claim[];
 };
 
-const Claims: React.FC< ClaimsProps > = ( { currentPage } ) => {
-	const { loading, data } = useClaimsIndexQuery( {
-		variables: { offset: currentPage * 20 },
-	} );
-
+const Claims: React.FC< ClaimsProps > = ( {
+	currentPage,
+	records,
+	totalPages,
+} ) => {
 	const actions: ActionItem[] = [
 		{
 			href: '/claims/upload',
@@ -105,11 +121,11 @@ const Claims: React.FC< ClaimsProps > = ( { currentPage } ) => {
 			<DataTable
 				basePath="/claims"
 				currentPage={ currentPage }
-				totalCount={ data?.getClaims.totalCount }
+				totalCount={ totalPages }
 				columns={ columns }
-				rows={ data?.getClaims.claims }
+				rows={ records }
 				filters={ filters }
-				loading={ loading }
+				loading={ false }
 			/>
 			<Footer wrap />
 		</>
@@ -120,7 +136,9 @@ export async function getStaticProps(): Promise< { props: ClaimsProps } > {
 	return {
 		props: {
 			title: 'Claims',
-			currentPage: 0,
+			currentPage: 1,
+			totalPages: 1,
+			records: [],
 		},
 	};
 }

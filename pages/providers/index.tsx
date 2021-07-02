@@ -4,7 +4,6 @@ import { Container, Link } from '@material-ui/core';
 import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
 import DataTable, { DataTableColumn } from 'components/data-table';
-import { useProvidersIndexQuery } from 'lib/apollo/queries/providers.graphql';
 import { toString } from 'lib/casting';
 
 import type { PaginatedPageProps } from 'global-types';

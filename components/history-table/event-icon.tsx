@@ -6,8 +6,6 @@ import AppealIcon from '@material-ui/icons/Gavel';
 import NoteIcon from '@material-ui/icons/Comment';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 
-import { typeToPath } from 'lib/apollo/utils';
-
 type EventIconProps = {
 	type?: string;
 	slug?: string;

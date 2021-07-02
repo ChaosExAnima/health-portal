@@ -9,11 +9,9 @@ import ProviderLink from 'components/provider-link';
 import { staticPathsFromSlugs, staticPropsSlug } from 'lib/static-helpers';
 import numberFormat from 'lib/number-format';
 import { formatClaimStatus } from 'lib/strings';
-import { useClaimQuery } from 'lib/apollo/queries/claims.graphql';
 
 import type { GetStaticPaths } from 'next';
 import type { SinglePageProps } from 'global-types';
-import type { Claim } from 'lib/db/entities';
 
 const ClaimPage: React.FC< SinglePageProps > = ( { id, slug } ) => {
 	const { data, loading } = useClaimQuery( { variables: { slug } } );

@@ -7,7 +7,6 @@ import DataTable, {
 	DataTableColumn,
 	DataTableFilter,
 } from 'components/data-table';
-import { useAppealsIndexQuery } from 'lib/apollo/queries/appeals.graphql';
 import { capitalize } from 'lib/strings';
 
 import type { PaginatedPageProps } from 'global-types';

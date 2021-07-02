@@ -2,11 +2,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Head from 'next/head';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { useEffect } from 'react';
-import { ApolloProvider } from '@apollo/client';
 
 import Navigation from 'components/navigation';
 import theme from 'config/theme';
-import { createApolloClient } from 'lib/apollo';
 
 import type { AppProps } from 'next/app';
 
@@ -23,8 +21,6 @@ const App: React.FC< AppProps > = ( { Component, pageProps } ) => {
 		? `${ pageProps.title } - Health Portal`
 		: 'Health Portal';
 
-	const client = createApolloClient();
-
 	return (
 		<>
 			<Head>
@@ -35,12 +31,9 @@ const App: React.FC< AppProps > = ( { Component, pageProps } ) => {
 				/>
 			</Head>
 			<ThemeProvider theme={ theme }>
-				<ApolloProvider client={ client }>
-					{ /* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */ }
-					<CssBaseline />
-					<Navigation title="Health Portal ⚕️" />
-					<Component { ...pageProps } />
-				</ApolloProvider>
+				<CssBaseline />
+				<Navigation title="Health Portal ⚕️" />
+				<Component { ...pageProps } />
 			</ThemeProvider>
 		</>
 	);
