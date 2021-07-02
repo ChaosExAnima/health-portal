@@ -2,28 +2,9 @@
 import casual from 'casual';
 import dayjs from 'dayjs';
 
-import init from './index';
-import {
-	Appeal,
-	Call,
-	Claim,
-	File,
-	Note,
-	Payment,
-	Provider,
-	Representative,
-} from './entities';
-import { slugify } from '../strings';
+import initDB from '../lib/db/index';
+import { slugify } from '../lib/strings';
 
-type DBTypes =
-	| Appeal
-	| Call
-	| Claim
-	| Note
-	| Payment
-	| Provider
-	| File
-	| Representative;
 
 function dateThisYear(): Date {
 	return casual.moment.year( 2020 ).toDate();
@@ -52,7 +33,7 @@ function pickFromArray< T extends DBTypes | string >( array: T[] ): T {
 }
 
 async function run( size: number ): Promise< void > {
-	await init();
+	const db = await initDB();
 	const numToAssign = Math.floor( size / 2 );
 
 	for ( let index = 0; index < size; index++ ) {
