@@ -17,7 +17,7 @@ export const CONTENT_ALL = [
 	CONTENT_FILE,
 	CONTENT_NOTE,
 	CONTENT_PAYMENT,
-];
+] as const;
 
 export default {
 	TABLE_CONTENT,
