@@ -1,10 +1,10 @@
-import type {
+import {
 	Appeal,
 	Call,
+	CallMetaRep,
 	Claim,
 	Note,
 	Provider,
-	Representative,
 } from 'lib/db/entities';
 import type { QueryResolver, TypeResolver } from './index';
 
@@ -41,20 +41,22 @@ const Resolver: TypeResolver< 'Call' > = {
 			.load( parent.id );
 	},
 	claims( parent, {}, { dataSources: { db } } ) {
-		return db.loader< Call, Claim[] >( 'Call', 'claims' ).load( parent.id );
+		return db
+			.loader< Call, Claim[] >( 'Call', 'relations' )
+			.load( parent.id );
 	},
 	appeals( parent, {}, { dataSources: { db } } ) {
 		return db
-			.loader< Call, Appeal[] >( 'Call', 'appeals' )
+			.loader< Call, Appeal[] >( 'Call', 'relations' )
 			.load( parent.id );
 	},
 	note( parent, {}, { dataSources: { db } } ) {
-		return db.loader< Call, Note >( 'Call', 'note' ).load( parent.id );
+		return db.loader< Call, Note >( 'Call', 'relations' ).load( parent.id );
 	},
-	async reps( parent, {}, { dataSources: { db } } ) {
-		const loader = db.loader< Call, Representative[] >( 'Call', 'reps' );
-		const reps = await loader.load( parent.id );
-		return reps.map( ( { name } ) => name );
+	reps( parent ) {
+		return parent.meta
+			.filter( ( meta ) => meta instanceof CallMetaRep )
+			.map( ( meta: CallMetaRep ) => meta.value );
 	},
 };
 

@@ -38,24 +38,19 @@ const Resolver: TypeResolver< 'Appeal' > = {
 			.loader< Appeal, Provider >( 'Appeal', 'provider' )
 			.load( parent.id );
 	},
-	async otherProviders( parent, {}, { dataSources: { db } } ) {
-		return db
-			.loader< Appeal, Provider[] >( 'Appeal', 'involvedProviders' )
-			.load( parent.id );
-	},
 	async calls( parent, {}, { dataSources: { db } } ) {
 		return db
-			.loader< Appeal, Call[] >( 'Appeal', 'calls' )
+			.loader< Appeal, Call[] >( 'Appeal', 'relations' )
 			.load( parent.id );
 	},
 	async claims( parent, {}, { dataSources: { db } } ) {
 		return db
-			.loader< Appeal, Claim[] >( 'Appeal', 'claims' )
+			.loader< Appeal, Claim[] >( 'Appeal', 'relations' )
 			.load( parent.id );
 	},
 	async notes( parent, {}, { dataSources: { db } } ) {
 		return db
-			.loader< Appeal, Note[] >( 'Appeal', 'notes' )
+			.loader< Appeal, Note[] >( 'Appeal', 'relations' )
 			.load( parent.id );
 	},
 };

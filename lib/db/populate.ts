@@ -7,6 +7,7 @@ import {
 	Appeal,
 	Call,
 	Claim,
+	Content,
 	File,
 	Meta,
 	Note,
@@ -169,12 +170,14 @@ async function run( size: number ): Promise< void > {
 		note.created = dateThisYear();
 		note.info = casual.text;
 
-		const type = pickFromArray< string >( [ 'claim', 'appeal' ] );
+		const type = pickFromArray( [ 'claim', 'appeal', 'call' ] );
+		let relation: Content = pickFromArray( calls );
 		if ( type === 'claim' ) {
-			note.relations = Promise.resolve( [ pickFromArray( claims ) ] );
+			relation = pickFromArray( claims );
 		} else if ( type === 'appeal' ) {
-			note.relations = Promise.resolve( [ pickFromArray( appeals ) ] );
+			relation = pickFromArray( appeals );
 		}
+		note.relations = Promise.resolve( [ relation ] );
 
 		note.files = Promise.resolve( pickManyFromArray( files ) );
 		await note.save();

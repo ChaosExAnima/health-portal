@@ -36,15 +36,31 @@ export default class Content extends BaseEntity {
 		return this.created;
 	}
 
-	@ManyToMany( () => Content )
-	@JoinTable()
+	@ManyToMany( () => Content, ( relation ) => relation.relatedTo, {
+		eager: false,
+	} )
+	@JoinTable( {
+		name: 'content_relations',
+		joinColumn: {
+			name: 'from',
+		},
+		inverseJoinColumn: {
+			name: 'to',
+		},
+	} )
 	relations: Promise< Content[] >;
+
+	@ManyToMany( () => Content, ( relation ) => relation.relations, {
+		eager: false,
+	} )
+	relatedTo: Promise< Content[] >;
 
 	@ManyToOne( 'Provider', 'content', {
 		nullable: true,
+		eager: false,
 	} )
 	provider?: Promise< Provider >;
 
-	@OneToMany( 'Meta', 'parent' )
+	@OneToMany( 'Meta', 'parent', { eager: false } )
 	meta: Meta[];
 }

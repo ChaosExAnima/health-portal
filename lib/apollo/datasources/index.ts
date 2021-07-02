@@ -46,7 +46,7 @@ export class TypeORM extends DataSource {
 			const items: P[] = await this.entityManager.findByIds< P >(
 				entity,
 				keys as number[],
-				( { relations: [ column ] } as unknown ) as FindConditions< P >
+				{ relations: [ column ] } as FindConditions< P >
 			);
 			return items.map( ( item ) => ( item[ column ] as unknown ) as L );
 		};

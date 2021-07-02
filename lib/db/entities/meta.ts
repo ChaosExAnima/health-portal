@@ -14,7 +14,7 @@ export default class Meta extends BaseEntity {
 		}
 	}
 
-	@ManyToOne( 'Content', 'meta' )
+	@ManyToOne( 'Content', 'meta', { eager: true } )
 	parent: Content;
 
 	@Column( { type: 'varchar', name: 'value' } )

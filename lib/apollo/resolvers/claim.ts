@@ -3,7 +3,7 @@ import Claim from 'lib/db/entities/claim';
 import parseCSV from 'lib/parser';
 
 import type { QueryResolver, MutationResolver, TypeResolver } from './index';
-import type { Note, Provider } from 'lib/db/entities';
+import { Content, Note, Provider } from 'lib/db/entities';
 
 const getClaims: QueryResolver< 'getClaims' > = async (
 	parent,
@@ -61,13 +61,30 @@ const uploadClaims: MutationResolver< 'uploadClaims' > = async (
 };
 
 const Resolver: TypeResolver< 'Claim' > = {
+	claim( parent ) {
+		return parent.number;
+	},
 	async provider( parent, {}, { dataSources: { db } } ) {
 		return db
 			.loader< Claim, Provider >( 'Claim', 'provider' )
 			.load( parent.id );
 	},
 	async notes( parent, {}, { dataSources: { db } } ) {
-		return db.loader< Claim, Note[] >( 'Claim', 'notes' ).load( parent.id );
+		// return ( await parent.relations ).filter(
+		// 	( rel ) => rel instanceof Note
+		// ) as Note[];
+
+		// return db.em
+		// 	.createQueryBuilder< Claim >( 'Claim', 'claim' )
+		// 	.leftJoinAndSelect( 'claim.relations', 'note' )
+		// 	.where( 'claim.id = :id', parent )
+		// 	.execute();
+
+		const loaded = await db
+			.loader< Claim, Content[] >( 'Claim', 'relations' )
+			.load( parent.id );
+		console.log( loaded );
+		return loaded.filter( ( rel ) => rel instanceof Note ) as Note[];
 	},
 };
 
