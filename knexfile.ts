@@ -1,12 +1,12 @@
-import debug from 'debug';
 import dotenv from 'dotenv';
+dotenv.config();
+
+import debug from 'debug';
 import path from 'path';
 
 import type { Knex } from 'knex';
 
-dotenv.config();
-
-const log = debug( 'db' ).extend;
+const log = debug( 'db' );
 const connection: Knex.Config = {
 	client: 'mysql',
 	connection: {
@@ -16,12 +16,13 @@ const connection: Knex.Config = {
 		database: process.env.DB_DATABASE || 'health',
 		port: Number.parseInt( process.env.DB_PORT || '3306', 10 ),
 	},
-	debug: true,
-	// log: {
-	// 	warn: log( 'warn' ),
-	// 	error: log( 'error' ),
-	// 	debug: log( 'debug' ),
-	// },
+	debug: process.env.NODE_ENV !== 'production',
+	log: {
+		warn: log.extend( 'warn' ),
+		error: log.extend( 'error' ),
+		debug: log.extend( 'debug' ),
+		deprecate: log.extend( 'deprecate' ),
+	},
 	migrations: {
 		directory: path.resolve( __dirname, 'lib/db/migrations' ),
 	},
