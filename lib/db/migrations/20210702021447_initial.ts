@@ -8,6 +8,7 @@ import {
 	TABLE_PROVIDERS,
 	TABLE_RELATIONS,
 } from '../constants';
+import { ContentDB, ImportDB, MetaDB, ProviderDB, RelationDB } from '../types';
 
 export async function up( knex: Knex ): Promise< void > {
 	const addCreated = ( table: Knex.TableBuilder ): void => {
@@ -42,7 +43,7 @@ export async function up( knex: Knex ): Promise< void > {
 	await knex.schema.createTable( TABLE_PROVIDERS, ( table ) => {
 		table.increments();
 		addCreated( table );
-		table.string( 'string' ).notNullable().index();
+		table.string( 'slug' ).notNullable().index();
 		table.string( 'name' ).notNullable();
 		table.string( 'phone' );
 		table.text( 'address' );
@@ -98,10 +99,30 @@ export async function up( knex: Knex ): Promise< void > {
 	} );
 }
 
-export async function down( { schema }: Knex ): Promise< void > {
-	await schema.dropTableIfExists( TABLE_CONTENT );
-	await schema.dropTableIfExists( TABLE_IMPORTS );
-	await schema.dropTableIfExists( TABLE_META );
-	await schema.dropTableIfExists( TABLE_PROVIDERS );
-	await schema.dropTableIfExists( TABLE_RELATIONS );
+async function dropForeign< Table extends Record< string, unknown > >(
+	knex: Knex,
+	tableName: string,
+	keys: keyof Table | ( keyof Table )[]
+): Promise< void > {
+	if ( await knex.schema.hasTable( tableName ) ) {
+		await knex.schema.table( tableName, ( table ) => {
+			table.dropForeign( keys as string | string[] );
+		} );
+	}
+}
+
+export async function down( knex: Knex ): Promise< void > {
+	await dropForeign< ImportDB >( knex, TABLE_IMPORTS, 'fileId' );
+	await dropForeign< ProviderDB >( knex, TABLE_PROVIDERS, 'importId' );
+	await dropForeign< ContentDB >( knex, TABLE_CONTENT, [
+		'providerId',
+		'importId',
+	] );
+	await dropForeign< MetaDB >( knex, TABLE_META, 'contentId' );
+	await dropForeign< RelationDB >( knex, TABLE_RELATIONS, [ 'to', 'from' ] );
+	await knex.schema.dropTableIfExists( TABLE_CONTENT );
+	await knex.schema.dropTableIfExists( TABLE_IMPORTS );
+	await knex.schema.dropTableIfExists( TABLE_META );
+	await knex.schema.dropTableIfExists( TABLE_PROVIDERS );
+	await knex.schema.dropTableIfExists( TABLE_RELATIONS );
 }
