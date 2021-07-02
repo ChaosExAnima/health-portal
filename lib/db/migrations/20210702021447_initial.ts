@@ -62,7 +62,7 @@ export async function up( knex: Knex ): Promise< void > {
 		addRef( table, 'importId', TABLE_IMPORTS ).nullable().index();
 
 		table
-			.index( [ 'identifier', 'type' ] )
+			.index( [ 'type', 'identifier' ] )
 			.comment( 'Should use to query types.' );
 	} );
 
