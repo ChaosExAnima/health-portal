@@ -1,11 +1,12 @@
-import { CONTENT_ALL } from './constants';
+import { knex } from 'knex';
 import { Nullable } from 'global-types';
+import { CONTENT_ALL, TABLE_CONTENT, TABLE_IMPORTS, TABLE_META, TABLE_PROVIDERS, TABLE_RELATIONS } from 'lib/constants';
 
-type DBCommonFields = {
+export type DBCommonFields = {
 	id: number;
 	created: Date;
 };
-type DBMetaField = {
+export type DBMetaField = {
 	meta: Record< string, unknown >;
 };
 
@@ -13,19 +14,18 @@ export type ContentDB = DBCommonFields & {
 	identifier: string;
 	type: typeof CONTENT_ALL;
 	info: string;
-	providerId: Nullable< number >;
-	importId: Nullable< number >;
+	providerId: Nullable< ProviderDB["id"] >;
 };
 
 export type MetaDB = DBCommonFields & DBMetaField & {
-	contentId: number;
+	contentId: ContentDB["id"];
 	key: string;
 	value: Nullable< string >;
 };
 
 export type RelationDB = DBCommonFields & DBMetaField & {
-	from: number;
-	to: number;
+	from: ContentDB["id"];
+	to: ContentDB["id"];
 };
 
 export type ProviderDB = DBCommonFields & {
@@ -35,12 +35,22 @@ export type ProviderDB = DBCommonFields & {
 	address: Nullable< string >;
 	website: Nullable< string >;
 	email: Nullable< string >;
-	importId: Nullable< number >;
+	importId: Nullable< ImportDB["id"] >;
 };
 
 export type ImportDB = DBCommonFields & {
 	hash: string;
 	inserted: Nullable< number >;
 	updated: Nullable< number >;
-	fileId: Nullable< number >;
+	fileId: Nullable< ContentDB["id"] >;
 };
+
+declare module 'knex/types/tables' {
+	interface Tables {
+		[ TABLE_CONTENT ]: ContentDB;
+		[ TABLE_META ]: MetaDB;
+		[ TABLE_RELATIONS ]: RelationDB;
+		[ TABLE_PROVIDERS ]: ProviderDB;
+		[ TABLE_IMPORTS ]: ImportDB;
+	}
+}

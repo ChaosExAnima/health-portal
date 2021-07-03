@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { TABLE_CONTENT } from '../constants';
+import { TABLE_CONTENT } from 'lib/constants';
 
 export async function up( knex: Knex ): Promise< void > {
 	await knex.schema.table( TABLE_CONTENT, ( table ) => {

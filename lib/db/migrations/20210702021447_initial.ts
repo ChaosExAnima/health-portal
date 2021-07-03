@@ -7,7 +7,7 @@ import {
 	TABLE_META,
 	TABLE_PROVIDERS,
 	TABLE_RELATIONS,
-} from '../constants';
+} from 'lib/constants';
 
 export async function up( knex: Knex ): Promise< void > {
 	const addCreated = ( table: Knex.TableBuilder ): Knex.ColumnBuilder =>
