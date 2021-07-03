@@ -46,7 +46,6 @@
     "@wordpress/eslint-plugin": "^9",
     "babel-jest": "^27",
     "babel-plugin-transform-typescript-metadata": "^0.3.1",
-    "casual": "^1.6.2",
     "eslint": "^7.15.0",
     "eslint-plugin-jest": "^24.3.2",
     "eslint-plugin-mui-unused-classes": "^1.0.3",

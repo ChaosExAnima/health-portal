@@ -26,5 +26,8 @@ const connection: Knex.Config = {
 	migrations: {
 		directory: path.resolve( __dirname, 'lib/db/migrations' ),
 	},
+	seeds: {
+		directory: path.resolve( __dirname, 'lib/db/seeds' ),
+	},
 };
 export default connection;
