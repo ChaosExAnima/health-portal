@@ -17,14 +17,12 @@ type DataTableRowProps = {
 type DataTableCellProps = DataTableColumn & {
 	value: React.ReactNode | number | string | Record< string, unknown >;
 	slug?: string;
-	__typename?: string;
 };
 
 const DataTableCell: React.FC< DataTableCellProps > = ( {
 	value,
 	link,
 	slug,
-	__typename,
 	format,
 	...props
 } ) => {
@@ -43,10 +41,7 @@ const DataTableCell: React.FC< DataTableCellProps > = ( {
 	) {
 		if ( isLinkObject( value ) ) {
 			text = (
-				<Link
-					color="inherit"
-					href={ typeToPath( value.__typename, value.slug ) }
-				>
+				<Link color="inherit" href={ value.slug }>
 					{ value.name }
 				</Link>
 			);
@@ -54,10 +49,7 @@ const DataTableCell: React.FC< DataTableCellProps > = ( {
 	}
 	return (
 		<TableCell { ...props }>
-			<OptionalLink
-				href={ link ? typeToPath( __typename, slug ) : '' }
-				color="inherit"
-			>
+			<OptionalLink href={ link ? slug : '' } color="inherit">
 				{ text }
 			</OptionalLink>
 		</TableCell>
@@ -73,7 +65,6 @@ const DataTableRow: React.FC< DataTableRowProps > = ( {
 			...column,
 			value: rowData[ column.key ],
 			slug: rowData.slug,
-			__typename: rowData.__typename,
 		} ) );
 	}, [ rowData, columns ] );
 

@@ -1,4 +1,5 @@
 import type { TableCellProps } from '@material-ui/core/TableCell/TableCell';
+import React from 'react';
 
 type DataTableFilterBase = {
 	key: string;
@@ -17,19 +18,16 @@ type DataTableFilterSelect = DataTableFilterBase & {
 export type DataTableFilter = DataTableFilterSelect;
 
 export type DataTableRowLink = {
-	__typename: string;
 	slug: string;
 	name: string | React.ReactNode;
 };
 
 export type DataTableRowData = {
-	__typename?: string;
 	id: number;
 	slug: string;
-	[ key: string ]: React.ReactNode;
+	[ column: string ]: ?React.ReactNode;
 };
 
-// eslint-disable-next-line no-unused-vars
 export type DataTableFormatter = ( arg0: unknown ) => string | React.ReactNode;
 
 export type DataTableColumn = TableCellProps & {
