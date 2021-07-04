@@ -14,6 +14,7 @@ export type ContentDB = DBCommonFields & {
 	identifier: string;
 	type: typeof CONTENT_ALL;
 	info: string;
+	status: string;
 	providerId: Nullable< ProviderDB["id"] >;
 };
 
