@@ -19,28 +19,34 @@ export const CONTENT_ALL = [
 	CONTENT_PAYMENT,
 ] as const;
 
-export const CLAIM_TYPE_IN = 'In Network';
-export const CLAIM_TYPE_OUT = 'Out of Network';
-export const CLAIM_TYPE_MEDS = 'Pharmacy';
-export const CLAIM_TYPE_OTHER = 'Other';
+export const CLAIM_TYPE_IN = 'in network';
+export const CLAIM_TYPE_OUT = 'out of network';
+export const CLAIM_TYPE_MEDS = 'pharmacy';
+export const CLAIM_TYPE_DENTAL = 'dental';
+export const CLAIM_TYPE_OTHER = 'other';
 export const CLAIM_TYPES = [
 	CLAIM_TYPE_IN,
 	CLAIM_TYPE_OUT,
 	CLAIM_TYPE_MEDS,
+	CLAIM_TYPE_DENTAL,
 	CLAIM_TYPE_OTHER,
-];
+] as const;
 
-export const CLAIM_STATUS_SUBMITTED = 'Submitted';
-export const CLAIM_STATUS_PENDING = 'Pending';
-export const CLAIM_STATUS_APPEALING = 'Appealing';
-export const CLAIM_STATUS_APPROVED = 'Approved';
-export const CLAIM_STATUS_DENIED = 'Denied';
+export const CLAIM_STATUS_SUBMITTED = 'submitted';
+export const CLAIM_STATUS_PENDING = 'pending';
+export const CLAIM_STATUS_APPEALING = 'appealing';
+export const CLAIM_STATUS_APPROVED = 'approved';
+export const CLAIM_STATUS_DENIED = 'denied';
+export const CLAIM_STATUS_DELETED = 'deleted';
+export const CLAIM_STATUS_UNKNOWN = 'unknown';
 export const CLAIM_STATUSES = [
 	CLAIM_STATUS_SUBMITTED,
 	CLAIM_STATUS_PENDING,
 	CLAIM_STATUS_APPROVED,
 	CLAIM_STATUS_APPEALING,
 	CLAIM_STATUS_DENIED,
+	CLAIM_STATUS_DELETED,
+	CLAIM_STATUS_UNKNOWN,
 ] as const;
 
 export default {

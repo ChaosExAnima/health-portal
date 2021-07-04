@@ -10,6 +10,17 @@ export function toInt( val: unknown ): number {
 	return 0;
 }
 
+export function toFloat( val: unknown ): number {
+	if ( typeof val === 'number' ) {
+		return val;
+	} else if ( typeof val === 'string' ) {
+		return Number.parseFloat( val );
+	} else if ( typeof val === 'boolean' ) {
+		return val ? 1 : 0;
+	}
+	return 0;
+}
+
 export function toString( val: unknown ): string {
 	return val + '';
 }
