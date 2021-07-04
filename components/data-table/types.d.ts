@@ -1,5 +1,5 @@
-import type { TableCellProps } from '@material-ui/core/TableCell/TableCell';
 import React from 'react';
+import type { TableCellProps } from '@material-ui/core/TableCell/TableCell';
 
 type DataTableFilterBase = {
 	key: string;
@@ -15,6 +15,11 @@ type DataTableFilterSelect = DataTableFilterBase & {
 	noAll?: true;
 };
 
+export type DataTableRowData = {
+	slug: string;
+	[ key: string ]: any;
+};
+
 export type DataTableFilter = DataTableFilterSelect;
 
 export type DataTableRowLink = {
@@ -22,17 +27,11 @@ export type DataTableRowLink = {
 	name: string | React.ReactNode;
 };
 
-export type DataTableRowData = {
-	id: number;
-	slug: string;
-	[ column: string ]: ?React.ReactNode;
-};
-
 export type DataTableFormatter = ( arg0: unknown ) => string | React.ReactNode;
 
-export type DataTableColumn = TableCellProps & {
+export type DataTableColumn< Key extends keyof DataTableRowData > = TableCellProps & {
 	name: string;
-	key: string;
+	key: Key;
 	format?: 'currency' | DataTableFormatter;
 	link?: boolean;
 };

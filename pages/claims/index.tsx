@@ -7,24 +7,23 @@ import DataTable, {
 } from 'components/data-table';
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
-import { capitalize, formatClaimType } from 'lib/strings';
+import {
+	formatClaimStatus,
+	formatClaimType,
+	formatCurrency,
+	formatDate,
+} from 'lib/strings';
 
 import type { PageProps } from 'global-types';
-
-type Claim = {
-	id: number;
-	slug: string;
-	date: Date;
-	claim: string;
-	provider: {
-		name: string;
-		slug: string;
-	};
-	type: string;
-	billed: number;
-	cost: number;
-	status: string;
-};
+import getDB from 'lib/db';
+import {
+	CONTENT_CLAIM,
+	TABLE_CONTENT,
+	TABLE_META,
+	TABLE_PROVIDERS,
+} from 'lib/constants';
+import contentToClaim from 'lib/entities/claim';
+import { Claim } from 'lib/entities/types';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;
@@ -75,15 +74,16 @@ const Claims: React.FC< ClaimsProps > = ( {
 			},
 		},
 	];
-	const columns: DataTableColumn[] = [
+	const columns: DataTableColumn< keyof Claim >[] = [
 		{
 			align: 'right',
 			key: 'date',
 			name: 'Service Date',
 			width: 150,
+			format: formatDate( 'YYYY-MM-DD' ),
 		},
 		{
-			key: 'claim',
+			key: 'number',
 			name: 'Claim #',
 			link: true,
 		},
@@ -99,17 +99,17 @@ const Claims: React.FC< ClaimsProps > = ( {
 		{
 			key: 'billed',
 			name: 'Billed',
-			format: 'currency',
+			format: formatCurrency,
 		},
 		{
 			key: 'cost',
 			name: 'Cost',
-			format: 'currency',
+			format: formatCurrency,
 		},
 		{
 			key: 'status',
 			name: 'Status',
-			format: capitalize,
+			format: formatClaimStatus,
 		},
 	];
 
@@ -118,7 +118,7 @@ const Claims: React.FC< ClaimsProps > = ( {
 			<Container maxWidth="md">
 				<Header title="Claims" actions={ actions } />
 			</Container>
-			<DataTable
+			<DataTable< Claim >
 				basePath="/claims"
 				currentPage={ currentPage }
 				totalCount={ totalPages }
@@ -133,12 +133,28 @@ const Claims: React.FC< ClaimsProps > = ( {
 };
 
 export async function getStaticProps(): Promise< { props: ClaimsProps } > {
+	const knex = getDB();
+	const rows = await knex( TABLE_CONTENT )
+		.where( 'type', CONTENT_CLAIM )
+		.limit( 100 );
+	const meta = await knex( TABLE_META ).whereIn(
+		'contentId',
+		rows.map( ( { id } ) => id )
+	);
+	const providers = await knex( TABLE_PROVIDERS ).whereIn(
+		'id',
+		rows.map( ( { providerId } ) => providerId )
+	);
+	const records = rows.map( ( row ) =>
+		contentToClaim( row, { meta, providers } )
+	);
+
 	return {
 		props: {
 			title: 'Claims',
 			currentPage: 1,
 			totalPages: 1,
-			records: [],
+			records,
 		},
 	};
 }
