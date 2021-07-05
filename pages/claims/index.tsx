@@ -1,6 +1,7 @@
 import { GetStaticPropsContext } from 'next';
 import { Container } from '@material-ui/core';
 import UploadIcon from '@material-ui/icons/CloudUpload';
+import type { SetRequired } from 'type-fest';
 
 import DataTable, {
 	DataTableColumn,
@@ -31,7 +32,7 @@ import { PageProps } from 'global-types';
 export type ClaimsProps = PageProps & {
 	currentPage: number;
 	totalPages: number;
-	records: Claim[];
+	records: SetRequired< Claim, 'billed' | 'cost' | 'provider' >[];
 };
 
 const Claims: React.FC< ClaimsProps > = ( {

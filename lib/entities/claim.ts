@@ -1,3 +1,5 @@
+import type { SetRequired } from 'type-fest';
+
 import {
 	CLAIM_STATUSES,
 	CLAIM_STATUS_UNKNOWN,
@@ -16,11 +18,22 @@ type ClaimAdditions = {
 	providers?: ProviderDB[];
 	relations?: ContentDB[];
 };
+type ClaimWithMeta = { meta: MetaDB[] };
+type ClaimWithProviders = { providers: ProviderDB[] };
 
-export default function rowToClaim(
+type ClaimWithAdditions< T > = T extends ClaimWithMeta & ClaimWithProviders
+	? SetRequired< Claim, 'cost' | 'billed' | 'provider' >
+	: T extends ClaimWithMeta
+	? SetRequired< Claim, 'cost' | 'billed' >
+	: T extends ClaimWithProviders
+	? SetRequired< Claim, 'provider' >
+	: Claim;
+
+export default function rowToClaim< T extends ClaimAdditions >(
 	row: ContentDB,
-	{ meta, providers }: ClaimAdditions
-): Claim {
+	additions: T
+): ClaimWithAdditions< T > {
+	const { meta, providers } = additions;
 	const { id, identifier: number, created: createdDate, info, status } = row;
 	const created = dateToString( createdDate );
 	const claim: Claim = {
@@ -56,5 +69,5 @@ export default function rowToClaim(
 		claim.cost = getNumericMeta( 'cost', contentMeta );
 	}
 
-	return claim;
+	return claim as ClaimWithAdditions< T >;
 }
