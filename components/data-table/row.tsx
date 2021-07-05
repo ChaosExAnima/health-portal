@@ -42,7 +42,7 @@ export default function DataTableRow< Data extends DataTableRowData >(
 		return columns.map( ( column ) => ( {
 			...column,
 			value: rowData[ column.key ],
-			slug: rowData.slug,
+			slug: ( column.linkPrefix || '' ) + rowData.slug,
 		} ) );
 	}, [ rowData, columns ] );
 

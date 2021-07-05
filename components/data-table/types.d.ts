@@ -34,4 +34,5 @@ export type DataTableColumn< Key extends keyof DataTableRowData > = TableCellPro
 	key: Key;
 	format?: DataTableFormatter;
 	link?: boolean;
+	linkPrefix?: string;
 };

@@ -90,6 +90,7 @@ const Claims: React.FC< ClaimsProps > = ( {
 			key: 'number',
 			name: 'Claim #',
 			link: true,
+			linkPrefix: '/claims/',
 		},
 		{
 			key: 'provider',
@@ -104,7 +105,6 @@ const Claims: React.FC< ClaimsProps > = ( {
 					</Link>
 				);
 			},
-			link: true,
 		},
 		{
 			key: 'type',
