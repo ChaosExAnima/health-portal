@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 
 import {
-	CONTENT_ALL,
+	CONTENTS,
 	TABLE_CONTENT,
 	TABLE_IMPORTS,
 	TABLE_META,
@@ -42,7 +42,7 @@ export async function up( knex: Knex ): Promise< void > {
 		table.increments();
 		addCreated( table );
 		table.string( 'identifier' ).notNullable().defaultTo( '' );
-		table.enum( 'type', CONTENT_ALL ).notNullable();
+		table.enum( 'type', CONTENTS ).notNullable();
 		table.text( 'info' ).nullable();
 		table.string( 'status' ).nullable().index();
 		addRef( table, 'providerId' ).nullable().index();

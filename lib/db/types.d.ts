@@ -1,6 +1,6 @@
 import { knex } from 'knex';
 import { Nullable } from 'global-types';
-import { CONTENT_ALL, TABLE_CONTENT, TABLE_IMPORTS, TABLE_META, TABLE_PROVIDERS, TABLE_RELATIONS } from 'lib/constants';
+import { CONTENTS_TYPE, TABLE_CONTENT, TABLE_IMPORTS, TABLE_META, TABLE_PROVIDERS, TABLE_RELATIONS } from 'lib/constants';
 
 export type DBCommonFields = {
 	id: number;
@@ -12,7 +12,7 @@ export type DBMetaField = {
 
 export type ContentDB = DBCommonFields & {
 	identifier: string;
-	type: typeof CONTENT_ALL;
+	type: CONTENTS_TYPE;
 	info: string;
 	status: string;
 	providerId: Nullable< ProviderDB["id"] >;
