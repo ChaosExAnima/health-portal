@@ -4,6 +4,9 @@ export type Nullable< T > = T | null;
 export type PaginatedPageContext = {
 	page: string;
 }
+export type SinglePageContext = {
+	slug: string;
+};
 
 export type PageProps = {
 	title: string;

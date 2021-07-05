@@ -16,6 +16,7 @@ import { dateToString, getNumericMeta } from './utils';
 type ClaimAdditions = {
 	meta?: MetaDB[];
 	providers?: ProviderDB[];
+	provider?: ProviderDB;
 	relations?: ContentDB[];
 };
 type ClaimWithMeta = { meta: MetaDB[] };

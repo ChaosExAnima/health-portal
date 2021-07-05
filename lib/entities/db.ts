@@ -5,6 +5,7 @@ import { toArray } from 'lib/casting';
 import * as constants from 'lib/constants';
 import getDB from 'lib/db';
 import { ContentDB, DBCommonFields, MetaDB, ProviderDB } from 'lib/db/types';
+import { Nullable } from 'global-types';
 
 export function getIdColumn< T extends DBCommonFields >(
 	entities: T[],
@@ -45,6 +46,13 @@ export function queryMeta(
 		'contentId',
 		toArray( contentIds )
 	);
+}
+
+export function queryProvider(
+	providerId: Nullable< number >
+): Knex.QueryBuilder< ProviderDB, ProviderDB | undefined > {
+	const knex = getDB();
+	return knex( constants.TABLE_PROVIDERS ).where( 'id', providerId ).first();
 }
 
 export function queryRelatedProviders(

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { toFloat } from './casting';
 
+import { toFloat } from './casting';
 import * as constants from './constants';
 
 export function capitalize( word: string ): string {
@@ -22,7 +22,7 @@ const formatter = new Intl.NumberFormat( 'en-US', {
 	style: 'currency',
 } );
 
-export function formatCurrency( value: number | string ): string {
+export function formatCurrency( value: unknown ): string {
 	const amount = toFloat( value );
 	return formatter.format( amount );
 }

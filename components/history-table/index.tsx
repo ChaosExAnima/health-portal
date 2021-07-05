@@ -1,7 +1,6 @@
 import {
 	Box,
 	Button,
-	LinearProgress,
 	Table,
 	TableBody,
 	TableCell,
@@ -11,37 +10,20 @@ import {
 	Typography,
 } from '@material-ui/core';
 
-import { Type, useHistoryQuery } from './query.graphql';
 import EventRow from './event-row';
+import { CONTENTS_TYPE } from 'lib/constants';
 
 type HistoryTableProps = {
-	type: 'claim' | 'appeal' | 'provider';
+	type: CONTENTS_TYPE;
 	id: number;
 };
-
-function stringToType( type: string ): Type {
-	if ( [ 'claim', 'appeal', 'provider' ].includes( type.toLowerCase() ) ) {
-		return type.toLowerCase() as Type;
-	}
-	throw new Error( `Invalid type: ${ type }` );
-}
 
 const HistoryTable: React.FC< HistoryTableProps > = ( {
 	type: rawType,
 	id,
 } ) => {
-	const type = stringToType( rawType );
-	const { data, loading, fetchMore } = useHistoryQuery( {
-		variables: { type, id, offset: 0 },
-	} );
-
-	if ( loading || ! data?.history ) {
-		return <LinearProgress />;
-	}
-	const events = data.history;
-	const loadMore = () =>
-		fetchMore( { variables: { offset: events.length } } );
-
+	const events: { id: number }[] = [];
+	const loadMore = () => null;
 	return (
 		<>
 			<Typography variant="h5" component="h2">
