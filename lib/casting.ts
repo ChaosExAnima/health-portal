@@ -20,3 +20,7 @@ export function isObjectWithKeys< Type extends Record< string, Primitive > >(
 		)
 	);
 }
+
+export function toArray< T >( input: T | T[] ): T[] {
+	return Array.isArray( input ) ? input : [ input ];
+}

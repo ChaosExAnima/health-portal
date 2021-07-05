@@ -1,5 +1,7 @@
+import { GetStaticPropsContext } from 'next';
 import { Container } from '@material-ui/core';
 import UploadIcon from '@material-ui/icons/CloudUpload';
+import { toInteger } from 'lodash';
 
 import DataTable, {
 	DataTableColumn,
@@ -7,25 +9,25 @@ import DataTable, {
 } from 'components/data-table';
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
+import Link from 'components/link';
 import {
 	formatClaimStatus,
 	formatClaimType,
 	formatCurrency,
 	formatDate,
 } from 'lib/strings';
-
-import type { PageProps } from 'global-types';
-import getDB from 'lib/db';
-import {
-	CONTENT_CLAIM,
-	TABLE_CONTENT,
-	TABLE_META,
-	TABLE_PROVIDERS,
-} from 'lib/constants';
 import contentToClaim from 'lib/entities/claim';
+import {
+	getIdColumn,
+	getIds,
+	queryClaims,
+	queryMeta,
+	queryRelatedProviders,
+} from 'lib/entities/db';
 import { Claim, Provider } from 'lib/entities/types';
-import Link from 'components/link';
 import { isProvider } from 'lib/entities/provider';
+import { getPageNumber } from 'lib/static-helpers';
+import { PageProps } from 'global-types';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;
@@ -145,28 +147,35 @@ const Claims: React.FC< ClaimsProps > = ( {
 	);
 };
 
-export async function getStaticProps(): Promise< { props: ClaimsProps } > {
-	const knex = getDB();
-	const rows = await knex( TABLE_CONTENT )
-		.where( 'type', CONTENT_CLAIM )
-		.limit( 100 );
-	const meta = await knex( TABLE_META ).whereIn(
-		'contentId',
-		rows.map( ( { id } ) => id )
+export async function getStaticProps( {
+	params,
+}: GetStaticPropsContext< { page: string } > ): Promise< {
+	props: ClaimsProps;
+} > {
+	// Pagination.
+	const { count = 0 } = ( await queryClaims()
+		.count( { count: '*' } )
+		.first() ) || { count: 0 };
+	const currentPage = getPageNumber( params?.page );
+	const pageSize = 100;
+
+	// Gets records.
+	const claims = await queryClaims()
+		.limit( pageSize )
+		.offset( ( currentPage - 1 ) * pageSize );
+	const meta = await queryMeta( getIds( claims ) );
+	const providers = await queryRelatedProviders(
+		getIdColumn( claims, 'providerId' )
 	);
-	const providers = await knex( TABLE_PROVIDERS ).whereIn(
-		'id',
-		rows.map( ( { providerId } ) => providerId )
-	);
-	const records = rows.map( ( row ) =>
+	const records = claims.map( ( row ) =>
 		contentToClaim( row, { meta, providers } )
 	);
 
 	return {
 		props: {
 			title: 'Claims',
-			currentPage: 1,
-			totalPages: 1,
+			currentPage,
+			totalPages: toInteger( count ) / pageSize,
 			records,
 		},
 	};
