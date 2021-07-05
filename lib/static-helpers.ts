@@ -1,6 +1,4 @@
-import { toInteger } from 'lodash';
-import { SinglePageProps } from 'global-types';
-
+import { toSafeInteger } from 'lodash';
 import type {
 	GetStaticPaths,
 	GetStaticPathsContext,
@@ -9,13 +7,26 @@ import type {
 	GetStaticPropsContext,
 	GetStaticPropsResult,
 } from 'next';
+import type { Knex } from 'knex';
+
+import { DBCommonFields } from './db/types';
+import { SinglePageProps } from 'global-types';
 
 export function isSSR(): boolean {
 	return typeof window === 'undefined';
 }
 
 export function getPageNumber( page: unknown ): number {
-	return Math.max( 1, toInteger( page ) );
+	return Math.max( 0, toSafeInteger( page ) );
+}
+
+export async function getTotalPageNumber(
+	query: Knex.QueryBuilder< DBCommonFields, DBCommonFields[] >,
+	pageSize = 20
+): Promise< number > {
+	const result = await query.count( { count: '*' } ).first();
+	const count = toSafeInteger( result?.count );
+	return Math.ceil( toSafeInteger( count ) / pageSize );
 }
 
 export async function staticPathsFromSlugs(

@@ -1,7 +1,6 @@
 import { GetStaticPropsContext } from 'next';
 import { Container } from '@material-ui/core';
 import UploadIcon from '@material-ui/icons/CloudUpload';
-import { toInteger } from 'lodash';
 
 import DataTable, {
 	DataTableColumn,
@@ -26,7 +25,7 @@ import {
 } from 'lib/entities/db';
 import { Claim, Provider } from 'lib/entities/types';
 import { isProvider } from 'lib/entities/provider';
-import { getPageNumber } from 'lib/static-helpers';
+import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { PageProps } from 'global-types';
 
 export type ClaimsProps = PageProps & {
@@ -153,16 +152,14 @@ export async function getStaticProps( {
 	props: ClaimsProps;
 } > {
 	// Pagination.
-	const { count = 0 } = ( await queryClaims()
-		.count( { count: '*' } )
-		.first() ) || { count: 0 };
+	const pageSize = 20;
 	const currentPage = getPageNumber( params?.page );
-	const pageSize = 100;
+	const totalPages = await getTotalPageNumber( queryClaims(), pageSize );
 
 	// Gets records.
 	const claims = await queryClaims()
 		.limit( pageSize )
-		.offset( ( currentPage - 1 ) * pageSize );
+		.offset( currentPage * pageSize );
 	const meta = await queryMeta( getIds( claims ) );
 	const providers = await queryRelatedProviders(
 		getIdColumn( claims, 'providerId' )
@@ -175,7 +172,7 @@ export async function getStaticProps( {
 		props: {
 			title: 'Claims',
 			currentPage,
-			totalPages: toInteger( count ) / pageSize,
+			totalPages,
 			records,
 		},
 	};
