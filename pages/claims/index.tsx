@@ -23,7 +23,9 @@ import {
 	TABLE_PROVIDERS,
 } from 'lib/constants';
 import contentToClaim from 'lib/entities/claim';
-import { Claim } from 'lib/entities/types';
+import { Claim, Provider } from 'lib/entities/types';
+import Link from 'components/link';
+import { isProvider } from 'lib/entities/provider';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;
@@ -90,6 +92,17 @@ const Claims: React.FC< ClaimsProps > = ( {
 		{
 			key: 'provider',
 			name: 'Provider',
+			format: ( value: Provider | unknown ): React.ReactNode => {
+				if ( ! isProvider( value ) ) {
+					return null;
+				}
+				return (
+					<Link href={ `/providers/${ value.slug }` }>
+						{ value.name }
+					</Link>
+				);
+			},
+			link: true,
 		},
 		{
 			key: 'type',

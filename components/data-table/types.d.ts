@@ -27,11 +27,11 @@ export type DataTableRowLink = {
 	name: string | React.ReactNode;
 };
 
-export type DataTableFormatter = ( arg0: unknown ) => string | React.ReactNode;
+export type DataTableFormatter = ( arg0: unknown ) => React.ReactNode;
 
 export type DataTableColumn< Key extends keyof DataTableRowData > = TableCellProps & {
 	name: string;
 	key: Key;
-	format?: 'currency' | DataTableFormatter;
+	format?: DataTableFormatter;
 	link?: boolean;
 };

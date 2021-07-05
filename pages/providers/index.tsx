@@ -4,7 +4,6 @@ import { Container, Link } from '@material-ui/core';
 import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
 import DataTable, { DataTableColumn } from 'components/data-table';
-import { toString } from 'lib/casting';
 
 import type { PaginatedPageProps } from 'global-types';
 
@@ -29,9 +28,9 @@ const ProvidersPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
 		{
 			key: 'phone',
 			name: 'Phone Number',
-			format: ( value ) => (
+			format: ( value: string ) => (
 				<Link href={ `tel:${ value }` } color="inherit">
-					{ toString( value ) }
+					{ value }
 				</Link>
 			),
 		},
