@@ -22,3 +22,11 @@ export function getNumericMeta( key: string, rows: MetaDB[] ): number | null {
 export function isEntity( input: unknown ): input is Entity {
 	return isObjectWithKeys( input, [ 'id', 'slug' ] );
 }
+
+export function inReadonlyArray< T extends readonly string[] >(
+	input: string,
+	types: T,
+	fallback: T[ number ]
+): T[ number ] {
+	return types.includes( input ) ? input : fallback;
+}

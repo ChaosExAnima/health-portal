@@ -1,17 +1,11 @@
 import type { SetRequired } from 'type-fest';
 
-import {
-	CLAIM_STATUSES,
-	CLAIM_STATUS_UNKNOWN,
-	CLAIM_TYPES,
-	CLAIM_TYPE_OTHER,
-} from 'lib/constants';
-import { ContentDB, MetaDB, ProviderDB } from 'lib/db/types';
-import { slugify } from 'lib/strings';
-
 import { rowToProvider } from './provider';
 import { Claim } from './types';
-import { dateToString, getNumericMeta } from './utils';
+import { dateToString, getNumericMeta, inReadonlyArray } from './utils';
+import * as constants from 'lib/constants';
+import { ContentDB, MetaDB, ProviderDB } from 'lib/db/types';
+import { slugify } from 'lib/strings';
 
 type ClaimAdditions = {
 	meta?: MetaDB[];
@@ -23,12 +17,23 @@ type ClaimWithMeta = { meta: MetaDB[] };
 type ClaimWithProviders = { providers: ProviderDB[] };
 
 type ClaimWithAdditions< T > = T extends ClaimWithMeta & ClaimWithProviders
-	? SetRequired< Claim, 'cost' | 'billed' | 'provider' >
+	? SetRequired< Claim, metaFieldType | 'provider' >
 	: T extends ClaimWithMeta
-	? SetRequired< Claim, 'cost' | 'billed' >
+	? SetRequired< Claim, metaFieldType >
 	: T extends ClaimWithProviders
 	? SetRequired< Claim, 'provider' >
 	: Claim;
+
+export const metaFields = [ 'cost', 'billed' ] as const;
+export type metaFieldType = typeof metaFields[ number ];
+
+export const related = [
+	constants.CONTENT_APPEAL,
+	constants.CONTENT_CALL,
+	constants.CONTENT_NOTE,
+	constants.CONTENT_PAYMENT,
+] as const;
+export type relatedType = typeof related[ number ];
 
 export default function rowToClaim< T extends ClaimAdditions >(
 	row: ContentDB,
@@ -42,15 +47,17 @@ export default function rowToClaim< T extends ClaimAdditions >(
 		number,
 		slug: slugify( number ),
 		date: created,
-		status: ( CLAIM_STATUSES.includes(
-			status as typeof CLAIM_STATUSES[ number ]
-		)
-			? status
-			: CLAIM_STATUS_UNKNOWN ) as typeof CLAIM_STATUSES[ number ],
+		status: inReadonlyArray(
+			status,
+			constants.CLAIM_STATUSES,
+			constants.CLAIM_STATUS_UNKNOWN
+		),
 		created,
-		type: ( CLAIM_TYPES.includes( info as typeof CLAIM_TYPES[ number ] )
-			? info
-			: CLAIM_TYPE_OTHER ) as typeof CLAIM_TYPES[ number ],
+		type: inReadonlyArray(
+			info,
+			constants.CLAIM_TYPES,
+			constants.CLAIM_TYPE_OTHER
+		),
 	};
 
 	if ( providers && row.providerId ) {

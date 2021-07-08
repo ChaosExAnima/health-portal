@@ -4,8 +4,15 @@ import { uniq, map, toSafeInteger } from 'lodash';
 import { toArray } from 'lib/casting';
 import * as constants from 'lib/constants';
 import getDB from 'lib/db';
-import { ContentDB, DBCommonFields, MetaDB, ProviderDB } from 'lib/db/types';
-import { Nullable } from 'global-types';
+
+import type { Entity } from './types';
+import type { Nullable, StringKeys } from 'global-types';
+import type {
+	ContentDB,
+	DBCommonFields,
+	MetaDB,
+	ProviderDB,
+} from 'lib/db/types';
 
 export function getIdColumn< T extends DBCommonFields >(
 	entities: T[],
@@ -46,6 +53,13 @@ export function queryMeta(
 		'contentId',
 		toArray( contentIds )
 	);
+}
+
+export function queryAllMeta< T extends Entity >(
+	key: StringKeys< T >
+): Knex.QueryBuilder< MetaDB, MetaDB[] > {
+	const knex = getDB();
+	return knex( constants.TABLE_META ).where( 'key', key );
 }
 
 export function queryProvider(
