@@ -1,4 +1,0 @@
-{
-	"schema": [ "**/*.graphqls", "${SCHEMA_ENDPOINT:'http://localhost:3000/api/graphql'}" ],
-	"documents": [ "**/*.graphql" ]
-}

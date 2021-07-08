@@ -9,8 +9,6 @@ import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
 
 import type { PaginatedPageProps } from 'global-types';
-import { useCallsIndexQuery } from 'lib/apollo/queries/calls.graphql';
-import { Note } from 'lib/db/entities';
 
 const CallsPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
 	const { data, loading } = useCallsIndexQuery( {

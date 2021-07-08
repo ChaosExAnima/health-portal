@@ -1,26 +1,45 @@
+import { GetStaticPropsContext } from 'next';
 import { Container } from '@material-ui/core';
 import UploadIcon from '@material-ui/icons/CloudUpload';
+import type { SetRequired } from 'type-fest';
 
-import Header, { ActionItem } from 'components/header';
-import Footer from 'components/footer';
-import { useClaimsIndexQuery } from 'lib/apollo/queries/claims.graphql';
-
-import type { PageProps } from 'global-types';
 import DataTable, {
 	DataTableColumn,
 	DataTableFilter,
 } from 'components/data-table';
-import { capitalize, formatClaimType } from 'lib/strings';
+import Footer from 'components/footer';
+import Header, { ActionItem } from 'components/header';
+import Link from 'components/link';
+import {
+	formatClaimStatus,
+	formatClaimType,
+	formatCurrency,
+	formatDate,
+} from 'lib/strings';
+import contentToClaim from 'lib/entities/claim';
+import {
+	getIdColumn,
+	getIds,
+	queryClaims,
+	queryMeta,
+	queryRelatedProviders,
+} from 'lib/entities/db';
+import { Claim, Provider } from 'lib/entities/types';
+import { isProvider } from 'lib/entities/provider';
+import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
+import { PageProps } from 'global-types';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;
+	totalPages: number;
+	records: SetRequired< Claim, 'billed' | 'cost' | 'provider' >[];
 };
 
-const Claims: React.FC< ClaimsProps > = ( { currentPage } ) => {
-	const { loading, data } = useClaimsIndexQuery( {
-		variables: { offset: currentPage * 20 },
-	} );
-
+const Claims: React.FC< ClaimsProps > = ( {
+	currentPage,
+	records,
+	totalPages,
+} ) => {
 	const actions: ActionItem[] = [
 		{
 			href: '/claims/upload',
@@ -59,21 +78,33 @@ const Claims: React.FC< ClaimsProps > = ( { currentPage } ) => {
 			},
 		},
 	];
-	const columns: DataTableColumn[] = [
+	const columns: DataTableColumn< keyof Claim >[] = [
 		{
 			align: 'right',
 			key: 'date',
 			name: 'Service Date',
 			width: 150,
+			format: formatDate( 'YYYY-MM-DD' ),
 		},
 		{
-			key: 'claim',
+			key: 'number',
 			name: 'Claim #',
 			link: true,
+			linkPrefix: '/claims/',
 		},
 		{
 			key: 'provider',
 			name: 'Provider',
+			format: ( value: Provider | unknown ): React.ReactNode => {
+				if ( ! isProvider( value ) ) {
+					return null;
+				}
+				return (
+					<Link href={ `/providers/${ value.slug }` }>
+						{ value.name }
+					</Link>
+				);
+			},
 		},
 		{
 			key: 'type',
@@ -83,17 +114,17 @@ const Claims: React.FC< ClaimsProps > = ( { currentPage } ) => {
 		{
 			key: 'billed',
 			name: 'Billed',
-			format: 'currency',
+			format: formatCurrency,
 		},
 		{
 			key: 'cost',
 			name: 'Cost',
-			format: 'currency',
+			format: formatCurrency,
 		},
 		{
 			key: 'status',
 			name: 'Status',
-			format: capitalize,
+			format: formatClaimStatus,
 		},
 	];
 
@@ -102,25 +133,48 @@ const Claims: React.FC< ClaimsProps > = ( { currentPage } ) => {
 			<Container maxWidth="md">
 				<Header title="Claims" actions={ actions } />
 			</Container>
-			<DataTable
+			<DataTable< Claim >
 				basePath="/claims"
 				currentPage={ currentPage }
-				totalCount={ data?.getClaims.totalCount }
+				totalCount={ totalPages }
 				columns={ columns }
-				rows={ data?.getClaims.claims }
+				rows={ records }
 				filters={ filters }
-				loading={ loading }
+				loading={ false }
 			/>
 			<Footer wrap />
 		</>
 	);
 };
 
-export async function getStaticProps(): Promise< { props: ClaimsProps } > {
+export async function getStaticProps( {
+	params,
+}: GetStaticPropsContext< { page: string } > ): Promise< {
+	props: ClaimsProps;
+} > {
+	// Pagination.
+	const pageSize = 20;
+	const currentPage = getPageNumber( params?.page );
+	const totalPages = await getTotalPageNumber( queryClaims(), pageSize );
+
+	// Gets records.
+	const claims = await queryClaims()
+		.limit( pageSize )
+		.offset( currentPage * pageSize );
+	const meta = await queryMeta( getIds( claims ) );
+	const providers = await queryRelatedProviders(
+		getIdColumn( claims, 'providerId' )
+	);
+	const records = claims.map( ( row ) =>
+		contentToClaim( row, { meta, providers } )
+	);
+
 	return {
 		props: {
 			title: 'Claims',
-			currentPage: 0,
+			currentPage,
+			totalPages,
+			records,
 		},
 	};
 }

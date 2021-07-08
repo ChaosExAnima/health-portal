@@ -5,13 +5,11 @@ import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import DetailsBox, { Detail } from 'components/details-box';
 import HistoryTable from 'components/history-table';
-import { useProviderQuery } from 'lib/apollo/queries/providers.graphql';
 import { staticPathsFromSlugs } from 'lib/static-helpers';
 import { query } from 'lib/db';
 
 import type { GetStaticPaths, GetStaticProps } from 'next';
 import type { SinglePageProps } from 'global-types';
-import type Provider from 'lib/db/entities/provider';
 
 const ProviderPage: React.FC< SinglePageProps > = ( { id, slug } ) => {
 	const { data, loading } = useProviderQuery( { variables: { slug } } );

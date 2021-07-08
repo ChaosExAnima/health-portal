@@ -1,4 +1,13 @@
 export type Optional< T, K extends keyof T > = Omit< T, K > & Partial< T >;
+export type Nullable< T > = T | null;
+export type StringKeys< T > = Extract< keyof T, string >;
+
+export type PaginatedPageContext = {
+	page: string;
+}
+export type SinglePageContext = {
+	slug: string;
+};
 
 export type PageProps = {
 	title: string;

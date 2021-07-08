@@ -6,10 +6,6 @@ import Breadcrumbs from 'components/breadcrumbs';
 import Header from 'components/header';
 import DetailsBox, { Detail } from 'components/details-box';
 import {
-	useProviderEditMutation,
-	useProviderQuery,
-} from 'lib/apollo/queries/providers.graphql';
-import {
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
 } from './index';
@@ -17,7 +13,6 @@ import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import type { GetStaticPaths, GetStaticProps } from 'next';
 import type { SinglePageProps } from 'global-types';
-import type { Provider } from 'lib/apollo/schema/index.graphqls';
 
 const ProviderEditPage: React.FC< SinglePageProps > = ( { slug } ) => {
 	const router = useRouter();

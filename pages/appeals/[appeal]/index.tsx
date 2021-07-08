@@ -5,9 +5,7 @@ import Breadcrumbs from 'components/breadcrumbs';
 import DetailsBox from 'components/details-box';
 import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
-import { useAppealQuery } from 'lib/apollo/queries/appeals.graphql';
 import initDb from 'lib/db';
-import { Appeal } from 'lib/db/entities';
 import { staticPathsFromSlugs } from 'lib/static-helpers';
 import { capitalize } from 'lib/strings';
 

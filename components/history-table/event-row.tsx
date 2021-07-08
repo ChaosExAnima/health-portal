@@ -2,7 +2,6 @@ import { TableCell, TableRow } from '@material-ui/core';
 
 import EventIcon from './event-icon';
 import OptionalLink from 'components/optional-link';
-import { slugToPath } from 'lib/apollo/utils';
 
 import type { Event } from './query.graphql';
 

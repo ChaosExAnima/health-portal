@@ -2,89 +2,55 @@ import React, { useMemo } from 'react';
 import { TableCell, TableRow } from '@material-ui/core';
 
 import OptionalLink from 'components/optional-link';
-import { typeToPath } from 'lib/apollo/utils';
-import { toInt } from 'lib/casting';
-import numberFormat from 'lib/number-format';
 
 import { DataTableColumn, DataTableRowData } from './types';
-import Link from 'components/link';
-import { isLinkObject } from './utils';
 
-type DataTableRowProps = {
-	rowData: DataTableRowData;
-	columns: DataTableColumn[];
+type DataTableRowProps< Data > = {
+	rowData: Data;
+	columns: DataTableColumn< Extract< keyof Data, string > >[];
 };
 
-type DataTableCellProps = DataTableColumn & {
-	value: React.ReactNode | number | string | Record< string, unknown >;
+type DataTableCellProps< Data > = DataTableColumn<
+	Extract< keyof Data, string >
+> & {
+	value: React.ReactNode;
 	slug?: string;
-	__typename?: string;
 };
 
-const DataTableCell: React.FC< DataTableCellProps > = ( {
-	value,
-	link,
-	slug,
-	__typename,
-	format,
-	...props
-} ) => {
+function DataTableCell< Data >(
+	props: DataTableCellProps< Data >
+): JSX.Element {
+	const { value, link, slug, format } = props;
 	let text = value;
-	if ( value && format && ! React.isValidElement( value ) ) {
-		if ( format === 'currency' ) {
-			text = numberFormat( toInt( value ), true );
-		} else if ( typeof format === 'function' ) {
-			text = format( value );
-		}
-	}
-	if (
-		! React.isValidElement( value ) &&
-		typeof value === 'object' &&
-		value
-	) {
-		if ( isLinkObject( value ) ) {
-			text = (
-				<Link
-					color="inherit"
-					href={ typeToPath( value.__typename, value.slug ) }
-				>
-					{ value.name }
-				</Link>
-			);
-		}
+	if ( typeof format === 'function' ) {
+		text = format( value );
 	}
 	return (
 		<TableCell { ...props }>
-			<OptionalLink
-				href={ link ? typeToPath( __typename, slug ) : '' }
-				color="inherit"
-			>
+			<OptionalLink href={ link ? slug : '' } color="inherit">
 				{ text }
 			</OptionalLink>
 		</TableCell>
 	);
-};
+}
 
-const DataTableRow: React.FC< DataTableRowProps > = ( {
-	rowData,
-	columns,
-} ) => {
-	const cells: DataTableCellProps[] = useMemo( () => {
+export default function DataTableRow< Data extends DataTableRowData >(
+	props: DataTableRowProps< Data >
+): JSX.Element {
+	const { columns, rowData } = props;
+	const cells: DataTableCellProps< Data >[] = useMemo( () => {
 		return columns.map( ( column ) => ( {
 			...column,
 			value: rowData[ column.key ],
-			slug: rowData.slug,
-			__typename: rowData.__typename,
+			slug: ( column.linkPrefix || '' ) + rowData.slug,
 		} ) );
 	}, [ rowData, columns ] );
 
 	return (
 		<TableRow>
 			{ cells.map( ( cell ) => (
-				<DataTableCell { ...cell } key={ cell.key } />
+				<DataTableCell< Data > { ...cell } key={ cell.key } />
 			) ) }
 		</TableRow>
 	);
-};
-
-export default DataTableRow;
+}

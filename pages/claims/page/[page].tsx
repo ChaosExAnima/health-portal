@@ -1,25 +1,32 @@
-import Claims, { ClaimsProps } from '../index';
+import {
+	GetStaticPathsResult,
+	GetStaticPropsContext,
+	GetStaticPropsResult,
+} from 'next';
 
-import type { GetStaticPaths, GetStaticProps } from 'next';
-
-const ClaimsPaginated = Claims;
-
-export const getStaticPaths: GetStaticPaths = async () => ( {
-	paths: [ 2, 3, 4, 5, 6, 7, 8, 9 ].map( ( page ) => ( {
-		params: { page: page + '' },
-	} ) ),
-	fallback: true,
-} );
-
-export const getStaticProps: GetStaticProps<
+import Claims, {
 	ClaimsProps,
-	{ page: string }
-> = async ( { params } ) => {
-	let currentPage = 1;
-	if ( params && params.page ) {
-		currentPage = Number.parseInt( params.page ) - 1;
-	}
-	if ( currentPage < 1 ) {
+	getStaticProps as getRootStaticProps,
+} from '../index';
+import { queryClaims } from 'lib/entities/db';
+import { getPageNumber } from 'lib/static-helpers';
+import { PaginatedPageContext } from 'global-types';
+
+export async function getStaticPaths(): Promise< GetStaticPathsResult > {
+	const claims = await queryClaims().select( 'identifier' );
+	return {
+		paths: claims.map( ( { identifier } ) => identifier.toLowerCase() ),
+		fallback: false,
+	};
+}
+
+export async function getStaticProps( {
+	params,
+}: GetStaticPropsContext< PaginatedPageContext > ): Promise<
+	GetStaticPropsResult< ClaimsProps >
+> {
+	const currentPage = getPageNumber( params?.page );
+	if ( currentPage === 1 ) {
 		return {
 			redirect: {
 				destination: '/claims',
@@ -27,12 +34,8 @@ export const getStaticProps: GetStaticProps<
 			},
 		};
 	}
-	return {
-		props: {
-			title: 'Claims',
-			currentPage,
-		},
-	};
-};
+	return getRootStaticProps( { params } );
+}
 
+const ClaimsPaginated = Claims;
 export default ClaimsPaginated;

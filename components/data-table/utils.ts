@@ -6,7 +6,6 @@ export function isLinkObject( value: unknown ): value is DataTableRowLink {
 		typeof value === 'object' &&
 		value !== null &&
 		'slug' in value &&
-		'__typename' in value &&
 		'name' in value
 	);
 }
