@@ -45,6 +45,22 @@ export const queryFiles: queryFunction = () =>
 export const queryPayments: queryFunction = () =>
 	queryContentType( constants.CONTENT_PAYMENT );
 
+export function queryRelated(
+	contentIds: number | number[]
+): Knex.QueryBuilder< ContentDB, ContentDB[] > {
+	const knex = getDB();
+	return knex( constants.TABLE_RELATIONS )
+		.whereIn( 'from', toArray( contentIds ) )
+		.join( constants.TABLE_CONTENT, 'to', 'id' );
+}
+
+export function queryRelatedOfType(
+	contentIds: number | number[],
+	types: constants.CONTENTS_TYPE | constants.CONTENTS_TYPE[]
+): Knex.QueryBuilder< ContentDB, ContentDB[] > {
+	return queryRelated( contentIds ).whereIn( 'type', toArray( types ) );
+}
+
 export function queryMeta(
 	contentIds: number | number[]
 ): Knex.QueryBuilder< MetaDB, MetaDB[] > {
