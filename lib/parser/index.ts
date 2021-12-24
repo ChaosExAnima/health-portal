@@ -1,5 +1,4 @@
 import csv from 'csv-parser';
-import { DeepPartial, EntityManager, In } from 'typeorm';
 import debug from 'debug';
 
 import {
@@ -12,18 +11,22 @@ import {
 	isTestClaim,
 	parseTestClaim,
 } from './test-utils';
-import { Claim, Import, Provider } from 'lib/db/entities';
+import { getHash } from './utils';
+import * as constants from 'lib/constants';
+import getDB from 'lib/db';
+import { queryMeta } from 'lib/entities/db';
 import { slugify } from 'lib/strings';
 
 import type { Readable } from 'stream';
-import { getHash, getUniqueSlug, isClaimSame } from './utils';
-
-type RawClaim = Record< string, string >;
+import type { Knex } from 'knex';
+import type { RawClaim, RawData } from './types';
+import type { Nullable } from 'global-types';
+import type { ContentDB, ImportDB, ProviderDB } from 'lib/db/types';
 
 const log = debug( 'app:parser' );
 
-export function readCSV( readStream: Readable ): Promise< RawClaim[] > {
-	const rawClaims: RawClaim[] = [];
+export function readCSV( readStream: Readable ): Promise< RawData[] > {
+	const rawClaims: RawData[] = [];
 	const stream = readStream
 		.pipe( csv( { strict: true } ) )
 		.on( 'data', ( data ) => rawClaims.push( data ) );
@@ -37,19 +40,17 @@ export function readCSV( readStream: Readable ): Promise< RawClaim[] > {
 }
 
 export async function getAndInsertProviders(
-	rawClaims: RawClaim[],
-	em: EntityManager,
-	importEntity: Import
-): Promise< Provider[] > {
-	const providerRepo = em.getRepository< Provider >( 'Provider' );
-
+	rawClaims: RawData[],
+	importEntity: ImportDB,
+	trx: Knex.Transaction
+): Promise< ProviderDB[] > {
 	// Get all provider slugs.
-	const providerNames = await (
-		await providerRepo.find( { select: [ 'name' ] } )
-	 ).map( ( { name } ) => name );
+	const providerRows = await trx( constants.TABLE_PROVIDERS ).select(
+		'slug'
+	);
+	const providerSlugs = providerRows.map( ( { slug } ) => slug );
 
 	// Iterate over all claims and determines new ones.
-	const newProviders: Provider[] = [];
 	for ( const rawClaim of rawClaims ) {
 		// Filter out existing data.
 		let name = '';
@@ -62,132 +63,168 @@ export async function getAndInsertProviders(
 		}
 
 		// Checks if the name is included.
-		name = name.trim();
-		if ( ! name || providerNames.includes( name ) ) {
+		const slug = slugify( name );
+		if ( ! slug || providerSlugs.includes( slug ) ) {
 			continue;
 		}
 
 		// Create a new provider and add it to array to be created.
-		const newProvider = providerRepo.create( {
+		const newProviderId = await trx(
+			constants.TABLE_PROVIDERS
+		).insert< number >( {
 			slug: slugify( name ),
 			name,
+			importId: importEntity.id,
 		} );
-		newProvider.import = Promise.resolve( importEntity );
-		providerNames.push( name );
-		newProviders.push( newProvider );
+		const newProvider = await trx( constants.TABLE_PROVIDERS )
+			.where( 'id', newProviderId )
+			.first();
+		if ( ! newProvider ) {
+			throw new Error( 'Could not insert provider row' );
+		}
+		providerSlugs.push( newProvider.slug );
 	}
-	if ( newProviders.length ) {
-		await providerRepo.save( newProviders );
-	}
-	return providerRepo.find();
+	return trx( constants.TABLE_PROVIDERS );
 }
 
 export async function getImportOrThrow(
-	rawClaims: RawClaim[],
-	em: EntityManager
-): Promise< Import > {
+	rawClaims: RawData[],
+	trx: Knex.Transaction
+): Promise< ImportDB > {
 	const claimsHash = getHash( rawClaims );
-	const importRepo = em.getRepository< Import >( 'Import' );
-	if ( await importRepo.findOne( { where: { hash: claimsHash } } ) ) {
+	const existingImport = await trx( constants.TABLE_IMPORTS )
+		.where( 'hash', claimsHash )
+		.first();
+	if ( existingImport ) {
 		throw new Error( 'Claims have been previously uploaded' );
 	}
-	return importRepo.save( {
-		hash: claimsHash,
-	} );
+	const importId = await trx( constants.TABLE_IMPORTS )
+		.insert( {
+			hash: claimsHash,
+		} )
+		.first();
+	if ( ! importId ) {
+		throw new Error( 'Could not insert new import row' );
+	}
+	const newImport = await trx( constants.TABLE_IMPORTS )
+		.where( 'id', importId )
+		.first();
+	if ( ! newImport ) {
+		throw new Error( 'Could not insert new import row' );
+	}
+	return newImport;
+}
+
+function providerNameToId(
+	name: Nullable< string >,
+	providers: ProviderDB[]
+): Nullable< number > {
+	if ( ! name ) {
+		return null;
+	}
+	const provider = providers.find( ( { slug } ) => slug === slugify( name ) );
+	if ( ! provider ) {
+		return null;
+	}
+	return provider.id;
 }
 
 export async function saveClaims(
-	rawClaims: RawClaim[],
-	providers: Provider[],
-	importEntity: Import,
-	em: EntityManager
+	rawClaims: RawData[],
+	providers: ProviderDB[],
+	importEntity: ImportDB,
+	trx: Knex.Transaction
 ): Promise< { inserted: number; updated: number } > {
-	const claimRepo = em.getRepository< Claim >( 'Claim' );
-	const claims = rawClaims.map( ( rawClaim ) => {
-		let claimData: DeepPartial< Claim > | undefined;
+	let inserted = 0;
+	let updated = 0;
+	const oldClaims = await trx( constants.TABLE_CONTENT ).where(
+		'type',
+		constants.CONTENT_CLAIM
+	);
+
+	for ( const rawClaim of rawClaims ) {
+		// Get claim data from raw CSV row.
+		let claimData: Nullable< RawClaim > = null;
 		if ( isAnthemClaim( rawClaim ) ) {
-			claimData = parseAnthemClaim( rawClaim, providers );
+			claimData = parseAnthemClaim( rawClaim );
 		} else if ( isTestClaim( rawClaim ) ) {
-			claimData = parseTestClaim( rawClaim, providers );
+			claimData = parseTestClaim( rawClaim );
 		}
 		if ( ! claimData ) {
 			throw new Error( 'Unknown claim type found!' );
 		} else if ( ! claimData.number ) {
 			throw new Error( 'Number field required' );
 		}
-		const claim = claimRepo.create( claimData );
-		if ( claimData.provider ) {
-			claim.provider = claimData.provider as Promise< Provider >;
-		}
-		return claim;
-	} );
 
-	// Get all old claims.
-	const oldClaims = await claimRepo.find( {
-		where: {
-			parent: null,
-			number: In( claims.map( ( { number } ) => number ) ),
-		},
-	} );
-
-	// Iterate over claims and generate list of changed claims.
-	const insertClaims: Claim[] = [];
-	const parentClaims: Claim[] = [];
-	const claimNumbers: string[] = [];
-	let inserted = 0;
-	let updated = 0;
-	for ( const claim of claims ) {
-		if ( claimNumbers.includes( claim.number ) ) {
-			continue;
-		}
-		claimNumbers.push( claim.number );
-
+		// Updates DB.
+		const contentData: Omit< ContentDB, 'id' > = {
+			identifier: slugify( claimData.number ),
+			created: claimData.created,
+			type: constants.CONTENT_CLAIM,
+			status: claimData.status,
+			info: claimData.type,
+			importId: importEntity.id,
+			providerId: providerNameToId( claimData.providerName, providers ),
+		};
 		const oldClaim = oldClaims.find(
-			( { number } ) => claim.number === number
+			( { identifier } ) =>
+				slugify( contentData.identifier ) === identifier
 		);
-		if ( oldClaim ) {
-			if ( isClaimSame( claim, oldClaim ) ) {
-				continue;
+		if ( ! oldClaim ) {
+			const newClaimId = await trx( constants.TABLE_CONTENT )
+				.insert( contentData )
+				.first();
+			if ( newClaimId ) {
+				await trx( constants.TABLE_META ).insert( [
+					{
+						contentId: newClaimId,
+						key: 'billed',
+						value: claimData.billed.toString(),
+					},
+					{
+						contentId: newClaimId,
+						key: 'cost',
+						value: claimData.cost.toString(),
+					},
+				] );
+				inserted++;
 			}
-			parentClaims.push( oldClaim );
-			updated++;
 		} else {
-			inserted++;
+			await trx( constants.TABLE_CONTENT ).update( {
+				id: oldClaim.id,
+				...contentData,
+			} );
+			const meta = await queryMeta( oldClaim.id );
+			await trx( constants.TABLE_META ).update( [
+				{
+					id: meta.find( ( { key } ) => key === 'billed' )?.id,
+					contentId: oldClaim.id,
+					key: 'billed',
+					value: claimData.billed.toString(),
+				},
+				{
+					id: meta.find( ( { key } ) => key === 'cost' )?.id,
+					contentId: oldClaim.id,
+					key: 'cost',
+					value: claimData.cost.toString(),
+				},
+			] );
+			updated++;
 		}
-		claim.slug = getUniqueSlug( oldClaim?.slug || claim.number );
-		claim.import = Promise.resolve( importEntity );
-
-		insertClaims.push( claim );
 	}
 
-	// Write to DB.
-	if ( insertClaims.length ) {
-		log( 'Saving new claims' );
-		await claimRepo.save( insertClaims );
-
-		log( 'Updating parent claims' );
-		for ( const oldClaim of parentClaims ) {
-			const newClaim = insertClaims.find(
-				( { number } ) => oldClaim.number === number
-			);
-			if ( newClaim ) {
-				oldClaim.parent = Promise.resolve( newClaim );
-			}
-		}
-		await claimRepo.save( parentClaims );
-	}
 	return { inserted, updated };
 }
 
 export default async function parseCSV(
-	readStream: Readable,
-	em: EntityManager
+	readStream: Readable
 ): Promise< number > {
 	let returnVal = 0;
 	log( '===== Starting import' );
-	await em.transaction( async ( emt ) => {
-		let providers;
-		let rawClaims: RawClaim[];
+	const knex = getDB();
+	await knex.transaction( async ( trx ) => {
+		let providers: ProviderDB[];
+		let rawClaims: RawData[];
 		try {
 			rawClaims = await readCSV( readStream );
 			log( 'Read CSV' );
@@ -195,14 +232,14 @@ export default async function parseCSV(
 			log( err );
 			throw new Error( 'Error parsing CSV' );
 		}
-		const importEntity = await getImportOrThrow( rawClaims, emt );
+		const importEntity = await getImportOrThrow( rawClaims, trx );
 		log( 'Saved import to DB' );
 
 		try {
 			providers = await getAndInsertProviders(
 				rawClaims,
-				emt,
-				importEntity
+				importEntity,
+				trx
 			);
 			log( 'Inserted providers' );
 		} catch ( err ) {
@@ -216,12 +253,15 @@ export default async function parseCSV(
 				rawClaims,
 				providers,
 				importEntity,
-				emt
+				trx
 			);
 			returnVal = inserted + updated;
 			log( 'Inserted and updated claims' );
-			const importRepo = emt.getRepository< Import >( 'Import' );
-			await importRepo.update( importEntity.id, { inserted, updated } );
+			await trx( constants.TABLE_IMPORTS ).update( {
+				id: importEntity.id,
+				inserted,
+				updated,
+			} );
 			log( 'Saves totals to import table' );
 		} catch ( err ) {
 			log( err );

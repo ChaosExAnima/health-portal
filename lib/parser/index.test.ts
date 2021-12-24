@@ -5,16 +5,7 @@ import parseCSV, {
 	readCSV,
 	saveClaims,
 } from './index';
-import {
-	arrToCSVStream,
-	getEntityManagerWithClaim,
-	getImportEntity,
-} from './test-utils';
-import Claim from 'lib/db/entities/claim';
-import { createTestDB, getEntityManager, resetTestDB } from 'lib/db/test-utils';
-
-import type Import from 'lib/db/entities/import';
-import type Provider from 'lib/db/entities/provider';
+import { arrToCSVStream } from './test-utils';
 
 const rootClaim = {
 	number: '1234',
