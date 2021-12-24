@@ -1,20 +1,21 @@
 import { Box, Container } from '@material-ui/core';
+import { SetRequired } from 'type-fest';
 
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
-import DetailsBox from 'components/details-box';
 import HistoryTable from 'components/history-table';
-import ProviderLink from 'components/provider-link';
-import initDb from 'lib/db';
-import { staticPathsFromSlugs } from 'lib/static-helpers';
-import { capitalize } from 'lib/strings';
 
 import type { SinglePageProps } from 'global-types';
-import type { GetStaticPaths, GetStaticProps } from 'next';
+import type { GetStaticPathsResult, GetStaticProps } from 'next';
+import { queryAppeals } from 'lib/entities/db';
+import { Appeal } from 'lib/entities/types';
+import rowToAppeal from 'lib/entities/appeal';
 
-const AppealPage: React.FC< SinglePageProps > = ( { title, slug, id } ) => {
-	const { data } = useAppealQuery( { variables: { slug } } );
-	const appeal = data && data.appeal;
+type AppealProps = SinglePageProps & {
+	appeal: SetRequired< Appeal, 'claims' | 'notes' >;
+};
+
+const AppealPage: React.FC< AppealProps > = ( { title, slug, id, appeal } ) => {
 	if ( ! slug || ! id ) {
 		return null;
 	}
@@ -24,7 +25,7 @@ const AppealPage: React.FC< SinglePageProps > = ( { title, slug, id } ) => {
 				breadcrumbs={ [ { href: '/appeals', name: 'Appeals' }, title ] }
 			/>
 			<Header
-				title={ title }
+				title={ appeal.name }
 				actions={ [
 					{ action: 'Update', icon: 'add' },
 					{
@@ -35,24 +36,6 @@ const AppealPage: React.FC< SinglePageProps > = ( { title, slug, id } ) => {
 					},
 				] }
 			/>
-			{ appeal && (
-				<DetailsBox
-					details={ [
-						{ name: 'Status', detail: capitalize( status ) },
-						{
-							name: 'For provider',
-							detail: (
-								<ProviderLink
-									provider={ appeal.provider }
-									color="inherit"
-								/>
-							),
-						},
-						{ name: 'Last updated', detail: appeal.created },
-						{ name: 'Update due', detail: appeal.created },
-					] }
-				/>
-			) }
 			<Box my={ 4 }>
 				<HistoryTable type="appeal" id={ id } />
 			</Box>
@@ -60,26 +43,32 @@ const AppealPage: React.FC< SinglePageProps > = ( { title, slug, id } ) => {
 	);
 };
 
-export const getStaticPaths: GetStaticPaths = async () =>
-	staticPathsFromSlugs( Appeal, 'appeals' );
+export async function getStaticPaths(): Promise< GetStaticPathsResult > {
+	const claims = await queryAppeals().select( 'identifier' );
+	return {
+		paths: claims.map(
+			( { identifier } ) => `/appeals/${ identifier.toLowerCase() }`
+		),
+		fallback: false,
+	};
+}
 
-export const getStaticProps: GetStaticProps<
-	SinglePageProps,
-	{ appeal: string }
-> = async ( { params } ) => {
-	const db = await initDb();
-	const appeal =
-		params && ( await db.em.findOne( Appeal, { slug: params.appeal } ) );
-	if ( ! appeal ) {
+export const getStaticProps: GetStaticProps = async ( { params } ) => {
+	const appealObj = await queryAppeals()
+		.andWhere( 'slug', params?.slug )
+		.first();
+	if ( ! appealObj ) {
 		return {
 			notFound: true,
 		};
 	}
+	const appeal = rowToAppeal( appealObj, {} );
 	return {
 		props: {
 			title: appeal.name,
 			slug: appeal.slug,
 			id: appeal.id,
+			appeal,
 		},
 	};
 };
