@@ -10,6 +10,7 @@ import type { Nullable, StringKeys } from 'global-types';
 import type {
 	ContentDB,
 	DBCommonFields,
+	ImportDB,
 	LoadedRelationDB,
 	MetaDB,
 	ProviderDB,
@@ -104,4 +105,9 @@ export function queryRelatedProviders(
 		'id',
 		toArray( contentIds )
 	);
+}
+
+export function queryImports(): Knex.QueryBuilder< ImportDB, ImportDB[] > {
+	const knex = getDB();
+	return knex( constants.TABLE_IMPORTS );
 }
