@@ -2,15 +2,15 @@ import { knex } from 'knex';
 import { Nullable } from 'global-types';
 import { CONTENTS_TYPE, TABLE_CONTENT, TABLE_IMPORTS, TABLE_META, TABLE_PROVIDERS, TABLE_RELATIONS } from 'lib/constants';
 
-export type DBCommonFields = {
+type DBCommonFields = {
 	id: number;
 	created: Date;
 };
-export type DBMetaField = {
+type DBMetaField = {
 	meta: Record< string, unknown >;
 };
 
-export type ContentDB = DBCommonFields & {
+type ContentDB = DBCommonFields & {
 	identifier: string;
 	type: CONTENTS_TYPE;
 	info: string;
@@ -19,18 +19,18 @@ export type ContentDB = DBCommonFields & {
 	importId: Nullable< ImportDB["id"] >;
 };
 
-export type MetaDB = DBCommonFields & DBMetaField & {
+type MetaDB = DBCommonFields & DBMetaField & {
 	contentId: ContentDB["id"];
 	key: string;
 	value: Nullable< string >;
 };
 
-export type RelationDB = DBCommonFields & DBMetaField & {
+type RelationDB = DBCommonFields & DBMetaField & {
 	from: ContentDB["id"];
 	to: ContentDB["id"];
 };
 
-export type ProviderDB = DBCommonFields & {
+type ProviderDB = DBCommonFields & {
 	slug: string;
 	name: string;
 	phone: Nullable< string >;
@@ -40,7 +40,7 @@ export type ProviderDB = DBCommonFields & {
 	importId: Nullable< ImportDB["id"] >;
 };
 
-export type ImportDB = DBCommonFields & {
+type ImportDB = DBCommonFields & {
 	hash: string;
 	inserted: Nullable< number >;
 	updated: Nullable< number >;
