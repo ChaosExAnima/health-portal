@@ -21,9 +21,10 @@ export type PaginatedPageProps< T extends Entity > = PageProps & {
 	records: T[];
 };
 
-export type SinglePageProps = PageProps & {
+export type SinglePageProps< T extends Entity > = PageProps & {
 	id: number;
 	slug: string;
+	record: T;
 };
 
 export type onChangeFunc = ( value: string ) => void;

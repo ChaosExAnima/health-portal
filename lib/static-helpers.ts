@@ -11,6 +11,7 @@ import type { Knex } from 'knex';
 
 import { DBCommonFields } from './db/types';
 import { SinglePageProps } from 'global-types';
+import { Entity } from './entities/types';
 
 export function isSSR(): boolean {
 	return typeof window === 'undefined';
@@ -64,31 +65,7 @@ export const staticPathsNoData = (
 	return null;
 };
 
-export function staticPropsSlug< E, T = SinglePageProps >(
-	entity: E | undefined,
-	props: ( item: E ) => Promise< T >
-): GetStaticProps< T > {
-	const cb: GetStaticProps< T > = async ( { params } ) => {
-		if ( ! params ) {
-			return {
-				notFound: true,
-			};
-		}
-		if ( ! entity ) {
-			return {
-				notFound: true,
-			};
-		}
-		return {
-			props: await props( entity ),
-		};
-	};
-	return cb;
-}
-
-export async function staticPropsEdit<
-	T extends SinglePageProps = SinglePageProps
->(
+export async function staticPropsEdit< T extends SinglePageProps< Entity > >(
 	root: GetStaticProps< T >,
 	context: GetStaticPropsContext
 ): Promise< GetStaticPropsResult< T > > {
