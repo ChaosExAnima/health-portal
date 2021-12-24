@@ -5,17 +5,18 @@ import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import HistoryTable from 'components/history-table';
 
-import type { SinglePageProps } from 'global-types';
+import type { SinglePageContext, SinglePageProps } from 'global-types';
 import type { GetStaticPathsResult, GetStaticProps } from 'next';
-import { queryAppeals } from 'lib/entities/db';
+import { queryAppeals, queryRelatedOfType } from 'lib/entities/db';
 import { Appeal } from 'lib/entities/types';
 import rowToAppeal from 'lib/entities/appeal';
+import { CONTENT_CLAIM, CONTENT_NOTE } from 'lib/constants';
+import rowToClaim from 'lib/entities/claim';
+import rowToNote from 'lib/entities/note';
 
-type AppealProps = SinglePageProps & {
-	appeal: SetRequired< Appeal, 'claims' | 'notes' >;
-};
+type AppealProps = SinglePageProps< SetRequired< Appeal, 'claims' | 'notes' > >;
 
-const AppealPage: React.FC< AppealProps > = ( { title, slug, id, appeal } ) => {
+const AppealPage: React.FC< AppealProps > = ( { title, slug, id, record } ) => {
 	if ( ! slug || ! id ) {
 		return null;
 	}
@@ -25,7 +26,7 @@ const AppealPage: React.FC< AppealProps > = ( { title, slug, id, appeal } ) => {
 				breadcrumbs={ [ { href: '/appeals', name: 'Appeals' }, title ] }
 			/>
 			<Header
-				title={ appeal.name }
+				title={ record.name }
 				actions={ [
 					{ action: 'Update', icon: 'add' },
 					{
@@ -53,7 +54,10 @@ export async function getStaticPaths(): Promise< GetStaticPathsResult > {
 	};
 }
 
-export const getStaticProps: GetStaticProps = async ( { params } ) => {
+export const getStaticProps: GetStaticProps<
+	AppealProps,
+	SinglePageContext
+> = async ( { params } ) => {
 	const appealObj = await queryAppeals()
 		.andWhere( 'slug', params?.slug )
 		.first();
@@ -62,13 +66,21 @@ export const getStaticProps: GetStaticProps = async ( { params } ) => {
 			notFound: true,
 		};
 	}
-	const appeal = rowToAppeal( appealObj, {} );
+	const record = rowToAppeal( appealObj, {} );
+
+	const related = await queryRelatedOfType( record.id, [ 'note', 'claim' ] );
+	record.claims = related
+		.filter( ( { type } ) => type === CONTENT_CLAIM )
+		.map( ( claim ) => rowToClaim( claim ) );
+	record.notes = related
+		.filter( ( { type } ) => type === CONTENT_NOTE )
+		.map( ( note ) => rowToNote( note ) );
 	return {
 		props: {
-			title: appeal.name,
-			slug: appeal.slug,
-			id: appeal.id,
-			appeal,
+			id: record.id,
+			slug: record.slug,
+			title: record.name,
+			record: record as SetRequired< Appeal, 'claims' | 'notes' >,
 		},
 	};
 };
