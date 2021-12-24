@@ -25,7 +25,6 @@ export type ClaimWithAdditions = SetRequired<
 >;
 
 export default function ClaimPage( {
-	id,
 	slug,
 	record,
 }: SinglePageProps< ClaimWithAdditions > ): JSX.Element {
