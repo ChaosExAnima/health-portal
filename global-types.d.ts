@@ -1,3 +1,4 @@
+import { GetStaticProps } from 'next';
 import { Entity } from 'lib/entities/types';
 
 export type Optional< T, K extends keyof T > = Omit< T, K > & Partial< T >;
@@ -26,5 +27,7 @@ export type SinglePageProps< T extends Entity > = PageProps & {
 	slug: string;
 	record: T;
 };
+
+export type GetSinglePageProps< T extends Entity > = GetStaticProps< SinglePageProps< T >, SinglePageContext >;
 
 export type onChangeFunc = ( value: string ) => void;

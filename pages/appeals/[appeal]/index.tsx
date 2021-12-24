@@ -1,22 +1,27 @@
 import { Box, Container } from '@material-ui/core';
-import { SetRequired } from 'type-fest';
 
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import HistoryTable from 'components/history-table';
-
-import type { SinglePageContext, SinglePageProps } from 'global-types';
-import type { GetStaticPathsResult, GetStaticProps } from 'next';
-import { queryAppeals, queryRelatedOfType } from 'lib/entities/db';
-import { Appeal } from 'lib/entities/types';
-import rowToAppeal from 'lib/entities/appeal';
 import { CONTENT_CLAIM, CONTENT_NOTE } from 'lib/constants';
+import rowToAppeal from 'lib/entities/appeal';
 import rowToClaim from 'lib/entities/claim';
+import { queryAppeals, queryRelatedOfType } from 'lib/entities/db';
 import rowToNote from 'lib/entities/note';
 
-type AppealProps = SinglePageProps< SetRequired< Appeal, 'claims' | 'notes' > >;
+import type { GetStaticPathsResult } from 'next';
+import type { SetRequired } from 'type-fest';
+import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { Appeal } from 'lib/entities/types';
 
-const AppealPage: React.FC< AppealProps > = ( { title, slug, id, record } ) => {
+type AppealWithAdditions = SetRequired< Appeal, 'claims' | 'notes' >;
+
+const AppealPage: React.FC< SinglePageProps< AppealWithAdditions > > = ( {
+	title,
+	slug,
+	id,
+	record,
+} ) => {
 	if ( ! slug || ! id ) {
 		return null;
 	}
@@ -54,10 +59,9 @@ export async function getStaticPaths(): Promise< GetStaticPathsResult > {
 	};
 }
 
-export const getStaticProps: GetStaticProps<
-	AppealProps,
-	SinglePageContext
-> = async ( { params } ) => {
+export const getStaticProps: GetSinglePageProps< AppealWithAdditions > = async ( {
+	params,
+} ) => {
 	const appealObj = await queryAppeals()
 		.andWhere( 'slug', params?.slug )
 		.first();
@@ -80,7 +84,7 @@ export const getStaticProps: GetStaticProps<
 			id: record.id,
 			slug: record.slug,
 			title: record.name,
-			record: record as SetRequired< Appeal, 'claims' | 'notes' >,
+			record: record as AppealWithAdditions,
 		},
 	};
 };
