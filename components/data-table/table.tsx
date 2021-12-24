@@ -89,7 +89,7 @@ export default function DataTable< T extends DataTableRowData >(
 								rowsPerPageOptions={ [ rowsPerPage ] }
 								count={ totalCount }
 								page={ currentPage }
-								onChangePage={ ( event, page ) =>
+								onPageChange={ ( event, page ) =>
 									router.push(
 										`${ basePath }/page/${ page + 1 }`
 									)
