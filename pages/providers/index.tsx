@@ -4,14 +4,19 @@ import { Container, Link } from '@material-ui/core';
 import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
 import DataTable, { DataTableColumn } from 'components/data-table';
+import { queryAllProviders } from 'lib/entities/db';
+import { rowToProvider } from 'lib/entities/provider';
+import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 
-import type { PaginatedPageProps } from 'global-types';
+import type { PaginatedPageContext, PaginatedPageProps } from 'global-types';
+import type { Provider } from 'lib/entities/types';
+import type { GetStaticProps } from 'next';
 
-const ProvidersPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
-	const { data, loading } = useProvidersIndexQuery( {
-		variables: { offset: 0 },
-	} );
-
+const ProvidersPage: React.FC< PaginatedPageProps< Provider > > = ( {
+	currentPage,
+	totalPages,
+	records,
+} ) => {
 	const actions: ActionItem[] = [
 		{
 			href: '/providers/new',
@@ -19,7 +24,7 @@ const ProvidersPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
 			icon: 'add',
 		},
 	];
-	const columns: DataTableColumn[] = [
+	const columns: DataTableColumn< keyof Provider >[] = [
 		{
 			key: 'name',
 			name: 'Name',
@@ -44,25 +49,41 @@ const ProvidersPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
 			<DataTable
 				basePath="/providers"
 				columns={ columns }
-				loading={ loading }
+				loading={ false }
 				currentPage={ currentPage }
-				totalCount={ data?.getProviders.totalCount }
-				rows={ data?.getProviders.providers }
+				totalCount={ totalPages }
+				rows={ records }
 			/>
 			<Footer wrap />
 		</>
 	);
 };
 
-export async function getStaticProps(): Promise< {
-	props: PaginatedPageProps;
-} > {
+export const getStaticProps: GetStaticProps<
+	PaginatedPageProps< Provider >,
+	PaginatedPageContext
+> = async ( { params } ) => {
+	// Pagination.
+	const pageSize = 20;
+	const currentPage = getPageNumber( params?.page );
+	const totalPages = await getTotalPageNumber(
+		queryAllProviders(),
+		pageSize
+	);
+
+	// Gets records.
+	const calls = await queryAllProviders()
+		.limit( pageSize )
+		.offset( currentPage * pageSize );
+	const records = calls.map( ( row ) => rowToProvider( row ) );
 	return {
 		props: {
 			title: 'Providers',
-			currentPage: 0,
+			currentPage,
+			totalPages,
+			records,
 		},
 	};
-}
+};
 
 export default ProvidersPage;

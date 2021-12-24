@@ -11,8 +11,8 @@ import rowToCall from 'lib/entities/call';
 import { queryCalls } from 'lib/entities/db';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 
-import type { GetStaticPropsContext } from 'next';
-import type { PaginatedPageProps } from 'global-types';
+import type { GetStaticProps } from 'next';
+import type { PaginatedPageContext, PaginatedPageProps } from 'global-types';
 import type { Call, Note } from 'lib/entities/types';
 
 type CallsProps = PaginatedPageProps< Call >;
@@ -85,11 +85,10 @@ const CallsPage: React.FC< CallsProps > = ( {
 	);
 };
 
-export async function getStaticProps( {
-	params,
-}: GetStaticPropsContext< { page: string } > ): Promise< {
-	props: CallsProps;
-} > {
+export const getStaticProps: GetStaticProps<
+	PaginatedPageProps< Call >,
+	PaginatedPageContext
+> = async ( { params } ) => {
 	// Pagination.
 	const pageSize = 20;
 	const currentPage = getPageNumber( params?.page );
@@ -108,6 +107,6 @@ export async function getStaticProps( {
 			records,
 		},
 	};
-}
+};
 
 export default CallsPage;

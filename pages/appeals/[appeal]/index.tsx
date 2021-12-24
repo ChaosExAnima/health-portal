@@ -1,13 +1,9 @@
-import { Box, Container } from '@material-ui/core';
+import { Container } from '@material-ui/core';
 
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
-import HistoryTable from 'components/history-table';
-import { CONTENT_CLAIM, CONTENT_NOTE } from 'lib/constants';
 import rowToAppeal from 'lib/entities/appeal';
-import rowToClaim from 'lib/entities/claim';
 import { queryAppeals, queryRelatedOfType } from 'lib/entities/db';
-import rowToNote from 'lib/entities/note';
 
 import type { GetStaticPathsResult } from 'next';
 import type { SetRequired } from 'type-fest';
@@ -42,9 +38,6 @@ const AppealPage: React.FC< SinglePageProps< AppealWithAdditions > > = ( {
 					},
 				] }
 			/>
-			<Box my={ 4 }>
-				<HistoryTable type="appeal" id={ id } />
-			</Box>
 		</Container>
 	);
 };
@@ -70,15 +63,12 @@ export const getStaticProps: GetSinglePageProps< AppealWithAdditions > = async (
 			notFound: true,
 		};
 	}
-	const record = rowToAppeal( appealObj, {} );
+	const relations = await queryRelatedOfType( appealObj.id, [
+		'note',
+		'claim',
+	] );
+	const record = rowToAppeal( appealObj, { relations } );
 
-	const related = await queryRelatedOfType( record.id, [ 'note', 'claim' ] );
-	record.claims = related
-		.filter( ( { type } ) => type === CONTENT_CLAIM )
-		.map( ( claim ) => rowToClaim( claim ) );
-	record.notes = related
-		.filter( ( { type } ) => type === CONTENT_NOTE )
-		.map( ( note ) => rowToNote( note ) );
 	return {
 		props: {
 			id: record.id,

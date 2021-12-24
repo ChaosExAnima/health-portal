@@ -1,33 +1,34 @@
-import { Box, Container } from '@material-ui/core';
 import React from 'react';
-import type {
-	GetStaticPathsResult,
-	GetStaticPropsContext,
-	GetStaticPropsResult,
-} from 'next';
-import type { SetRequired } from 'type-fest';
+import { Container } from '@material-ui/core';
 
 import DetailsBox, { Detail } from 'components/details-box';
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
-import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
 import rowToClaim from 'lib/entities/claim';
-import { queryClaims, queryMeta, queryProvider } from 'lib/entities/db';
-import { Claim } from 'lib/entities/types';
-import { rowToProvider } from 'lib/entities/provider';
+import {
+	queryClaims,
+	queryMeta,
+	queryProvider,
+	queryRelated,
+} from 'lib/entities/db';
 import { formatClaimStatus, formatCurrency, formatDate } from 'lib/strings';
-import type { SinglePageContext, SinglePageProps } from 'global-types';
 
-type ClaimPageProps = SinglePageProps & {
-	claim: SetRequired< Claim, 'billed' | 'cost' >;
-};
+import type { GetStaticPathsResult } from 'next';
+import type { SetRequired } from 'type-fest';
+import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { Claim } from 'lib/entities/types';
+
+export type ClaimWithAdditions = SetRequired<
+	Claim,
+	'billed' | 'cost' | 'notes'
+>;
 
 export default function ClaimPage( {
 	id,
 	slug,
-	claim,
-}: ClaimPageProps ): JSX.Element {
+	record,
+}: SinglePageProps< ClaimWithAdditions > ): JSX.Element {
 	return (
 		<Container maxWidth="md">
 			<Breadcrumbs
@@ -47,29 +48,28 @@ export default function ClaimPage( {
 			/>
 			<DetailsBox>
 				<Detail name="Status">
-					{ formatClaimStatus( claim.status ) }
+					{ formatClaimStatus( record.status ) }
 				</Detail>
 				<Detail name="Date of service">
-					{ formatDate( 'YYYY-MM-DD' )( claim.date ) }
+					{ formatDate( 'YYYY-MM-DD' )( record.date ) }
 				</Detail>
 				<Detail name="Provider">
-					{ claim.provider && (
+					{ record.provider && (
 						<ProviderLink
-							provider={ claim.provider }
+							provider={ record.provider }
 							color="inherit"
 						/>
 					) }
-					{ ! claim.provider && 'Missing' }
+					{ ! record.provider && 'Missing' }
 				</Detail>
 				<Detail name="Amount billed">
-					{ formatCurrency( claim.billed ) }
+					{ formatCurrency( record.billed ) }
 				</Detail>
-				<Detail name="You owe">{ formatCurrency( claim.cost ) }</Detail>
+				<Detail name="You owe">
+					{ formatCurrency( record.cost ) }
+				</Detail>
 				<Detail name="You are owed">{ formatCurrency( 0 ) }</Detail>
 			</DetailsBox>
-			<Box my={ 4 }>
-				<HistoryTable type="claim" id={ id } />
-			</Box>
 		</Container>
 	);
 }
@@ -84,11 +84,9 @@ export async function getStaticPaths(): Promise< GetStaticPathsResult > {
 	};
 }
 
-export async function getStaticProps( {
+export const getStaticProps: GetSinglePageProps< ClaimWithAdditions > = async ( {
 	params,
-}: GetStaticPropsContext< SinglePageContext > ): Promise<
-	GetStaticPropsResult< ClaimPageProps >
-> {
+} ) => {
 	const slug = params?.slug;
 	if ( ! slug ) {
 		return {
@@ -105,14 +103,14 @@ export async function getStaticProps( {
 	}
 	const meta = await queryMeta( row.id );
 	const provider = await queryProvider( row.providerId );
-	const claim = rowToClaim( row, { meta } );
-	claim.provider = provider && rowToProvider( provider );
+	const relations = await queryRelated( row.id );
+	const record = rowToClaim( row, { meta, provider, relations } );
 	return {
 		props: {
 			id: row.id,
 			slug,
 			title: `Claim ${ row.identifier }`,
-			claim,
+			record,
 		},
 	};
-}
+};
