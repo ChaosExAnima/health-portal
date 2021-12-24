@@ -10,6 +10,7 @@ import type { Nullable, StringKeys } from 'global-types';
 import type {
 	ContentDB,
 	DBCommonFields,
+	LoadedRelationDB,
 	MetaDB,
 	ProviderDB,
 } from 'lib/db/types';
@@ -26,10 +27,10 @@ export function getIds( entities: DBCommonFields[] ): number[] {
 }
 
 export function queryContentType(
-	type: constants.CONTENTS_TYPE
+	types: constants.CONTENTS_TYPE | constants.CONTENTS_TYPE[]
 ): Knex.QueryBuilder< ContentDB, ContentDB[] > {
 	const knex = getDB();
-	return knex( constants.TABLE_CONTENT ).where( 'type', type );
+	return knex( constants.TABLE_CONTENT ).whereIn( 'type', toArray( types ) );
 }
 
 type queryFunction = () => Knex.QueryBuilder< ContentDB, ContentDB[] >;
@@ -44,10 +45,12 @@ export const queryFiles: queryFunction = () =>
 	queryContentType( constants.CONTENT_FILE );
 export const queryPayments: queryFunction = () =>
 	queryContentType( constants.CONTENT_PAYMENT );
+export const queryNotes: queryFunction = () =>
+	queryContentType( constants.CONTENT_NOTE );
 
 export function queryRelated(
 	contentIds: number | number[]
-): Knex.QueryBuilder< ContentDB, ContentDB[] > {
+): Knex.QueryBuilder< LoadedRelationDB, LoadedRelationDB[] > {
 	const knex = getDB();
 	return knex( constants.TABLE_RELATIONS )
 		.whereIn( 'from', toArray( contentIds ) )
@@ -57,7 +60,7 @@ export function queryRelated(
 export function queryRelatedOfType(
 	contentIds: number | number[],
 	types: constants.CONTENTS_TYPE | constants.CONTENTS_TYPE[]
-): Knex.QueryBuilder< ContentDB, ContentDB[] > {
+): Knex.QueryBuilder< LoadedRelationDB, LoadedRelationDB[] > {
 	return queryRelated( contentIds ).whereIn( 'type', toArray( types ) );
 }
 
@@ -83,6 +86,14 @@ export function queryProvider(
 ): Knex.QueryBuilder< ProviderDB, ProviderDB | undefined > {
 	const knex = getDB();
 	return knex( constants.TABLE_PROVIDERS ).where( 'id', providerId ).first();
+}
+
+export function queryAllProviders(): Knex.QueryBuilder<
+	ProviderDB,
+	ProviderDB[]
+> {
+	const knex = getDB();
+	return knex( constants.TABLE_PROVIDERS );
 }
 
 export function queryRelatedProviders(

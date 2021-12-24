@@ -29,6 +29,7 @@ type RelationDB = DBCommonFields & DBMetaField & {
 	from: ContentDB["id"];
 	to: ContentDB["id"];
 };
+type LoadedRelationDB = RelationDB & ContentDB;
 
 type ProviderDB = DBCommonFields & {
 	slug: string;
