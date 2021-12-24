@@ -68,3 +68,7 @@ export function formatClaimStatus( status: ClaimStatus ): string {
 	} as const;
 	return statuses[ status ] || 'Unknown';
 }
+
+export function typeToURL( type: string, slug: string ): string {
+	return `/${ type }/${ slug }`;
+}

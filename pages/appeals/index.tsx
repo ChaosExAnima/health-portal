@@ -16,10 +16,7 @@ import type { PaginatedPageProps } from 'global-types';
 import type { GetStaticPropsContext } from 'next';
 import type { Appeal } from 'lib/entities/types';
 
-type AppealsProps = PaginatedPageProps & {
-	totalPages: number;
-	records: Appeal[];
-};
+type AppealsProps = PaginatedPageProps< Appeal >;
 
 const AppealsPage: React.FC< AppealsProps > = ( {
 	title,
