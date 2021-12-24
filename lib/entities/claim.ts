@@ -37,7 +37,7 @@ export type relatedType = typeof related[ number ];
 
 export default function rowToClaim< T extends ClaimAdditions >(
 	row: ContentDB,
-	additions: T
+	additions: T = {} as T
 ): ClaimWithAdditions< T > {
 	const { meta, providers } = additions;
 	const { id, identifier: number, created: createdDate, info, status } = row;
