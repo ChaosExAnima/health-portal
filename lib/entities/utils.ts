@@ -1,5 +1,6 @@
 import { isObjectWithKeys } from 'lib/casting';
-import { MetaDB } from 'lib/db/types';
+import { CONTENTS_TYPE } from 'lib/constants';
+import { ContentDB, MetaDB } from 'lib/db/types';
 import { Entity } from './types';
 
 export function dateToString( date: Date ): string {
@@ -17,6 +18,15 @@ export function getMeta( key: string, rows: MetaDB[] ): string | null {
 export function getNumericMeta( key: string, rows: MetaDB[] ): number | null {
 	const value = getMeta( key, rows );
 	return value ? Number.parseFloat( value ) : null;
+}
+
+export function relatedOfType< R extends ContentDB >(
+	relations: R[],
+	type: CONTENTS_TYPE
+): R[] {
+	return relations.filter(
+		( { type: relationType } ) => type === relationType
+	);
 }
 
 export function isEntity( input: unknown ): input is Entity {
