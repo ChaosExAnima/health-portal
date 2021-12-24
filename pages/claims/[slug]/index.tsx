@@ -1,26 +1,33 @@
-import { Box, Container, LinearProgress } from '@material-ui/core';
 import React from 'react';
+import { Container } from '@material-ui/core';
 
-import DetailsBox from 'components/details-box';
+import DetailsBox, { Detail } from 'components/details-box';
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
-import HistoryTable from 'components/history-table';
 import ProviderLink from 'components/provider-link';
-import { staticPathsFromSlugs, staticPropsSlug } from 'lib/static-helpers';
-import numberFormat from 'lib/number-format';
-import { formatClaimStatus } from 'lib/strings';
-import { useClaimQuery } from 'lib/apollo/queries/claims.graphql';
+import rowToClaim from 'lib/entities/claim';
+import {
+	queryClaims,
+	queryMeta,
+	queryProvider,
+	queryRelated,
+} from 'lib/entities/db';
+import { formatClaimStatus, formatCurrency, formatDate } from 'lib/strings';
 
-import type { GetStaticPaths } from 'next';
-import type { SinglePageProps } from 'global-types';
-import type { Claim } from 'lib/db/entities';
+import type { GetStaticPathsResult } from 'next';
+import type { SetRequired } from 'type-fest';
+import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { Claim } from 'lib/entities/types';
 
-const ClaimPage: React.FC< SinglePageProps > = ( { id, slug } ) => {
-	const { data, loading } = useClaimQuery( { variables: { slug } } );
-	if ( ! slug ) {
-		return null;
-	}
-	const claim = data && data.claim;
+export type ClaimWithAdditions = SetRequired<
+	Claim,
+	'billed' | 'cost' | 'notes'
+>;
+
+export default function ClaimPage( {
+	slug,
+	record,
+}: SinglePageProps< ClaimWithAdditions > ): JSX.Element {
 	return (
 		<Container maxWidth="md">
 			<Breadcrumbs
@@ -38,53 +45,71 @@ const ClaimPage: React.FC< SinglePageProps > = ( { id, slug } ) => {
 					},
 				] }
 			/>
-			{ loading && <LinearProgress /> }
-			{ claim && (
-				<DetailsBox
-					details={ [
-						{ name: 'Status', detail: formatClaimStatus( claim.status ) },
-						{ name: 'Date of service', detail: claim.date as Date },
-						{
-							name: 'Provider',
-							detail: (
-								<ProviderLink
-									provider={ claim.provider }
-									color="inherit"
-								/>
-							),
-						},
-						{
-							name: 'Amount billed',
-							detail: numberFormat( claim.billed || 0, true ),
-						},
-						{
-							name: 'You owe',
-							detail: numberFormat( claim.cost || 0, true ),
-						},
-						{
-							name: 'You are owed',
-							detail: numberFormat( claim.owed || 0, true ),
-						},
-					] }
-				/>
-			) }
-			<Box my={ 4 }>
-				<HistoryTable type="claim" id={ id } />
-			</Box>
+			<DetailsBox>
+				<Detail name="Status">
+					{ formatClaimStatus( record.status ) }
+				</Detail>
+				<Detail name="Date of service">
+					{ formatDate( 'YYYY-MM-DD' )( record.date ) }
+				</Detail>
+				<Detail name="Provider">
+					{ record.provider && (
+						<ProviderLink
+							provider={ record.provider }
+							color="inherit"
+						/>
+					) }
+					{ ! record.provider && 'Missing' }
+				</Detail>
+				<Detail name="Amount billed">
+					{ formatCurrency( record.billed ) }
+				</Detail>
+				<Detail name="You owe">
+					{ formatCurrency( record.cost ) }
+				</Detail>
+				<Detail name="You are owed">{ formatCurrency( 0 ) }</Detail>
+			</DetailsBox>
 		</Container>
 	);
+}
+
+export async function getStaticPaths(): Promise< GetStaticPathsResult > {
+	const claims = await queryClaims().select( 'identifier' );
+	return {
+		paths: claims.map(
+			( { identifier } ) => `/claims/${ identifier.toLowerCase() }`
+		),
+		fallback: false,
+	};
+}
+
+export const getStaticProps: GetSinglePageProps< ClaimWithAdditions > = async ( {
+	params,
+} ) => {
+	const slug = params?.slug;
+	if ( ! slug ) {
+		return {
+			notFound: true,
+		};
+	}
+	const row = await queryClaims()
+		.andWhere( 'identifier', slug.toUpperCase() )
+		.first();
+	if ( ! row ) {
+		return {
+			notFound: true,
+		};
+	}
+	const meta = await queryMeta( row.id );
+	const provider = await queryProvider( row.providerId );
+	const relations = await queryRelated( row.id );
+	const record = rowToClaim( row, { meta, provider, relations } );
+	return {
+		props: {
+			id: row.id,
+			slug,
+			title: `Claim ${ row.identifier }`,
+			record,
+		},
+	};
 };
-
-export const getStaticPaths: GetStaticPaths = async () =>
-	staticPathsFromSlugs( 'Claim', 'claims' );
-
-export const getStaticProps = staticPropsSlug< Claim >(
-	'Claim',
-	( claim ) => ( {
-		id: claim.id,
-		title: `Claim # ${ claim.number }`,
-		slug: claim.slug,
-	} )
-);
-
-export default ClaimPage;

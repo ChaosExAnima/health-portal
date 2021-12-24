@@ -1,15 +1,26 @@
-export function toInt( val: unknown ): number {
-	if ( typeof val === 'number' ) {
-		return Math.round( val );
-	} else if ( typeof val === 'string' ) {
-		return Number.parseInt( val, 10 );
-	} else if ( typeof val === 'boolean' ) {
-		return val ? 1 : 0;
-	}
+import { isPlainObject, toNumber } from 'lodash';
+import { Primitive } from 'type-fest';
 
+export function toFloat( input: unknown ): number {
+	const num = toNumber( input );
+	if ( Number.isFinite( num ) ) {
+		return num;
+	}
 	return 0;
 }
 
-export function toString( val: unknown ): string {
-	return val + '';
+export function isObjectWithKeys< Type extends Record< string, Primitive > >(
+	input: unknown,
+	keys: Extract< keyof Type, string >[]
+): input is Type {
+	return (
+		isPlainObject( input ) &&
+		keys.every( ( key ) =>
+			( input as Record< string, unknown > ).hasOwnProperty( key )
+		)
+	);
+}
+
+export function toArray< T >( input: T | T[] ): T[] {
+	return Array.isArray( input ) ? input : [ input ];
 }

@@ -1,5 +1,5 @@
-import { Container } from '@material-ui/core';
 import React from 'react';
+import { Container } from '@material-ui/core';
 
 import DataTable, {
 	DataTableColumn,
@@ -7,16 +7,21 @@ import DataTable, {
 } from 'components/data-table';
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
+import rowToCall from 'lib/entities/call';
+import { queryCalls } from 'lib/entities/db';
+import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 
-import type { PaginatedPageProps } from 'global-types';
-import { useCallsIndexQuery } from 'lib/apollo/queries/calls.graphql';
-import { Note } from 'lib/db/entities';
+import type { GetStaticProps } from 'next';
+import type { PaginatedPageContext, PaginatedPageProps } from 'global-types';
+import type { Call, Note } from 'lib/entities/types';
 
-const CallsPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
-	const { data, loading } = useCallsIndexQuery( {
-		variables: { offset: 0 },
-	} );
+type CallsProps = PaginatedPageProps< Call >;
 
+const CallsPage: React.FC< CallsProps > = ( {
+	currentPage,
+	totalPages,
+	records,
+} ) => {
 	const actions: ActionItem[] = [
 		{
 			href: '/calls/new',
@@ -32,9 +37,9 @@ const CallsPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
 			values: {},
 		},
 	];
-	const columns: DataTableColumn[] = [
+	const columns: DataTableColumn< keyof Call >[] = [
 		{
-			key: 'date',
+			key: 'created',
 			link: true,
 			name: 'Date',
 			align: 'right',
@@ -53,7 +58,7 @@ const CallsPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
 			name: 'Provider',
 		},
 		{
-			key: 'note',
+			key: 'notes',
 			link: true,
 			name: 'Description',
 			format: ( note: Pick< Note, 'description' > ) => note.description,
@@ -70,9 +75,9 @@ const CallsPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
 				columns={ columns }
 				currentPage={ currentPage }
 				filters={ filters }
-				loading={ loading }
-				rows={ data?.getCalls.calls }
-				totalCount={ data?.getCalls.totalCount }
+				loading={ false }
+				rows={ records }
+				totalCount={ totalPages }
 				hasDates
 			/>
 			<Footer wrap />
@@ -80,15 +85,28 @@ const CallsPage: React.FC< PaginatedPageProps > = ( { currentPage } ) => {
 	);
 };
 
-export async function getStaticProps(): Promise< {
-	props: PaginatedPageProps;
-} > {
+export const getStaticProps: GetStaticProps<
+	PaginatedPageProps< Call >,
+	PaginatedPageContext
+> = async ( { params } ) => {
+	// Pagination.
+	const pageSize = 20;
+	const currentPage = getPageNumber( params?.page );
+	const totalPages = await getTotalPageNumber( queryCalls(), pageSize );
+
+	// Gets records.
+	const calls = await queryCalls()
+		.limit( pageSize )
+		.offset( currentPage * pageSize );
+	const records = calls.map( ( row ) => rowToCall( row ) );
 	return {
 		props: {
 			title: 'Calls',
-			currentPage: 0,
+			currentPage,
+			totalPages,
+			records,
 		},
 	};
-}
+};
 
 export default CallsPage;

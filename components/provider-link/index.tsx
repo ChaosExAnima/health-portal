@@ -1,6 +1,6 @@
 import Link, { LinkProps } from 'components/link';
 
-import type { Provider } from 'lib/apollo/schema/index.graphqls';
+import type { Provider } from 'lib/entities/types';
 
 type ProviderLinkProps = Omit< LinkProps, 'href' > & {
 	provider: Pick< Provider, 'slug' | 'name' >;

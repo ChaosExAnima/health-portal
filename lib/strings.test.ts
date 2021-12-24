@@ -5,6 +5,7 @@ import {
 	priceToNumber,
 	slugify,
 } from './strings';
+import * as constants from 'lib/constants';
 
 describe( 'capitalize', () => {
 	test( 'Capitalizes words', () => {
@@ -60,14 +61,14 @@ describe( 'priceToNumber', () => {
 describe( 'claimType', () => {
 	test( 'Parses types', () => {
 		const typeMap = {
-			DENTAL: 'Dental',
-			OUTOFNETWORK: 'Out of Network',
-			INNETWORK: 'In Network',
-			PHARMACY: 'Pharmacy',
-			test: 'Unknown',
+			[ constants.CLAIM_TYPE_DENTAL ]: 'Dental',
+			[ constants.CLAIM_TYPE_OUT ]: 'Out of Network',
+			[ constants.CLAIM_TYPE_IN ]: 'In Network',
+			[ constants.CLAIM_TYPE_MEDS ]: 'Pharmacy',
+			[ constants.CLAIM_TYPE_OTHER ]: 'Other',
 		};
 		for ( const [ input, output ] of Object.entries( typeMap ) ) {
-			expect( formatClaimType( input ) ).toEqual( output );
+			expect( formatClaimType( input as constants.CLAIM_TYPES_TYPE ) ).toEqual( output );
 		}
 	} );
 } );
@@ -75,14 +76,14 @@ describe( 'claimType', () => {
 describe( 'claimStatus', () => {
 	test( 'Parses statuses', () => {
 		const typeMap = {
-			PENDING: 'Pending',
-			APPROVED: 'Approved',
-			DENIED: 'Denied',
-			DELETED: 'Deleted',
-			test: 'Unknown',
+			[ constants.CLAIM_STATUS_PENDING ]: 'Pending',
+			[ constants.CLAIM_STATUS_APPROVED ]: 'Approved',
+			[ constants.CLAIM_STATUS_DENIED ]: 'Denied',
+			[ constants.CLAIM_STATUS_DELETED ]: 'Deleted',
+			[ constants.CLAIM_STATUS_UNKNOWN ]: 'Unknown',
 		};
 		for ( const [ input, output ] of Object.entries( typeMap ) ) {
-			expect( formatClaimStatus( input ) ).toEqual( output );
+			expect( formatClaimStatus( input as constants.CLAIM_STATUS_TYPE ) ).toEqual( output );
 		}
 	} );
 } );

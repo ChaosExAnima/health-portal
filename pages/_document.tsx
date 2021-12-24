@@ -4,7 +4,7 @@ import { ServerStyleSheets } from '@material-ui/core/styles';
 import theme from 'config/theme';
 
 export default class HealthPortal extends Document {
-	render(): React.ReactElement {
+	render(): JSX.Element {
 		return (
 			<Html lang="en">
 				<Head>

@@ -1,84 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Container, LinearProgress } from '@material-ui/core';
+import React from 'react';
+import { Container } from '@material-ui/core';
 import { useRouter } from 'next/router';
 
-import Breadcrumbs from 'components/breadcrumbs';
-import Header from 'components/header';
-import DetailsBox, { Detail } from 'components/details-box';
-import {
-	useProviderEditMutation,
-	useProviderQuery,
-} from 'lib/apollo/queries/providers.graphql';
 import {
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
 } from './index';
+import Breadcrumbs from 'components/breadcrumbs';
+import Header from 'components/header';
+import DetailsBox, { Detail } from 'components/details-box';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import type { GetStaticPaths, GetStaticProps } from 'next';
 import type { SinglePageProps } from 'global-types';
-import type { Provider } from 'lib/apollo/schema/index.graphqls';
+import type { Provider } from 'lib/entities/types';
 
-const ProviderEditPage: React.FC< SinglePageProps > = ( { slug } ) => {
+const ProviderEditPage: React.FC< SinglePageProps< Provider > > = ( {
+	record,
+} ) => {
 	const router = useRouter();
-	const [ provider, updateProvider ] = useState< Provider >();
-	const { data, loading } = useProviderQuery( { variables: { slug } } );
-	const [ saveProvider, { loading: saving } ] = useProviderEditMutation( {
-		variables: {
-			provider: {
-				name: provider?.name || 'Unknown',
-				slug,
-				website: provider?.website,
-				email: provider?.email,
-				phone: provider?.phone,
-				address: provider?.address,
-			},
-		},
-	} );
-	useEffect( () => {
-		if ( data && data.provider ) {
-			updateProvider( data.provider );
-		}
-	}, [ data ] );
-	if ( ! slug ) {
-		return null;
-	}
-	if ( ! provider || loading ) {
-		return (
-			<Container maxWidth="md">
-				<Box my={ 4 }>
-					<LinearProgress />
-				</Box>
-			</Container>
-		);
-	}
 	return (
 		<Container maxWidth="md">
 			<Breadcrumbs
 				breadcrumbs={ [
 					{ href: '/providers', name: 'Providers' },
-					{ href: `/providers/${ slug }`, name: provider.name },
+					{ href: `/providers/${ record.slug }`, name: record.name },
 					'Edit',
 				] }
 			/>
 			<Header
-				title={ provider.name }
+				title={ record.name }
 				buttonsBelow
 				edit
-				onChange={ ( name ) => updateProvider( { ...provider, name } ) }
+				// eslint-disable-next-line no-console
+				onChange={ ( name ) => console.log( name ) }
 				actions={ [
 					{
 						action: 'Save',
 						icon: 'save',
 						onClick: async () => {
-							await saveProvider();
-							router.push( `/providers/${ slug }` );
+							router.push( `/providers/${ record.slug }` );
 						},
-						disabled: saving,
+						disabled: false,
 					},
 					{
 						action: 'Cancel',
-						href: `/providers/${ slug }`,
+						href: `/providers/${ record.slug }`,
 						icon: 'cancel',
 						color: 'secondary',
 					},
@@ -86,21 +53,20 @@ const ProviderEditPage: React.FC< SinglePageProps > = ( { slug } ) => {
 			/>
 			<DetailsBox
 				edit
-				onChange={ ( key, value ) =>
-					updateProvider( { ...provider, [ key ]: value } )
-				}
+				// eslint-disable-next-line no-console
+				onChange={ ( key, value ) => console.log( key, value ) }
 			>
 				<Detail name="Website" type="url" id="website">
-					{ provider.website }
+					{ record.website }
 				</Detail>
 				<Detail name="Email" id="email">
-					{ provider.email }
+					{ record.email }
 				</Detail>
 				<Detail name="Phone Number" id="phone">
-					{ provider.phone }
+					{ record.phone }
 				</Detail>
 				<Detail name="Address" id="address">
-					{ provider.address }
+					{ record.address }
 				</Detail>
 			</DetailsBox>
 		</Container>

@@ -1,25 +1,29 @@
 import { Container } from '@material-ui/core';
 import React from 'react';
 
-import Header, { ActionItem } from 'components/header';
-import Footer from 'components/footer';
 import DataTable, {
 	DataTableColumn,
 	DataTableFilter,
 } from 'components/data-table';
-import { useAppealsIndexQuery } from 'lib/apollo/queries/appeals.graphql';
+import Footer from 'components/footer';
+import Header, { ActionItem } from 'components/header';
+import rowToAppeal from 'lib/entities/appeal';
+import { queryAppeals } from 'lib/entities/db';
+import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { capitalize } from 'lib/strings';
 
 import type { PaginatedPageProps } from 'global-types';
+import type { GetStaticPropsContext } from 'next';
+import type { Appeal } from 'lib/entities/types';
 
-const AppealsPage: React.FC< PaginatedPageProps > = ( {
+type AppealsProps = PaginatedPageProps< Appeal >;
+
+const AppealsPage: React.FC< AppealsProps > = ( {
 	title,
 	currentPage,
+	totalPages,
+	records,
 } ) => {
-	const { data, loading } = useAppealsIndexQuery( {
-		variables: { offset: 0 },
-	} );
-
 	const actions: ActionItem[] = [
 		{
 			href: '/appeals/new',
@@ -45,7 +49,7 @@ const AppealsPage: React.FC< PaginatedPageProps > = ( {
 			values: {},
 		},
 	];
-	const columns: DataTableColumn[] = [
+	const columns: DataTableColumn< keyof Appeal >[] = [
 		{
 			align: 'right',
 			key: 'created',
@@ -69,27 +73,41 @@ const AppealsPage: React.FC< PaginatedPageProps > = ( {
 			<Container maxWidth="md">
 				<Header title={ title } actions={ actions } />
 			</Container>
-			<DataTable
+			<DataTable< Appeal >
 				basePath="/appeals"
 				columns={ columns }
 				currentPage={ currentPage }
 				filters={ filters }
-				loading={ loading }
-				rows={ data?.getAppeals.appeals }
-				totalCount={ data?.getAppeals.totalCount }
+				rows={ records }
+				totalCount={ totalPages }
+				loading={ false }
 			/>
 			<Footer wrap />
 		</>
 	);
 };
 
-export async function getStaticProps(): Promise< {
-	props: PaginatedPageProps;
+export async function getStaticProps( {
+	params,
+}: GetStaticPropsContext< { page: string } > ): Promise< {
+	props: AppealsProps;
 } > {
+	// Pagination.
+	const pageSize = 20;
+	const currentPage = getPageNumber( params?.page );
+	const totalPages = await getTotalPageNumber( queryAppeals(), pageSize );
+
+	// Gets records.
+	const appeals = await queryAppeals()
+		.limit( pageSize )
+		.offset( currentPage * pageSize );
+	const records = appeals.map( ( row ) => rowToAppeal( row, {} ) );
 	return {
 		props: {
 			title: 'Appeals',
-			currentPage: 0,
+			currentPage,
+			totalPages,
+			records,
 		},
 	};
 }

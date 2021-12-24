@@ -4,7 +4,6 @@ import {
 	Button,
 	Container,
 	createStyles,
-	LinearProgress,
 	makeStyles,
 	Paper,
 	Theme,
@@ -16,7 +15,6 @@ import { Alert } from '@material-ui/lab';
 
 import Link from 'components/link';
 import ButtonLink from 'components/button-link';
-import { useUploadClaimsMutation } from 'lib/apollo/queries/claims.graphql';
 
 import type { PageProps } from 'global-types';
 
@@ -73,10 +71,6 @@ const useStyles = makeStyles( ( { palette, shape, spacing }: Theme ) =>
 );
 
 const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
-	const [
-		uploadClaims,
-		{ data, loading, error },
-	] = useUploadClaimsMutation();
 	const {
 		getRootProps,
 		getInputProps,
@@ -84,8 +78,8 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 		isDragReject,
 	} = useDropzone( {
 		accept: 'text/csv',
-		onDropAccepted: ( files ) =>
-			uploadClaims( { variables: { file: files[ 0 ] } } ),
+		// eslint-disable-next-line no-console
+		onDropAccepted: ( files ) => console.log( files ),
 	} );
 	const classes = useStyles();
 
@@ -101,7 +95,7 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 		[ isDragReject, isDragAccept ]
 	);
 
-	const hasUploadError = error || ( data && ! data.uploadClaims.success );
+	const hasUploadError = false;
 
 	return (
 		<Container maxWidth="md">
@@ -120,30 +114,25 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 			</Box>
 			{ hasUploadError && (
 				<Alert severity="error" className={ classes.uploadError }>
-					{ data?.uploadClaims.code ||
-						'There was an error processing your uploads.' }
+					{ false || 'There was an error processing your uploads.' }
 				</Alert>
 			) }
-			{ ! loading && ( ! data || hasUploadError ) && (
-				<Paper
-					{ ...getRootProps() }
-					className={ dropzoneClasses }
-					elevation={ isDragAccept ? 3 : 0 }
-				>
-					<input { ...getInputProps() } />
-					<Typography variant="h6" component="p" align="center">
-						{ ! isDragReject && 'Drop claims here' }
-						{ isDragReject && 'CSV files only' }
-					</Typography>
-				</Paper>
-			) }
-			{ loading && <LinearProgress /> }
-			{ data?.uploadClaims.success && (
+			<Paper
+				{ ...getRootProps() }
+				className={ dropzoneClasses }
+				elevation={ isDragAccept ? 3 : 0 }
+			>
+				<input { ...getInputProps() } />
+				<Typography variant="h6" component="p" align="center">
+					{ ! isDragReject && 'Drop claims here' }
+					{ isDragReject && 'CSV files only' }
+				</Typography>
+			</Paper>
+			{ false && (
 				<>
 					<Paper className={ classes.uploadSuccess }>
 						<Typography variant="h6" component="p" align="center">
-							{ data.uploadClaims.claimsProcessed } claims
-							processed!
+							-1 claims processed!
 						</Typography>
 					</Paper>
 					<Box my={ 4 }>

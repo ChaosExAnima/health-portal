@@ -4,12 +4,13 @@ import {
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
 } from '.';
-
-import type { GetStaticPaths, GetStaticProps } from 'next';
-import type { SinglePageProps } from 'global-types';
+import { Appeal } from 'lib/entities/types';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
-const AppealEditPage: React.FC< SinglePageProps > = () => {
+import type { GetStaticPaths } from 'next';
+import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+
+const AppealEditPage: React.FC< SinglePageProps< Appeal > > = () => {
 	return (
 		<Container maxWidth="md">
 			<Box my={ 4 }>Hello</Box>
@@ -17,10 +18,8 @@ const AppealEditPage: React.FC< SinglePageProps > = () => {
 	);
 };
 
-export const getStaticProps: GetStaticProps<
-	SinglePageProps,
-	{ appeal: string }
-> = async ( context ) => staticPropsEdit( getRootStaticProps, context );
+export const getStaticProps: GetSinglePageProps< Appeal > = async ( context ) =>
+	staticPropsEdit( getRootStaticProps, context );
 
 export const getStaticPaths: GetStaticPaths = async ( context ) =>
 	staticPathsEdit( getRootStaticPaths, context );

@@ -60,10 +60,9 @@ const ActionIcon: React.FC< { icon: ActionItemIcon } > = ( { icon } ) => {
 	return icon;
 };
 
-const HeaderTitle: React.FC< Pick<
-	HeaderProps,
-	'title' | 'edit' | 'onChange'
-> > = ( { title, edit, onChange } ) => {
+const HeaderTitle: React.FC<
+	Pick< HeaderProps, 'title' | 'edit' | 'onChange' >
+> = ( { title, edit, onChange } ) => {
 	const classes = useStyles();
 	if ( edit ) {
 		return (
@@ -145,10 +144,9 @@ const HeaderFab: React.FC< ActionItem > = ( {
 	</Tooltip>
 );
 
-const HeaderButtonsSide: React.FC< Pick<
-	HeaderProps,
-	'actions' | 'title'
-> > = ( { actions, title } ) => (
+const HeaderButtonsSide: React.FC<
+	Pick< HeaderProps, 'actions' | 'title' >
+> = ( { actions, title } ) => (
 	<Grid container spacing={ 4 }>
 		<Grid item>
 			<HeaderTitle title={ title } />

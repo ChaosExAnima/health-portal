@@ -1,21 +1,6 @@
-import dayjs from 'dayjs';
 import { createHash } from 'crypto';
 
-import type Claim from 'lib/db/entities/claim';
-
 type MaybeArray< T > = T | T[];
-
-export function isClaimSame( newClaim: Claim, oldClaim?: Claim ): boolean {
-	return (
-		!! oldClaim &&
-		newClaim.number === oldClaim.number &&
-		newClaim.status === oldClaim.status &&
-		dayjs( newClaim.serviceDate ).isSame( oldClaim.serviceDate ) &&
-		newClaim.type === oldClaim.type &&
-		newClaim.billed === oldClaim.billed &&
-		newClaim.cost === oldClaim.cost
-	);
-}
 
 export function getHash(
 	input: MaybeArray< Record< string, unknown > >,

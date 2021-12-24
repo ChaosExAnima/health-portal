@@ -22,29 +22,32 @@ import type {
 	DataTableRowData,
 } from './types';
 
-type DataTableProps = {
+type DataTableProps< Data > = {
 	basePath: string;
-	columns: DataTableColumn[];
+	columns: DataTableColumn< Extract< keyof Data, string > >[];
 	currentPage: number;
 	filters?: DataTableFilter[];
 	loading: boolean;
-	rows?: DataTableRowData[];
+	rows?: Data[];
 	rowsPerPage?: number;
 	totalCount?: number;
 	hasDates?: true;
 };
 
-const DataTable: React.FC< DataTableProps > = ( {
-	basePath,
-	columns,
-	currentPage,
-	filters = [],
-	loading,
-	rows,
-	rowsPerPage = 20,
-	totalCount,
-	hasDates = false,
-} ) => {
+export default function DataTable< T extends DataTableRowData >(
+	props: DataTableProps< T >
+): JSX.Element {
+	const {
+		basePath,
+		columns,
+		currentPage,
+		filters = [],
+		loading,
+		rows,
+		rowsPerPage = 20,
+		totalCount,
+		hasDates = false,
+	} = props;
 	const router = useRouter();
 	if ( loading || ! rows ) {
 		return (
@@ -86,7 +89,7 @@ const DataTable: React.FC< DataTableProps > = ( {
 								rowsPerPageOptions={ [ rowsPerPage ] }
 								count={ totalCount }
 								page={ currentPage }
-								onChangePage={ ( event, page ) =>
+								onPageChange={ ( event, page ) =>
 									router.push(
 										`${ basePath }/page/${ page + 1 }`
 									)
@@ -98,6 +101,4 @@ const DataTable: React.FC< DataTableProps > = ( {
 			</TableContainer>
 		</Container>
 	);
-};
-
-export default DataTable;
+}

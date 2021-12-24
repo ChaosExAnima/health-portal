@@ -1,43 +1,33 @@
 import React from 'react';
-import { Box, Container, LinearProgress } from '@material-ui/core';
+import { Container } from '@material-ui/core';
 
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import DetailsBox, { Detail } from 'components/details-box';
-import HistoryTable from 'components/history-table';
-import { useProviderQuery } from 'lib/apollo/queries/providers.graphql';
-import { staticPathsFromSlugs } from 'lib/static-helpers';
-import { query } from 'lib/db';
+import { queryAllProviders, queryContentType } from 'lib/entities/db';
+import { rowToProvider } from 'lib/entities/provider';
 
-import type { GetStaticPaths, GetStaticProps } from 'next';
-import type { SinglePageProps } from 'global-types';
-import type Provider from 'lib/db/entities/provider';
+import type { SetRequired } from 'type-fest';
+import type { GetStaticPathsResult } from 'next';
+import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { Provider } from 'lib/entities/types';
 
-const ProviderPage: React.FC< SinglePageProps > = ( { id, slug } ) => {
-	const { data, loading } = useProviderQuery( { variables: { slug } } );
-	if ( ! slug ) {
-		return null;
-	}
-	const provider = data && data.provider;
-	if ( ! provider || loading ) {
-		return (
-			<Container maxWidth="md">
-				<Box my={ 4 }>
-					<LinearProgress />
-				</Box>
-			</Container>
-		);
-	}
+export type ProviderWithAdditions = SetRequired< Provider, 'claims' | 'notes' >;
+
+const ProviderPage: React.FC< SinglePageProps< ProviderWithAdditions > > = ( {
+	slug,
+	record,
+} ) => {
 	return (
 		<Container maxWidth="md">
 			<Breadcrumbs
 				breadcrumbs={ [
 					{ href: '/providers', name: 'Providers' },
-					provider.name,
+					record.name,
 				] }
 			/>
 			<Header
-				title={ provider.name }
+				title={ record.name }
 				buttonsBelow
 				actions={ [
 					{ action: 'Add Event', icon: 'add' },
@@ -49,45 +39,51 @@ const ProviderPage: React.FC< SinglePageProps > = ( { id, slug } ) => {
 				] }
 			/>
 			<DetailsBox>
-				<Detail name="Phone Number">{ provider.phone }</Detail>
-				<Detail name="Email">{ provider.email }</Detail>
-				<Detail name="Address">{ provider.address }</Detail>
-				<Detail name="Website">{ provider.website }</Detail>
+				<Detail name="Phone Number">{ record.phone }</Detail>
+				<Detail name="Email">{ record.email }</Detail>
+				<Detail name="Address">{ record.address }</Detail>
+				<Detail name="Website">{ record.website }</Detail>
 			</DetailsBox>
-			<Box my={ 4 }>
-				<HistoryTable type="provider" id={ id } />
-			</Box>
 		</Container>
 	);
 };
 
-export const getStaticPaths: GetStaticPaths = async () =>
-	staticPathsFromSlugs( 'Provider', 'providers' );
+export async function getStaticPaths(): Promise< GetStaticPathsResult > {
+	const claims = await queryAllProviders().select( 'identifier' );
+	return {
+		paths: claims.map(
+			( { identifier } ) => `/claims/${ identifier.toLowerCase() }`
+		),
+		fallback: false,
+	};
+}
 
-export const getStaticProps: GetStaticProps<
-	SinglePageProps,
-	{ provider: string }
-> = async ( { params } ) => {
+export const getStaticProps: GetSinglePageProps< ProviderWithAdditions > = async ( {
+	params,
+} ) => {
 	if ( ! params ) {
 		return {
 			notFound: true,
 		};
 	}
-	const { provider: providerSlug } = params;
-	const em = await query();
-	const provider = await em.findOne< Provider >( 'Provider', {
-		slug: providerSlug,
-	} );
-	if ( ! provider ) {
+	const { slug } = params;
+	const row = await queryAllProviders().where( 'slug', slug ).first();
+	if ( ! row ) {
 		return {
 			notFound: true,
 		};
 	}
+	const relations = await queryContentType( [ 'claim', 'note' ] ).andWhere(
+		'providerId',
+		row.id
+	);
+	const record = rowToProvider( row, { relations } );
 	return {
 		props: {
-			id: provider.id,
-			slug: providerSlug,
-			title: provider.name,
+			id: row.id,
+			slug,
+			title: row.name,
+			record,
 		},
 	};
 };

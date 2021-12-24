@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
-import { priceToNumber, slugify } from 'lib/strings';
+import * as constants from 'lib/constants';
+import { priceToNumber } from 'lib/strings';
 
-import type { Claim, Provider } from 'lib/db/entities';
-import type { DeepPartial } from 'typeorm';
+import { RawClaim } from './types';
 
-type RawClaim = {
+type RawAnthemRow = {
 	'Claim Type': string;
 	'Claim Number': string;
 	Patient: string;
@@ -25,42 +25,36 @@ type RawClaim = {
 
 export function isAnthemClaim(
 	claim: Record< string, string >
-): claim is RawClaim {
+): claim is RawAnthemRow {
 	return 'Claim Received' in claim;
 }
 
-export function getProviderFromClaim( rawClaim: RawClaim ): string {
+export function getProviderFromClaim( rawClaim: RawAnthemRow ): string {
 	return rawClaim[ 'Provided By' ];
 }
 
-export function parseAnthemClaim(
-	rawClaim: RawClaim,
-	providers: Provider[]
-): DeepPartial< Claim > {
-	let status = 'PENDING';
+export function parseAnthemClaim( rawClaim: RawAnthemRow ): RawClaim {
+	let status: constants.CLAIM_STATUS_TYPE = constants.CLAIM_STATUS_UNKNOWN;
 	if ( rawClaim.Status ) {
 		if ( rawClaim.Status === 'Approved' ) {
-			status = 'APPROVED';
+			status = constants.CLAIM_STATUS_APPROVED;
 		} else if ( rawClaim.Status === 'Denied' ) {
-			status = 'DENIED';
+			status = constants.CLAIM_STATUS_DENIED;
+		} else if ( rawClaim.Status === 'Pending' ) {
+			status = constants.CLAIM_STATUS_PENDING;
 		}
 	}
 
-	const claim: DeepPartial< Claim > = {
+	return {
 		number: rawClaim[ 'Claim Number' ],
-		slug: slugify( rawClaim[ 'Claim Number' ] || '' ),
 		type:
-			rawClaim[ 'Claim Type' ] === 'Pharmacy' ? 'PHARMACY' : 'INNETWORK',
-		serviceDate: dayjs( rawClaim[ 'Service Date' ] ).toDate(),
+			rawClaim[ 'Claim Type' ] === 'Pharmacy'
+				? constants.CLAIM_TYPE_MEDS
+				: constants.CLAIM_TYPE_IN,
+		created: dayjs( rawClaim[ 'Service Date' ] ).toDate(),
 		status,
+		providerName: getProviderFromClaim( rawClaim ),
 		billed: priceToNumber( rawClaim.Billed ) || 0,
 		cost: priceToNumber( rawClaim[ 'Your Cost' ] ) || 0,
 	};
-
-	// See: https://github.com/typeorm/typeorm/issues/2276
-	const provider = providers.find(
-		( { slug } ) => slug === slugify( getProviderFromClaim( rawClaim ) )
-	);
-	claim.provider = provider && Promise.resolve( provider );
-	return claim;
 }

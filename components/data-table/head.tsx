@@ -1,14 +1,14 @@
 import { TableCell, TableHead, TableRow } from '@material-ui/core';
 
-import type { DataTableColumn } from './types';
+import type { DataTableColumn, DataTableRowData } from './types';
 
 type DataTableHeadProps = {
-	columns: DataTableColumn[];
+	columns: DataTableColumn< keyof DataTableRowData >[];
 };
 
-const DataTableHeadCell: React.FC< { column: DataTableColumn } > = ( {
-	column,
-} ) => {
+const DataTableHeadCell: React.FC< {
+	column: DataTableColumn< keyof DataTableRowData >;
+} > = ( { column } ) => {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { name, link, format, key, ...props } = column;
 	return <TableCell { ...props }>{ name }</TableCell>;

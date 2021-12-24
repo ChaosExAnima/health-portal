@@ -4,12 +4,13 @@ import {
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
 } from '.';
-
-import type { GetStaticPaths, GetStaticProps } from 'next';
-import type { SinglePageProps } from 'global-types';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
-const CallEditPage: React.FC< SinglePageProps > = () => {
+import type { GetStaticPaths } from 'next';
+import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { Call } from 'lib/entities/types';
+
+const CallEditPage: React.FC< SinglePageProps< Call > > = () => {
 	return (
 		<Container maxWidth="md">
 			<Box my={ 4 }>Hello</Box>
@@ -17,9 +18,8 @@ const CallEditPage: React.FC< SinglePageProps > = () => {
 	);
 };
 
-export const getStaticProps: GetStaticProps< SinglePageProps > = async (
-	context
-) => staticPropsEdit( getRootStaticProps, context );
+export const getStaticProps: GetSinglePageProps< Call > = async ( context ) =>
+	staticPropsEdit( getRootStaticProps, context );
 
 export const getStaticPaths: GetStaticPaths = async ( context ) =>
 	staticPathsEdit( getRootStaticPaths, context );

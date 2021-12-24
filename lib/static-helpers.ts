@@ -1,6 +1,4 @@
-import { SinglePageProps } from 'global-types';
-import { getBySlug, query } from 'lib/db';
-
+import { toSafeInteger } from 'lodash';
 import type {
 	GetStaticPaths,
 	GetStaticPathsContext,
@@ -9,26 +7,36 @@ import type {
 	GetStaticPropsContext,
 	GetStaticPropsResult,
 } from 'next';
+import type { Knex } from 'knex';
+
+import { DBCommonFields } from './db/types';
+import { SinglePageProps } from 'global-types';
+import { Entity } from './entities/types';
 
 export function isSSR(): boolean {
 	return typeof window === 'undefined';
 }
 
+export function getPageNumber( page: unknown ): number {
+	return Math.max( 0, toSafeInteger( page ) );
+}
+
+export async function getTotalPageNumber(
+	query: Knex.QueryBuilder< DBCommonFields, DBCommonFields[] >,
+	pageSize = 20
+): Promise< number > {
+	const result = await query.count( { count: '*' } ).first();
+	const count = toSafeInteger( result?.count );
+	return Math.ceil( toSafeInteger( count ) / pageSize );
+}
+
 export async function staticPathsFromSlugs(
-	entity: string,
+	slugs: string[],
 	prefix: string
 ): Promise< GetStaticPathsResult > {
-	const em = await query();
-	const objects = await em.find( entity, { select: [ 'slug' ] } );
-	if ( ! objects.length ) {
-		return {
-			paths: [],
-			fallback: true,
-		};
-	}
 	return {
-		paths: objects.map( ( { slug } ) => `/${ prefix }/${ slug }` ),
-		fallback: true,
+		paths: slugs.map( ( slug ) => `/${ prefix }/${ slug }` ),
+		fallback: false,
 	};
 }
 
@@ -57,33 +65,7 @@ export const staticPathsNoData = (
 	return null;
 };
 
-export function staticPropsSlug< E, T = SinglePageProps >(
-	entity: string,
-	props: ( item: E ) => T
-): GetStaticProps< T > {
-	const cb: GetStaticProps< T > = async ( { params } ) => {
-		if ( ! params ) {
-			return {
-				notFound: true,
-			};
-		}
-		const { slug } = params;
-		const item = await getBySlug< E >( entity, slug as string );
-		if ( ! item ) {
-			return {
-				notFound: true,
-			};
-		}
-		return {
-			props: props( item ),
-		};
-	};
-	return cb;
-}
-
-export async function staticPropsEdit<
-	T extends SinglePageProps = SinglePageProps
->(
+export async function staticPropsEdit< T extends SinglePageProps< Entity > >(
 	root: GetStaticProps< T >,
 	context: GetStaticPropsContext
 ): Promise< GetStaticPropsResult< T > > {

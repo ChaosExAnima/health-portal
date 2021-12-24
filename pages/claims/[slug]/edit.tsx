@@ -15,14 +15,15 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import {
+	ClaimWithAdditions,
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
 } from '.';
 import Link from 'components/link';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
-import type { GetStaticPaths, GetStaticProps } from 'next';
-import type { SinglePageProps } from 'global-types';
+import type { GetStaticPaths } from 'next';
+import type { GetSinglePageProps, SinglePageProps } from 'global-types';
 
 const useStyles = makeStyles( ( theme: Theme ) =>
 	createStyles( {
@@ -45,7 +46,10 @@ const useStyles = makeStyles( ( theme: Theme ) =>
 	} )
 );
 
-const ClaimPageEdit: React.FC< SinglePageProps > = ( { slug, title } ) => {
+const ClaimPageEdit: React.FC< SinglePageProps< ClaimWithAdditions > > = ( {
+	slug,
+	title,
+} ) => {
 	const classes = useStyles();
 
 	if ( ! slug ) {
@@ -107,7 +111,8 @@ const ClaimPageEdit: React.FC< SinglePageProps > = ( { slug, title } ) => {
 export const getStaticPaths: GetStaticPaths = async ( context ) =>
 	staticPathsEdit( getRootStaticPaths, context );
 
-export const getStaticProps: GetStaticProps = async ( context ) =>
-	staticPropsEdit( getRootStaticProps, context );
+export const getStaticProps: GetSinglePageProps< ClaimWithAdditions > = async (
+	context
+) => staticPropsEdit( getRootStaticProps, context );
 
 export default ClaimPageEdit;

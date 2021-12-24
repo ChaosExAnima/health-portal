@@ -1,9 +1,11 @@
-import { getEntityManager } from 'lib/db/test-utils';
 import { Readable } from 'stream';
-import type { DeepPartial, EntityManager } from 'typeorm';
-import type { Claim, Import, Provider } from 'lib/db/entities';
 
-type RawTestClaim =
+import * as constants from 'lib/constants';
+import { inReadonlyArray } from 'lib/entities/utils';
+
+import type { RawClaim } from './types';
+
+type RawTestRow =
 	| {
 			number: string;
 			status: string;
@@ -17,7 +19,7 @@ type RawTestClaim =
 
 export function isTestClaim(
 	rawClaim: Record< string, string | undefined >
-): rawClaim is RawTestClaim {
+): rawClaim is RawTestRow {
 	return (
 		( 'number' in rawClaim &&
 			'status' in rawClaim &&
@@ -29,26 +31,34 @@ export function isTestClaim(
 	);
 }
 
-export function getProviderFromTestClaim( rawClaim: RawTestClaim ): string {
+export function getProviderFromTestClaim( rawClaim: RawTestRow ): string {
 	if ( ! ( 'provider' in rawClaim ) || ! rawClaim.provider ) {
 		throw new Error( 'Invalid test claim type' );
 	}
 	return rawClaim.provider;
 }
 
-export function parseTestClaim(
-	rawClaim: RawTestClaim,
-	providers: Provider[]
-): DeepPartial< Claim > {
+export function parseTestClaim( rawClaim: RawTestRow ): RawClaim {
 	if ( ! ( 'serviceDate' in rawClaim ) ) {
 		throw new Error( 'Invalid test claim type' );
 	}
+
 	return {
-		...rawClaim,
-		serviceDate: new Date( rawClaim.serviceDate ),
+		number: rawClaim.number,
+		created: new Date( rawClaim.serviceDate ),
 		billed: Number.parseFloat( rawClaim.billed ),
 		cost: Number.parseFloat( rawClaim.cost ),
-		provider: providers && Promise.resolve( providers[ 0 ] ),
+		providerName: rawClaim.provider || 'Unknown',
+		type: inReadonlyArray(
+			rawClaim.type,
+			constants.CLAIM_TYPES,
+			constants.CLAIM_TYPE_OTHER
+		),
+		status: inReadonlyArray(
+			rawClaim.status,
+			constants.CLAIM_STATUSES,
+			constants.CLAIM_STATUS_UNKNOWN
+		),
 	};
 }
 
@@ -67,21 +77,3 @@ export const baseClaim = {
 	billed: 1.23,
 	cost: 1.23,
 } as const;
-
-export async function getEntityManagerWithClaim(): Promise< EntityManager > {
-	const em = getEntityManager();
-	await em.insert( 'Claim', {
-		...baseClaim,
-		slug: 'test1',
-	} );
-	return em;
-}
-
-export async function getImportEntity( em: EntityManager ): Promise< Import > {
-	const importRepo = em.getRepository< Import >( 'Import' );
-	await importRepo.insert( {
-		id: 1,
-		hash: 'test1234',
-	} );
-	return importRepo.findOneOrFail( 1 );
-}
