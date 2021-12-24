@@ -1,27 +1,24 @@
-import { SetRequired } from 'type-fest';
-
 import rowToClaim from './claim';
-import rowToImport from './import';
 import rowToNote from './note';
-import { Appeal } from './types';
 import { dateToString, inReadonlyArray } from './utils';
 import * as constants from 'lib/constants';
-import { ContentDB, ImportDB } from 'lib/db/types';
 import { slugify } from 'lib/strings';
 
-type AppealAdditions = {
-	relations?: ContentDB[];
-	import?: ImportDB;
+import type {
+	Appeal,
+	Claim,
+	EntityAdditions,
+	EntityWithAdditions,
+	WithRelationAdditions,
+} from './types';
+import type { ContentDB } from 'lib/db/types';
+
+type AppealWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
+	Appeal,
+	A
+> & {
+	claims: A extends WithRelationAdditions< A > ? Claim[] : never;
 };
-type AppealWithRelations = SetRequired< AppealAdditions, 'relations' >;
-type AppealWithImport = SetRequired< AppealAdditions, 'import' >;
-type AppealWithAdditions< T > = T extends AppealWithRelations & AppealWithImport
-	? SetRequired< Appeal, 'notes' | 'claims' | 'import' >
-	: T extends AppealWithRelations
-	? SetRequired< Appeal, 'notes' | 'claims' >
-	: T extends AppealWithImport
-	? SetRequired< Appeal, 'import' >
-	: Appeal;
 
 export const related = [
 	constants.CONTENT_CLAIM,
@@ -29,11 +26,11 @@ export const related = [
 ] as const;
 export type relatedType = typeof related[ number ];
 
-export default function rowToAppeal< T extends AppealAdditions >(
+export default function rowToAppeal< A extends EntityAdditions >(
 	row: ContentDB,
-	additions: T
-): AppealWithAdditions< T > {
-	const { relations, import: importObj } = additions;
+	additions: A = {} as A
+): AppealWithAdditions< A > {
+	const { relations } = additions;
 	const { id, identifier: name, created: createdDate, status } = row;
 	const created = dateToString( createdDate );
 	const appeal: Appeal = {
@@ -59,8 +56,5 @@ export default function rowToAppeal< T extends AppealAdditions >(
 		}
 	}
 
-	if ( importObj ) {
-		appeal.import = rowToImport( importObj, {} );
-	}
-	return appeal as AppealWithAdditions< T >;
+	return appeal as AppealWithAdditions< A >;
 }

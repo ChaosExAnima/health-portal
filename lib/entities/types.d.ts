@@ -1,14 +1,43 @@
+import { SetRequired } from 'type-fest';
 import { Nullable } from 'global-types';
 import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
+import { ContentDB, ImportDB, LoadedRelationDB, MetaDB, ProviderDB } from 'lib/db/types';
 
 type WithField< E extends Entity, Column extends keyof E > = Omit< E, Column > & Required< Pick< E, Column > >;
 
-interface Entity {
+type EntityAdditions = {
+	relations?: LoadedRelationDB[];
+	import?: ImportDB;
+	provider?: ProviderDB;
+	meta?: MetaDB[];
+};
+type WithMetaAdditions< A extends EntityAdditions > = SetRequired< A, 'meta' >;
+type WithRelationAdditions< A extends EntityAdditions > = SetRequired< A, 'relations' >;
+type EntityWithAdditions< E extends Entity, A extends EntityAdditions > = E & {
+	provider: E extends WithProvider & SetRequired< A, 'provider' > ? Provider : never;
+	import: E extends WithImport & SetRequired< A, 'import' > ? Import : never;
+	notes: E extends WithNotes & SetRequired< A, 'relations' > ? Note[] : never;
+}
+
+// Abstract interfaces.
+abstract interface Entity {
 	id: number;
 	created: string;
 }
+abstract interface Content extends Entity {
+	slug: string;
+}
+abstract interface WithProvider {
+	provider?: Provider;
+}
+abstract interface WithImport {
+	import?: Import;
+}
+abstract interface WithNotes {
+	notes?: Note[];
+}
 
-interface Provider extends Entity {
+interface Provider extends Entity, WithNotes, WithImport {
 	slug: string;
 	name: string;
 	address: Nullable< string >;
@@ -16,8 +45,6 @@ interface Provider extends Entity {
 	email: Nullable< string >;
 	website: Nullable< string >;
 	claims?: Claim[];
-	notes?: Note[];
-	import?: Import;
 }
 
 interface Import extends Entity {
@@ -27,25 +54,17 @@ interface Import extends Entity {
 	file?: File;
 }
 
-interface Content extends Entity {
-	slug: string;
-	provider?: Provider;
-	import?: Import;
-}
-
-interface Appeal extends Content {
+interface Appeal extends Content, WithNotes, WithProvider {
 	name: string;
 	claims?: Claim[];
-	notes?: Note[];
 	status: typeof APPEAL_STATUSES[ number ];
 }
 
-interface Call extends Content {
+interface Call extends Content, WithNotes, WithProvider {
 	reps?: string[];
-	notes?: Note[];
 }
 
-interface Claim extends Content {
+interface Claim extends Content, WithNotes, WithProvider, WithImport {
 	number: string;
 	date: string;
 	type?: typeof CLAIM_TYPES[ number ];
@@ -53,10 +72,9 @@ interface Claim extends Content {
 	billed?: Nullable< number >;
 	cost?: Nullable< number >;
 	appeals?: Appeal[];
-	notes?: Note[];
 }
 
-interface File extends Content {
+interface File extends Content, WithNotes {
 	path: string;
 }
 

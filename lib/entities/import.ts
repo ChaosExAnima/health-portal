@@ -15,7 +15,7 @@ type ImportWithAdditions< T > = T extends ImportWithFile
 
 export default function rowToImport< T extends ImportAdditions >(
 	row: ImportDB,
-	additions: T
+	additions: T = {} as T
 ): ImportWithAdditions< T > {
 	const { id, hash, inserted, updated } = row;
 	const importObj: Import = {

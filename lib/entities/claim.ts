@@ -1,45 +1,34 @@
-import type { SetRequired } from 'type-fest';
-
 import { rowToProvider } from './provider';
-import { Claim } from './types';
-import { dateToString, getNumericMeta, inReadonlyArray } from './utils';
+import {
+	Claim,
+	EntityAdditions,
+	EntityWithAdditions,
+	WithMetaAdditions,
+} from './types';
+import {
+	dateToString,
+	getNumericMeta,
+	inReadonlyArray,
+	relatedOfType,
+} from './utils';
 import * as constants from 'lib/constants';
-import { ContentDB, MetaDB, ProviderDB } from 'lib/db/types';
+import { ContentDB } from 'lib/db/types';
 import { slugify } from 'lib/strings';
+import rowToNote from './note';
 
-type ClaimAdditions = {
-	meta?: MetaDB[];
-	providers?: ProviderDB[];
-	provider?: ProviderDB;
-	relations?: ContentDB[];
+type ClaimWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
+	Claim,
+	A
+> & {
+	billed: A extends WithMetaAdditions< A > ? number : never;
+	cost: A extends WithMetaAdditions< A > ? number : never;
 };
-type ClaimWithMeta = { meta: MetaDB[] };
-type ClaimWithProviders = { providers: ProviderDB[] };
 
-type ClaimWithAdditions< T > = T extends ClaimWithMeta & ClaimWithProviders
-	? SetRequired< Claim, metaFieldType | 'provider' >
-	: T extends ClaimWithMeta
-	? SetRequired< Claim, metaFieldType >
-	: T extends ClaimWithProviders
-	? SetRequired< Claim, 'provider' >
-	: Claim;
-
-export const metaFields = [ 'cost', 'billed' ] as const;
-export type metaFieldType = typeof metaFields[ number ];
-
-export const related = [
-	constants.CONTENT_APPEAL,
-	constants.CONTENT_CALL,
-	constants.CONTENT_NOTE,
-	constants.CONTENT_PAYMENT,
-] as const;
-export type relatedType = typeof related[ number ];
-
-export default function rowToClaim< T extends ClaimAdditions >(
+export default function rowToClaim< T extends EntityAdditions >(
 	row: ContentDB,
 	additions: T = {} as T
 ): ClaimWithAdditions< T > {
-	const { meta, providers } = additions;
+	const { meta, provider, relations } = additions;
 	const { id, identifier: number, created: createdDate, info, status } = row;
 	const created = dateToString( createdDate );
 	const claim: Claim = {
@@ -60,13 +49,8 @@ export default function rowToClaim< T extends ClaimAdditions >(
 		),
 	};
 
-	if ( providers && row.providerId ) {
-		const provider = providers.find(
-			( { id: providerId } ) => providerId === row.providerId
-		);
-		if ( provider ) {
-			claim.provider = rowToProvider( provider );
-		}
+	if ( provider ) {
+		claim.provider = rowToProvider( provider );
 	}
 
 	const contentMeta = ( meta || [] ).filter(
@@ -75,6 +59,11 @@ export default function rowToClaim< T extends ClaimAdditions >(
 	if ( contentMeta.length ) {
 		claim.billed = getNumericMeta( 'billed', contentMeta );
 		claim.cost = getNumericMeta( 'cost', contentMeta );
+	}
+
+	if ( relations ) {
+		const noteRows = relatedOfType( relations, 'note' );
+		claim.notes = noteRows.map( rowToNote );
 	}
 
 	return claim as ClaimWithAdditions< T >;
