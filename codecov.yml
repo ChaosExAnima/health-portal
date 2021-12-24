@@ -3,8 +3,3 @@ codecov:
 ignore:
   - './lib/parser/test-utils.ts'
   - './pages/**/*.tsx'
-coverage:
-    status:
-        patch:
-            default:
-                target: 0%
