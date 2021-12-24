@@ -1,5 +1,5 @@
 import { Nullable } from 'global-types';
-import { CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
+import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
 
 type WithField< E extends Entity, Column extends keyof E > = Omit< E, Column > & Required< Pick< E, Column > >;
 
@@ -37,6 +37,7 @@ interface Appeal extends Content {
 	name: string;
 	claims?: Claim[];
 	notes?: Note[];
+	status: typeof APPEAL_STATUSES[ number ];
 }
 
 interface Call extends Content {
@@ -57,7 +58,6 @@ interface Claim extends Content {
 
 interface File extends Content {
 	path: string;
-	url: string;
 }
 
 interface Note extends Content {

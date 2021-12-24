@@ -16,6 +16,7 @@ export type ContentDB = DBCommonFields & {
 	info: string;
 	status: string;
 	providerId: Nullable< ProviderDB["id"] >;
+	importId: Nullable< ImportDB["id"] >;
 };
 
 export type MetaDB = DBCommonFields & DBMetaField & {
