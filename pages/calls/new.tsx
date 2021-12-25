@@ -13,7 +13,13 @@ import {
 import { Autocomplete } from '@material-ui/lab';
 import dayjs from 'dayjs';
 import { uniq, without } from 'lodash';
-import { useForm, Controller, Control, useController } from 'react-hook-form';
+import {
+	useForm,
+	Controller,
+	Control,
+	useController,
+	UseFormSetValue,
+} from 'react-hook-form';
 
 import { TABLE_CONTENT, TABLE_PROVIDERS } from 'lib/constants';
 import { queryAllProviders, queryClaims } from 'lib/entities/db';
@@ -85,7 +91,9 @@ const CompanyField: React.FC<
 	);
 };
 
-const RepField: React.FC< WithControl > = ( { control } ) => {
+const RepField: React.FC< {
+	setFormValue: UseFormSetValue< FormValues >;
+} > = ( { setFormValue } ) => {
 	const [ reps, setReps ] = useState< string[] >( [] );
 	const [ value, setValue ] = useState< string >( '' );
 
@@ -98,7 +106,9 @@ const RepField: React.FC< WithControl > = ( { control } ) => {
 			case 'Enter':
 			case ',':
 				event.preventDefault();
-				setReps( uniq( [ ...reps, value ] ) );
+				const newReps = uniq( [ ...reps, value ] );
+				setReps( newReps );
+				setFormValue( 'reps', newReps, { shouldValidate: true } );
 				setValue( '' );
 				break;
 			case 'Escape':
@@ -163,7 +173,14 @@ const ClaimsField: React.FC< WithControl< { claims: Claim[] } > > = ( {
 };
 
 const NewCallPage: React.FC< NewCallProps > = ( { providers, claims } ) => {
-	const { handleSubmit, control } = useForm< FormValues >();
+	const {
+		handleSubmit,
+		control,
+		register,
+		setValue,
+	} = useForm< FormValues >();
+
+	register( 'reps' );
 	return (
 		<Container maxWidth="md">
 			<Box my={ 4 }>
@@ -171,14 +188,14 @@ const NewCallPage: React.FC< NewCallProps > = ( { providers, claims } ) => {
 					Add new call
 				</Typography>
 			</Box>
-			<form
+			<Box
+				component="form"
 				// eslint-disable-next-line no-console
 				onSubmit={ handleSubmit( console.log ) }
-				noValidate
-				autoComplete="off"
+				my={ 4 }
 			>
 				<CompanyField options={ providers } control={ control } />
-				<RepField control={ control } />
+				<RepField setFormValue={ setValue } />
 				<Controller
 					control={ control }
 					name="reason"
@@ -228,7 +245,7 @@ const NewCallPage: React.FC< NewCallProps > = ( { providers, claims } ) => {
 						Submit
 					</Button>
 				</Box>
-			</form>
+			</Box>
 		</Container>
 	);
 };
