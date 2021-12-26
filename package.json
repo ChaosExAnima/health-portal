@@ -42,6 +42,9 @@
   "devDependencies": {
     "@babel/core": "^7",
     "@hookform/devtools": "^4.0.1",
+    "@testing-library/dom": "^8.11.1",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
     "@types/debug": "^4",
     "@types/jest": "^27",
     "@types/lodash": "^4",
@@ -101,12 +104,5 @@
       "**/*.d.ts"
     ]
   },
-  "prettier": "@wordpress/prettier-config",
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "modulePaths": [
-      "."
-    ]
-  }
+  "prettier": "@wordpress/prettier-config"
 }
