@@ -27,7 +27,7 @@ export default function AutocompleteField( {
 	const { data: response, error } = useDebouncedSWR< AutocompleteResponse >(
 		searchPath
 	);
-	const loading = ! response;
+	const loading = ! response && !! searchTerm;
 
 	const onChange = ( _event: never, option: unknown ) => {
 		if ( isOptionObject( option ) ) {
