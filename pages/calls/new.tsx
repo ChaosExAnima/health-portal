@@ -1,20 +1,16 @@
-import { useState } from 'react';
 import {
 	Box,
 	Button,
-	Chip,
 	Container,
-	createStyles,
-	makeStyles,
 	TextField,
-	Theme,
 	Typography,
 } from '@material-ui/core';
-import { uniq, without } from 'lodash';
-import { useForm, Controller, UseFormSetValue } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { DevTool } from '@hookform/devtools';
 
 import AutocompleteField from 'components/autocomplete-field';
+import TermField from 'components/term-field';
+import { capitalize } from 'lib/strings';
 
 import type { GetStaticProps } from 'next';
 import type { PageProps } from 'global-types';
@@ -28,79 +24,8 @@ type FormValues = {
 	claims?: number[];
 };
 
-const useStyles = makeStyles( ( theme: Theme ) =>
-	createStyles( {
-		reps: {
-			display: 'flex',
-			gap: theme.spacing( 2 ),
-		},
-		missing: {
-			fontStyle: 'oblique',
-		},
-	} )
-);
-
-const RepField: React.FC< {
-	setFormValue: UseFormSetValue< FormValues >;
-} > = ( { setFormValue } ) => {
-	const [ reps, setReps ] = useState< string[] >( [] );
-	const [ value, setValue ] = useState< string >( '' );
-
-	const classes = useStyles();
-
-	const onChangeField = (
-		event: React.KeyboardEvent< HTMLInputElement >
-	) => {
-		switch ( event.key ) {
-			case 'Enter':
-			case ',':
-				event.preventDefault();
-				const newReps = uniq( [ ...reps, value ] );
-				setReps( newReps );
-				setFormValue( 'reps', newReps, { shouldValidate: true } );
-				setValue( '' );
-				break;
-			case 'Escape':
-				setValue( '' );
-				break;
-		}
-	};
-
-	return (
-		<>
-			<Box className={ classes.reps } mt={ 2 }>
-				{ reps.map( ( rep ) => (
-					<Chip
-						key={ rep }
-						label={ rep }
-						onDelete={ () => setReps( without( reps, rep ) ) }
-					/>
-				) ) }
-				{ ! reps.length && (
-					<Typography variant="body1" className={ classes.missing }>
-						No representatives yet
-					</Typography>
-				) }
-			</Box>
-			<TextField
-				label="Representative"
-				onKeyDown={ onChangeField }
-				value={ value }
-				onChange={ ( val ) => setValue( val.target.value ) }
-				fullWidth
-				margin="normal"
-			/>
-		</>
-	);
-};
-
 const NewCallPage: React.FC< PageProps > = () => {
-	const {
-		handleSubmit,
-		control,
-		register,
-		setValue,
-	} = useForm< FormValues >();
+	const { handleSubmit, control, register } = useForm< FormValues >();
 
 	register( 'reps' );
 
@@ -126,7 +51,13 @@ const NewCallPage: React.FC< PageProps > = () => {
 						control={ control }
 						free
 					/>
-					<RepField setFormValue={ setValue } />
+					<TermField
+						control={ control }
+						name="reps"
+						label="Representatives"
+						format={ capitalize }
+						fullWidth
+					/>
 					<Controller
 						control={ control }
 						name="reason"
@@ -137,7 +68,6 @@ const NewCallPage: React.FC< PageProps > = () => {
 								label="Reason"
 								multiline
 								fullWidth
-								margin="normal"
 								required
 							/>
 						) }
@@ -151,7 +81,6 @@ const NewCallPage: React.FC< PageProps > = () => {
 								{ ...field }
 								label="Reference #"
 								fullWidth
-								margin="normal"
 							/>
 						) }
 					/>
@@ -165,7 +94,6 @@ const NewCallPage: React.FC< PageProps > = () => {
 								label="Result"
 								multiline
 								fullWidth
-								margin="normal"
 								required
 							/>
 						) }
