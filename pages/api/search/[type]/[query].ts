@@ -18,6 +18,7 @@ export default async function handler(
 			errors: [ 'Invalid query or type' ],
 		} );
 	}
+	// @TODO Finish this!
 
 	if (
 		! inReadonlyArray( type, constants.CONTENTS ) &&
@@ -28,7 +29,6 @@ export default async function handler(
 			errors: [ 'Invalid type' ],
 		} );
 	}
-	console.log( 'Server responded to:', query );
 
 	res.json( {
 		success: true,
