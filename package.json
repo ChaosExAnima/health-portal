@@ -36,10 +36,12 @@
     "react-dom": "^17",
     "react-dropzone": "^11.4.2",
     "react-hook-form": "^7.22.5",
+    "swr": "^1.1.1",
     "yup": "^0.32.11"
   },
   "devDependencies": {
     "@babel/core": "^7",
+    "@hookform/devtools": "^4.0.1",
     "@types/debug": "^4",
     "@types/jest": "^27",
     "@types/lodash": "^4",

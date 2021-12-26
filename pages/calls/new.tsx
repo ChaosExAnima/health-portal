@@ -10,23 +10,14 @@ import {
 	Theme,
 	Typography,
 } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
-import dayjs from 'dayjs';
 import { uniq, without } from 'lodash';
-import {
-	useForm,
-	Controller,
-	Control,
-	useController,
-	UseFormSetValue,
-} from 'react-hook-form';
+import { useForm, Controller, UseFormSetValue } from 'react-hook-form';
+import { DevTool } from '@hookform/devtools';
 
-import { TABLE_CONTENT, TABLE_PROVIDERS } from 'lib/constants';
-import { queryAllProviders, queryClaims } from 'lib/entities/db';
+import AutocompleteField from 'components/autocomplete-field';
 
 import type { GetStaticProps } from 'next';
 import type { PageProps } from 'global-types';
-import type { ContentDB, ProviderDB } from 'lib/db/types';
 
 type FormValues = {
 	company: number | string;
@@ -35,22 +26,6 @@ type FormValues = {
 	reference?: string;
 	result: string;
 	claims?: number[];
-};
-type WithControl< Props = Record< string, unknown > > = Props & {
-	control: Control< FormValues >;
-};
-
-type Provider = {
-	id?: number;
-	name: string;
-};
-type Claim = {
-	id: number;
-	name: string;
-};
-type NewCallProps = PageProps & {
-	providers: Provider[];
-	claims: Claim[];
 };
 
 const useStyles = makeStyles( ( theme: Theme ) =>
@@ -64,32 +39,6 @@ const useStyles = makeStyles( ( theme: Theme ) =>
 		},
 	} )
 );
-
-const CompanyField: React.FC<
-	WithControl< {
-		options: Provider[];
-	} >
-> = ( { options, control } ) => {
-	const { field } = useController( {
-		name: 'company',
-		control,
-		rules: { required: true },
-	} );
-	return (
-		<Autocomplete
-			options={ options.map( ( { name: optionName } ) => optionName ) }
-			renderInput={ ( params ) => (
-				<TextField
-					{ ...params }
-					{ ...field }
-					label="Provider"
-					required
-				/>
-			) }
-			freeSolo
-		/>
-	);
-};
 
 const RepField: React.FC< {
 	setFormValue: UseFormSetValue< FormValues >;
@@ -145,34 +94,7 @@ const RepField: React.FC< {
 	);
 };
 
-const ClaimsField: React.FC< WithControl< { claims: Claim[] } > > = ( {
-	claims,
-	control,
-} ) => {
-	return (
-		<Controller
-			control={ control }
-			name="claims"
-			render={ ( { field } ) => (
-				<Autocomplete
-					options={ claims }
-					getOptionLabel={ ( { name } ) => name }
-					renderInput={ ( params ) => (
-						<TextField
-							{ ...params }
-							{ ...field }
-							label="Claims"
-							fullWidth
-							margin="normal"
-						/>
-					) }
-				/>
-			) }
-		/>
-	);
-};
-
-const NewCallPage: React.FC< NewCallProps > = ( { providers, claims } ) => {
+const NewCallPage: React.FC< PageProps > = () => {
 	const {
 		handleSubmit,
 		control,
@@ -181,100 +103,96 @@ const NewCallPage: React.FC< NewCallProps > = ( { providers, claims } ) => {
 	} = useForm< FormValues >();
 
 	register( 'reps' );
+
 	return (
-		<Container maxWidth="md">
-			<Box my={ 4 }>
-				<Typography variant="h4" component="h1">
-					Add new call
-				</Typography>
-			</Box>
-			<Box
-				component="form"
-				// eslint-disable-next-line no-console
-				onSubmit={ handleSubmit( console.log ) }
-				my={ 4 }
-			>
-				<CompanyField options={ providers } control={ control } />
-				<RepField setFormValue={ setValue } />
-				<Controller
-					control={ control }
-					name="reason"
-					rules={ { required: true } }
-					render={ ( { field } ) => (
-						<TextField
-							{ ...field }
-							label="Reason"
-							multiline
-							fullWidth
-							margin="normal"
-							required
-						/>
-					) }
-				/>
-				<Controller
-					control={ control }
-					name="reference"
-					defaultValue=""
-					render={ ( { field } ) => (
-						<TextField
-							{ ...field }
-							label="Reference #"
-							fullWidth
-							margin="normal"
-						/>
-					) }
-				/>
-				<Controller
-					control={ control }
-					name="result"
-					rules={ { required: true } }
-					render={ ( { field } ) => (
-						<TextField
-							{ ...field }
-							label="Result"
-							multiline
-							fullWidth
-							margin="normal"
-							required
-						/>
-					) }
-				/>
-				<ClaimsField claims={ claims } control={ control } />
-				<Box mt={ 2 }>
-					<Button type="submit" color="primary">
-						Submit
-					</Button>
+		<>
+			<Container maxWidth="md">
+				<Box my={ 4 }>
+					<Typography variant="h4" component="h1">
+						Add new call
+					</Typography>
 				</Box>
-			</Box>
-		</Container>
+				<Box
+					component="form"
+					onSubmit={ handleSubmit( ( ...args ) =>
+						// eslint-disable-next-line no-console
+						console.log( 'NewCallPage', ...args )
+					) }
+					my={ 4 }
+				>
+					<AutocompleteField
+						name="provider"
+						label="Provider"
+						control={ control }
+						free
+					/>
+					<RepField setFormValue={ setValue } />
+					<Controller
+						control={ control }
+						name="reason"
+						rules={ { required: true } }
+						render={ ( { field } ) => (
+							<TextField
+								{ ...field }
+								label="Reason"
+								multiline
+								fullWidth
+								margin="normal"
+								required
+							/>
+						) }
+					/>
+					<Controller
+						control={ control }
+						name="reference"
+						defaultValue=""
+						render={ ( { field } ) => (
+							<TextField
+								{ ...field }
+								label="Reference #"
+								fullWidth
+								margin="normal"
+							/>
+						) }
+					/>
+					<Controller
+						control={ control }
+						name="result"
+						rules={ { required: true } }
+						render={ ( { field } ) => (
+							<TextField
+								{ ...field }
+								label="Result"
+								multiline
+								fullWidth
+								margin="normal"
+								required
+							/>
+						) }
+					/>
+					<AutocompleteField
+						name="claims"
+						target="claim"
+						label="Linked Claims"
+						control={ control }
+						multiple
+					/>
+					<Box mt={ 2 }>
+						<Button type="submit" color="primary">
+							Submit
+						</Button>
+					</Box>
+				</Box>
+			</Container>
+			<DevTool control={ control } />
+		</>
 	);
 };
 
-export const getStaticProps: GetStaticProps< NewCallProps > = async () => {
-	const claims: ( ContentDB & ProviderDB )[] = await queryClaims()
-		.select(
-			`${ TABLE_CONTENT }.id`,
-			`${ TABLE_CONTENT }.identifier`,
-			`${ TABLE_CONTENT }.created`,
-			`${ TABLE_PROVIDERS }.name`
-		)
-		.orderBy( 'created', 'desc' )
-		.join(
-			TABLE_PROVIDERS,
-			`${ TABLE_CONTENT }.providerId`,
-			`${ TABLE_PROVIDERS }.id`
-		);
-	const providers = await queryAllProviders();
+export const getStaticProps: GetStaticProps< PageProps > = async () => {
 	return {
 		props: {
 			title: 'New call',
-			providers: providers.map( ( { id, name } ) => ( { id, name } ) ),
-			claims: claims.map( ( { id, identifier, created, name } ) => ( {
-				id,
-				name: `${ dayjs( created ).format(
-					'M/D/YYYY'
-				) } - ${ name } - ${ identifier }`,
-			} ) ),
 		},
 	};
 };
