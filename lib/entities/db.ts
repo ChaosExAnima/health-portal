@@ -55,7 +55,11 @@ export function queryRelated(
 	const knex = getDB();
 	return knex( constants.TABLE_RELATIONS )
 		.whereIn( 'from', toArray( contentIds ) )
-		.join( constants.TABLE_CONTENT, 'to', 'id' );
+		.join(
+			constants.TABLE_CONTENT,
+			'to',
+			`${ constants.TABLE_RELATIONS }.id`
+		);
 }
 
 export function queryRelatedOfType(
