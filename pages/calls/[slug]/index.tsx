@@ -9,11 +9,11 @@ import {
 	queryRelatedProviders,
 } from 'lib/entities/db';
 import { Call } from 'lib/entities/types';
-import { dateToString } from 'lib/entities/utils';
 
 import type { GetStaticPathsResult } from 'next';
 import type { SetRequired } from 'type-fest';
 import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import dayjs from 'dayjs';
 
 type CallWithAdditions = SetRequired< Call, 'notes' | 'reps' >;
 
@@ -46,7 +46,7 @@ export const getStaticProps: GetSinglePageProps< CallWithAdditions > = async ( {
 			notFound: true,
 		};
 	}
-	const date = dateToString( call.created );
+	const date = dayjs( call.created ).format( 'M/D/YY' );
 	let title = `Call on ${ date }`;
 	if ( call.providerId ) {
 		const provider = await queryRelatedProviders( call.providerId ).first();
