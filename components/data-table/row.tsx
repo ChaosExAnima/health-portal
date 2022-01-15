@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { TableCell, TableRow } from '@material-ui/core';
+import { get } from 'lodash';
 
 import OptionalLink from 'components/optional-link';
 
@@ -24,9 +25,11 @@ function DataTableCell< Data >(
 	let text = value;
 	if ( typeof format === 'function' ) {
 		text = format( value );
+	} else if ( typeof format === 'string' && typeof value !== 'string' ) {
+		text = get( value, format, '' );
 	}
 	return (
-		<TableCell { ...props }>
+		<TableCell>
 			<OptionalLink href={ link ? slug : '' } color="inherit">
 				{ text }
 			</OptionalLink>
