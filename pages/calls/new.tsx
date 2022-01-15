@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { useRouter } from 'next/router';
 import {
 	Box,
 	Button,
@@ -6,28 +8,37 @@ import {
 	Typography,
 } from '@material-ui/core';
 import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { DevTool } from '@hookform/devtools';
 
 import AutocompleteField from 'components/autocomplete-field';
+import ErrorNotice from 'components/error-notice';
 import TermField from 'components/term-field';
+import { formatErrors, handleNewType } from 'lib/api/new';
 import { capitalize } from 'lib/strings';
 
 import type { GetStaticProps } from 'next';
 import type { PageProps } from 'global-types';
-
-type FormValues = {
-	company: number | string;
-	reps: string[];
-	reason: string;
-	reference?: string;
-	result: string;
-	claims?: number[];
-};
+import type { ErrorHandler } from 'lib/api/types';
+import { callSchema, NewCallInput } from 'pages/api/new/call';
 
 const NewCallPage: React.FC< PageProps > = () => {
-	const { handleSubmit, control, register } = useForm< FormValues >();
+	const {
+		handleSubmit,
+		control,
+		register,
+		formState: { errors: formErrors },
+	} = useForm< NewCallInput >( {
+		resolver: yupResolver( callSchema ),
+	} );
+	const [ errors, setErrors ] = useState< string[] >( [] );
+	const router = useRouter();
+
+	const handleErrors: ErrorHandler = ( errs ) =>
+		setErrors( formatErrors( errs ) );
 
 	register( 'reps' );
+	console.log( formErrors );
 
 	return (
 		<>
@@ -37,11 +48,11 @@ const NewCallPage: React.FC< PageProps > = () => {
 						Add new call
 					</Typography>
 				</Box>
+				<ErrorNotice errors={ errors } />
 				<Box
 					component="form"
-					onSubmit={ handleSubmit( ( ...args ) =>
-						// eslint-disable-next-line no-console
-						console.log( 'NewCallPage', ...args )
+					onSubmit={ handleSubmit( ( form ) =>
+						handleNewType( form, 'call', handleErrors, router )
 					) }
 					my={ 4 }
 				>
@@ -51,6 +62,8 @@ const NewCallPage: React.FC< PageProps > = () => {
 						control={ control }
 						free
 					/>
+					{ formErrors.company?.id && 'Invalid company' }
+					{ formErrors.company?.input && 'Invalid company name' }
 					<TermField
 						control={ control }
 						name="reps"
