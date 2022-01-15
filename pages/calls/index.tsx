@@ -15,6 +15,7 @@ import {
 } from 'lib/entities/db';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { formatDate } from 'lib/strings';
+import { useProvidersForSelect } from 'lib/hooks';
 
 import type { GetStaticProps } from 'next';
 import type { PaginatedPageContext, PaginatedPageProps } from 'global-types';
@@ -27,6 +28,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 	totalPages,
 	records,
 } ) => {
+	const providers = useProvidersForSelect();
 	const actions: ActionItem[] = [
 		{
 			href: '/calls/new',
@@ -39,7 +41,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 			key: 'provider',
 			label: 'Provider',
 			type: 'select',
-			values: {},
+			values: providers,
 		},
 	];
 	const columns: DataTableColumn< keyof Call >[] = [

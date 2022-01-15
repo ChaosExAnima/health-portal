@@ -5,6 +5,7 @@ type Optional< T, K extends keyof T > = Omit< T, K > & Partial< T >;
 type Nullable< T > = T | null;
 type StringKeys< T > = Extract< keyof T, string >;
 type MaybeArray< T > = T | T[];
+type StringMap = Record< string, string >;
 
 type PaginatedPageContext = {
 	page: string;

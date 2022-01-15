@@ -6,7 +6,7 @@ type DataTableFilterBase = {
 	label: string;
 };
 
-type DataTableFilterSelectValues = Record< string, string >;
+type DataTableFilterSelectValues = Map< string, string >;
 
 type DataTableFilterSelect = DataTableFilterBase & {
 	type: 'select';

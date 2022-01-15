@@ -83,7 +83,7 @@ const DataTableFilters: React.FC< DataTableFiltersProps > = ( {
 						{ ! filter.noAll && (
 							<MenuItem value="all">All</MenuItem>
 						) }
-						{ Object.entries( filter.values ).map(
+						{ Object.entries( filter.values.entries() ).map(
 							( [ key, value ] ) => (
 								<MenuItem value={ key } key={ key }>
 									{ value }
