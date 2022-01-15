@@ -9,12 +9,14 @@ type EntityAdditions = {
 	relations?: LoadedRelationDB[];
 	import?: ImportDB;
 	provider?: ProviderDB;
+	providers?: ProviderDB[];
 	meta?: MetaDB[];
 };
 type WithMetaAdditions< A extends EntityAdditions > = SetRequired< A, 'meta' >;
 type WithRelationAdditions< A extends EntityAdditions > = SetRequired< A, 'relations' >;
 type EntityWithAdditions< E extends Entity, A extends EntityAdditions > = E & {
 	provider: E extends WithProvider & SetRequired< A, 'provider' > ? Provider : never;
+	providers: E extends WithProvider & SetRequired< A, 'providers' > ? Provider[]: never;
 	import: E extends WithImport & SetRequired< A, 'import' > ? Import : never;
 	notes: E extends WithNotes & SetRequired< A, 'relations' > ? Note[] : never;
 }
@@ -62,6 +64,8 @@ interface Appeal extends Content, WithNotes, WithProvider {
 
 interface Call extends Content, WithNotes, WithProvider {
 	reps?: string[];
+	reason: string;
+	result: string,
 }
 
 interface Claim extends Content, WithNotes, WithProvider, WithImport {

@@ -35,8 +35,17 @@ export function isEntity( input: unknown ): input is Entity {
 
 export function inReadonlyArray< T extends readonly string[] >(
 	input: string,
+	types: T
+): T[ number ] | false;
+export function inReadonlyArray< T extends readonly string[] >(
+	input: string,
 	types: T,
 	fallback: T[ number ]
-): T[ number ] {
-	return types.includes( input ) ? input : fallback;
+): T[ number ];
+export function inReadonlyArray< T extends readonly string[] >(
+	input: string,
+	types: T,
+	fallback?: T[ number ]
+): T[ number ] | false {
+	return types.includes( input ) ? input : fallback || false;
 }

@@ -15,6 +15,9 @@ const theme = createMuiTheme( {
 		MuiButton: {
 			variant: 'contained',
 		},
+		MuiTextField: {
+			margin: 'normal',
+		},
 	},
 } );
 

@@ -16,7 +16,7 @@ import {
 	formatCurrency,
 	formatDate,
 } from 'lib/strings';
-import contentToClaim from 'lib/entities/claim';
+import rowToClaim from 'lib/entities/claim';
 import {
 	getIdColumn,
 	getIds,
@@ -166,7 +166,7 @@ export async function getStaticProps( {
 		getIdColumn( claims, 'providerId' )
 	);
 	const records = claims.map( ( row ) =>
-		contentToClaim( row, { meta, providers } )
+		rowToClaim( row, { meta, providers } )
 	);
 
 	return {

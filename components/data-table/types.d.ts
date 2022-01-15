@@ -32,7 +32,7 @@ export type DataTableFormatter = ( arg0: unknown ) => React.ReactNode;
 export type DataTableColumn< Key extends keyof DataTableRowData > = TableCellProps & {
 	name: string;
 	key: Key;
-	format?: DataTableFormatter;
+	format?: DataTableFormatter | string;
 	link?: boolean;
 	linkPrefix?: string;
 };

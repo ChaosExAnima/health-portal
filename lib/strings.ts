@@ -5,7 +5,9 @@ import * as constants from './constants';
 
 export function capitalize( word: string ): string {
 	word = word.trim();
-	return word.substr( 0, 1 ).toUpperCase() + word.substr( 1 ).toLowerCase();
+	return (
+		word.substring( 0, 1 ).toUpperCase() + word.substring( 1 ).toLowerCase()
+	);
 }
 
 export function slugify( text: string ): string {

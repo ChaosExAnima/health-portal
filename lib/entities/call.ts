@@ -1,15 +1,18 @@
+import * as yup from 'yup';
+
+import { capitalize } from 'lib/strings';
 import { CONTENT_NOTE } from 'lib/constants';
 import { dateToString } from './utils';
 import rowToNote from './note';
 import { rowToProvider } from './provider';
 
+import type { ContentDB } from 'lib/db/types';
 import type {
 	Call,
 	EntityAdditions,
 	EntityWithAdditions,
 	WithMetaAdditions,
 } from './types';
-import type { ContentDB } from 'lib/db/types';
 
 type CallWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Call,
@@ -22,15 +25,22 @@ export default function rowToCall< A extends EntityAdditions >(
 	row: ContentDB,
 	additions: A = {} as A
 ): CallWithAdditions< A > {
-	const { id, identifier: slug } = row;
+	const { id, identifier: slug, info, status } = row;
 	const call: Call = {
 		id,
 		slug,
 		created: dateToString( row.created ),
+		reason: info,
+		result: status,
 	};
-	const { provider, relations, meta } = additions;
+	const { provider, providers, relations, meta } = additions;
 	if ( provider ) {
 		call.provider = rowToProvider( provider );
+	} else if ( providers ) {
+		const providerRow = providers.find(
+			( { id: providerId } ) => providerId === row.providerId
+		);
+		call.provider = providerRow ? rowToProvider( providerRow ) : undefined;
 	}
 	if ( relations ) {
 		call.notes = relations
@@ -44,3 +54,19 @@ export default function rowToCall< A extends EntityAdditions >(
 	}
 	return call as CallWithAdditions< A >;
 }
+
+export const callSchema = yup.object( {
+	date: yup.date().default( () => new Date() ),
+	provider: yup
+		.object( {
+			id: yup.number().min( 0 ).required(),
+			name: yup.string().trim().required(),
+		} )
+		.required(),
+	reps: yup.array( yup.string().trim().transform( capitalize ) ),
+	reason: yup.string().required(),
+	reference: yup.string().trim(),
+	result: yup.string().trim().required(),
+	claims: yup.array( yup.number() ),
+} );
+export type NewCallInput = yup.InferType< typeof callSchema >;

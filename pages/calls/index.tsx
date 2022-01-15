@@ -8,12 +8,17 @@ import DataTable, {
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
 import rowToCall from 'lib/entities/call';
-import { queryCalls } from 'lib/entities/db';
+import {
+	getIdColumn,
+	queryCalls,
+	queryRelatedProviders,
+} from 'lib/entities/db';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
+import { formatDate } from 'lib/strings';
 
 import type { GetStaticProps } from 'next';
 import type { PaginatedPageContext, PaginatedPageProps } from 'global-types';
-import type { Call, Note } from 'lib/entities/types';
+import type { Call } from 'lib/entities/types';
 
 type CallsProps = PaginatedPageProps< Call >;
 
@@ -44,6 +49,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 			name: 'Date',
 			align: 'right',
 			width: 200,
+			format: formatDate( 'MM/D/YY' ),
 		},
 		{
 			key: 'reps',
@@ -56,12 +62,11 @@ const CallsPage: React.FC< CallsProps > = ( {
 		{
 			key: 'provider',
 			name: 'Provider',
+			format: 'name',
 		},
 		{
-			key: 'notes',
-			link: true,
-			name: 'Description',
-			format: ( note: Pick< Note, 'description' > ) => note.description,
+			key: 'reason',
+			name: 'Reason',
 		},
 	];
 
@@ -98,7 +103,10 @@ export const getStaticProps: GetStaticProps<
 	const calls = await queryCalls()
 		.limit( pageSize )
 		.offset( currentPage * pageSize );
-	const records = calls.map( ( row ) => rowToCall( row ) );
+	const providers = await queryRelatedProviders(
+		getIdColumn( calls, 'providerId' )
+	);
+	const records = calls.map( ( row ) => rowToCall( row, { providers } ) );
 	return {
 		props: {
 			title: 'Calls',
