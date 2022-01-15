@@ -15,12 +15,12 @@ import AutocompleteField from 'components/autocomplete-field';
 import ErrorNotice from 'components/error-notice';
 import TermField from 'components/term-field';
 import { formatErrors, handleNewType } from 'lib/api/new';
+import { callSchema, NewCallInput } from 'lib/entities/call';
 import { capitalize } from 'lib/strings';
 
 import type { GetStaticProps } from 'next';
 import type { PageProps } from 'global-types';
 import type { ErrorHandler } from 'lib/api/types';
-import { callSchema, NewCallInput } from 'pages/api/new/call';
 
 const NewCallPage: React.FC< PageProps > = () => {
 	const {
@@ -62,8 +62,8 @@ const NewCallPage: React.FC< PageProps > = () => {
 						control={ control }
 						free
 					/>
-					{ formErrors.company?.id && 'Invalid company' }
-					{ formErrors.company?.input && 'Invalid company name' }
+					{ formErrors.provider?.id && 'Invalid company' }
+					{ formErrors.provider?.name && 'Invalid company name' }
 					<TermField
 						control={ control }
 						name="reps"

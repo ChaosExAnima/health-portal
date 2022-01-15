@@ -1,15 +1,18 @@
+import * as yup from 'yup';
+
+import { capitalize } from 'lib/strings';
 import { CONTENT_NOTE } from 'lib/constants';
 import { dateToString } from './utils';
 import rowToNote from './note';
 import { rowToProvider } from './provider';
 
+import type { ContentDB } from 'lib/db/types';
 import type {
 	Call,
 	EntityAdditions,
 	EntityWithAdditions,
 	WithMetaAdditions,
 } from './types';
-import type { ContentDB } from 'lib/db/types';
 
 type CallWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Call,
@@ -46,3 +49,19 @@ export default function rowToCall< A extends EntityAdditions >(
 	}
 	return call as CallWithAdditions< A >;
 }
+
+export const callSchema = yup.object( {
+	date: yup.date().required().default( new Date() ),
+	provider: yup
+		.object( {
+			id: yup.number().min( 0 ).required(),
+			name: yup.string().trim().required(),
+		} )
+		.required(),
+	reps: yup.array( yup.string().trim().transform( capitalize ) ),
+	reason: yup.string().required(),
+	reference: yup.string().trim(),
+	result: yup.string().trim().required(),
+	claims: yup.array( yup.number() ),
+} );
+export type NewCallInput = yup.InferType< typeof callSchema >;

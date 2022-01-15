@@ -1,29 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import dayjs from 'dayjs';
-import * as yup from 'yup';
+import { ValidationError } from 'yup';
 
-import { capitalize, slugify } from 'lib/strings';
+import { CONTENT_CALL, TABLE_CONTENT, TABLE_PROVIDERS } from 'lib/constants';
 import getDB from 'lib/db';
+import { slugify } from 'lib/strings';
+import { callSchema, NewCallInput } from './callSchema';
 
 import type { Knex } from 'knex';
 import type { ErrorInformation, NewResponse } from 'lib/api/types';
-import { CONTENT_CALL, TABLE_CONTENT, TABLE_PROVIDERS } from 'lib/constants';
-
-export const callSchema = yup.object( {
-	date: yup.date().required().default( new Date() ),
-	provider: yup
-		.object( {
-			id: yup.number().min( 0 ).required(),
-			name: yup.string().trim().required(),
-		} )
-		.required(),
-	reps: yup.array( yup.string().trim().transform( capitalize ) ),
-	reason: yup.string().required(),
-	reference: yup.string().trim(),
-	result: yup.string().trim().required(),
-	claims: yup.array( yup.number() ),
-} );
-export type NewCallInput = yup.InferType< typeof callSchema >;
 
 export default async function handler(
 	req: NextApiRequest,
@@ -41,7 +26,7 @@ export default async function handler(
 			} );
 		} );
 	} catch ( err ) {
-		if ( err instanceof yup.ValidationError ) {
+		if ( err instanceof ValidationError ) {
 			return res.status( 400 ).json( {
 				success: false,
 				errors: err.errors,
@@ -70,7 +55,7 @@ async function saveCall(
 			.where( 'id', providerId )
 			.first();
 		if ( ! provider ) {
-			throw new yup.ValidationError(
+			throw new ValidationError(
 				'Could not find provider',
 				providerId,
 				'provider'
