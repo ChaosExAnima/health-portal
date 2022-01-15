@@ -79,6 +79,7 @@ export default function DataTable< T extends DataTableRowData >(
 								key={ row.id }
 								rowData={ row }
 								columns={ columns }
+								basePath={ basePath }
 							/>
 						) ) }
 					</TableBody>
