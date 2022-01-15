@@ -51,7 +51,7 @@ export default function rowToCall< A extends EntityAdditions >(
 }
 
 export const callSchema = yup.object( {
-	date: yup.date().required().default( new Date() ),
+	date: yup.date().default( () => new Date() ),
 	provider: yup
 		.object( {
 			id: yup.number().min( 0 ).required(),

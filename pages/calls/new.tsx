@@ -22,14 +22,26 @@ import type { GetStaticProps } from 'next';
 import type { PageProps } from 'global-types';
 import type { ErrorHandler } from 'lib/api/types';
 
-const NewCallPage: React.FC< PageProps > = () => {
+const transformForm = (
+	value: Omit< NewCallInput, 'provider' > & {
+		provider: { id: number; value: string };
+	}
+): NewCallInput => ( {
+	...value,
+	provider: {
+		id: value.provider.id,
+		name: value.provider.value,
+	},
+} );
+
+function NewCallPage() {
 	const {
 		handleSubmit,
 		control,
 		register,
 		formState: { errors: formErrors },
 	} = useForm< NewCallInput >( {
-		resolver: yupResolver( callSchema ),
+		resolver: yupResolver( callSchema.transform( transformForm ) ),
 	} );
 	const [ errors, setErrors ] = useState< string[] >( [] );
 	const router = useRouter();
@@ -56,6 +68,21 @@ const NewCallPage: React.FC< PageProps > = () => {
 					) }
 					my={ 4 }
 				>
+					<Controller
+						control={ control }
+						name="date"
+						rules={ { required: true } }
+						render={ ( { field } ) => (
+							<TextField
+								{ ...field }
+								label="Date"
+								type="datetime-local"
+								fullWidth
+								required
+								InputLabelProps={ { shrink: true } }
+							/>
+						) }
+					/>
 					<AutocompleteField
 						name="provider"
 						label="Provider"
@@ -128,9 +155,9 @@ const NewCallPage: React.FC< PageProps > = () => {
 			<DevTool control={ control } />
 		</>
 	);
-};
+}
 
-export const getStaticProps: GetStaticProps< PageProps > = async () => {
+export const getStaticProps: GetStaticProps< PageProps > = () => {
 	return {
 		props: {
 			title: 'New call',

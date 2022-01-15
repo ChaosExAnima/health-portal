@@ -10,6 +10,7 @@ import Header, { ActionItem } from 'components/header';
 import rowToCall from 'lib/entities/call';
 import { queryCalls } from 'lib/entities/db';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
+import { formatDate } from 'lib/strings';
 
 import type { GetStaticProps } from 'next';
 import type { PaginatedPageContext, PaginatedPageProps } from 'global-types';
@@ -44,6 +45,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 			name: 'Date',
 			align: 'right',
 			width: 200,
+			format: formatDate( 'MM/D/YY' ),
 		},
 		{
 			key: 'reps',
@@ -56,12 +58,11 @@ const CallsPage: React.FC< CallsProps > = ( {
 		{
 			key: 'provider',
 			name: 'Provider',
+			format: 'name',
 		},
 		{
-			key: 'notes',
-			link: true,
-			name: 'Description',
-			format: ( note: Pick< Note, 'description' > ) => note.description,
+			key: 'reason',
+			name: 'Reason',
 		},
 	];
 

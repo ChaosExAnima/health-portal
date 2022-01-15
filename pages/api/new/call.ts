@@ -4,8 +4,8 @@ import { ValidationError } from 'yup';
 
 import { CONTENT_CALL, TABLE_CONTENT, TABLE_PROVIDERS } from 'lib/constants';
 import getDB from 'lib/db';
+import { callSchema, NewCallInput } from 'lib/entities/call';
 import { slugify } from 'lib/strings';
-import { callSchema, NewCallInput } from './callSchema';
 
 import type { Knex } from 'knex';
 import type { ErrorInformation, NewResponse } from 'lib/api/types';
@@ -63,12 +63,10 @@ async function saveCall(
 		}
 		providerName = provider.name;
 	} else if ( input.provider.id === 0 ) {
-		providerId = await trx( TABLE_PROVIDERS )
-			.insert( {
-				slug: slugify( input.provider.name ),
-				name: input.provider.name,
-			} )
-			.first();
+		[ providerId ] = await trx( TABLE_PROVIDERS ).insert( {
+			slug: slugify( input.provider.name ),
+			name: input.provider.name,
+		} );
 		providerName = input.provider.name;
 	}
 
@@ -80,16 +78,14 @@ async function saveCall(
 	const slug = slugify(
 		dayjs( input.date ).format( `YYYY-MM-DD [${ providerName }]` )
 	);
-	const id = await trx( TABLE_CONTENT )
-		.insert( {
-			type: CONTENT_CALL,
-			created,
-			identifier: slug,
-			info: input.reason,
-			status: input.result,
-			providerId,
-		} )
-		.first();
+	const [ id ] = await trx( TABLE_CONTENT ).insert( {
+		type: CONTENT_CALL,
+		created,
+		identifier: slug,
+		info: input.reason,
+		status: input.result,
+		providerId,
+	} );
 
 	if ( ! id ) {
 		throw new Error( 'Could not save call' );

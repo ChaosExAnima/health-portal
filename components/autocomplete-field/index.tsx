@@ -31,7 +31,7 @@ export default function AutocompleteField( {
 
 	const onChange = ( _event: never, option: unknown ) => {
 		if ( isOptionObject( option ) ) {
-			onChangeForm( option );
+			onChangeForm( { ...option, value: getOptionLabel( option ) } );
 		}
 	};
 
