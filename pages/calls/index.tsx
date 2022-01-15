@@ -8,13 +8,17 @@ import DataTable, {
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
 import rowToCall from 'lib/entities/call';
-import { queryCalls } from 'lib/entities/db';
+import {
+	getIdColumn,
+	queryCalls,
+	queryRelatedProviders,
+} from 'lib/entities/db';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { formatDate } from 'lib/strings';
 
 import type { GetStaticProps } from 'next';
 import type { PaginatedPageContext, PaginatedPageProps } from 'global-types';
-import type { Call, Note } from 'lib/entities/types';
+import type { Call } from 'lib/entities/types';
 
 type CallsProps = PaginatedPageProps< Call >;
 
@@ -99,7 +103,10 @@ export const getStaticProps: GetStaticProps<
 	const calls = await queryCalls()
 		.limit( pageSize )
 		.offset( currentPage * pageSize );
-	const records = calls.map( ( row ) => rowToCall( row ) );
+	const providers = await queryRelatedProviders(
+		getIdColumn( calls, 'providerId' )
+	);
+	const records = calls.map( ( row ) => rowToCall( row, { providers } ) );
 	return {
 		props: {
 			title: 'Calls',

@@ -33,9 +33,14 @@ export default function rowToCall< A extends EntityAdditions >(
 		reason: info,
 		result: status,
 	};
-	const { provider, relations, meta } = additions;
+	const { provider, providers, relations, meta } = additions;
 	if ( provider ) {
 		call.provider = rowToProvider( provider );
+	} else if ( providers ) {
+		const providerRow = providers.find(
+			( { id: providerId } ) => providerId === row.providerId
+		);
+		call.provider = providerRow ? rowToProvider( providerRow ) : undefined;
 	}
 	if ( relations ) {
 		call.notes = relations
