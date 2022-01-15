@@ -22,11 +22,13 @@ export default function rowToCall< A extends EntityAdditions >(
 	row: ContentDB,
 	additions: A = {} as A
 ): CallWithAdditions< A > {
-	const { id, identifier: slug } = row;
+	const { id, identifier: slug, info, status } = row;
 	const call: Call = {
 		id,
 		slug,
 		created: dateToString( row.created ),
+		reason: info,
+		result: status,
 	};
 	const { provider, relations, meta } = additions;
 	if ( provider ) {

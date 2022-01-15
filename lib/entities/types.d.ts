@@ -62,6 +62,8 @@ interface Appeal extends Content, WithNotes, WithProvider {
 
 interface Call extends Content, WithNotes, WithProvider {
 	reps?: string[];
+	reason: string;
+	result: string,
 }
 
 interface Claim extends Content, WithNotes, WithProvider, WithImport {
