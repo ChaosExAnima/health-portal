@@ -5,11 +5,14 @@ import { Entity } from 'lib/entities/types';
 type NewTypes = CONTENTS_TYPE | 'provider';
 
 // Abstract interfaces
-abstract interface SuccessResponse {
+abstract interface Response {
+	success: boolean;
+}
+abstract interface SuccessResponse extends Response {
 	success: true;
 }
 
-abstract interface ErrorResponse {
+abstract interface ErrorResponse extends Response {
 	success: false;
 	errors: Array< string | ErrorInformation >;
 }
@@ -32,16 +35,6 @@ type ErrorInformation = {
 	code: string;
 	text: string;
 };
-type ErrorResponse = {
-	success: false;
-	errors: Array< string | ErrorInformation >;
-};
-type SuccessResponse = {
-	success: true;
-	slug: string;
-};
-
-type NewResponse = ErrorResponse | SuccessResponse;
 
 type ErrorHandlerArg = undefined | MaybeArray< string | ErrorInformation >;
 type ErrorHandler = ( message: ErrorHandlerArg ) => void;
