@@ -70,6 +70,10 @@ const DataTableFilters: React.FC< DataTableFiltersProps > = ( {
 
 	for ( const filter of filters ) {
 		if ( filter.type === 'select' ) {
+			const values =
+				filter.values instanceof Map
+					? filter.values
+					: new Map( Object.entries( filter.values ) );
 			filterComponents.push(
 				<FormControl className={ classes.formControl }>
 					<InputLabel id={ `${ filter.key }-label` }>
@@ -83,13 +87,11 @@ const DataTableFilters: React.FC< DataTableFiltersProps > = ( {
 						{ ! filter.noAll && (
 							<MenuItem value="all">All</MenuItem>
 						) }
-						{ Object.entries( filter.values.entries() ).map(
-							( [ key, value ] ) => (
-								<MenuItem value={ key } key={ key }>
-									{ value }
-								</MenuItem>
-							)
-						) }
+						{ Array.from( values, ( [ key, value ] ) => (
+							<MenuItem value={ key } key={ key }>
+								{ value }
+							</MenuItem>
+						) ) }
 					</Select>
 				</FormControl>
 			);

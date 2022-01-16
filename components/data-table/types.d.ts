@@ -1,12 +1,14 @@
 import React from 'react';
-import type { TableCellProps } from '@material-ui/core/TableCell/TableCell';
+import { TableCellProps } from '@material-ui/core/TableCell/TableCell';
+
+import { StringMap } from 'global-types';
 
 type DataTableFilterBase = {
 	key: string;
 	label: string;
 };
 
-type DataTableFilterSelectValues = Map< string, string >;
+type DataTableFilterSelectValues = StringMap | Map< string, string >;
 
 type DataTableFilterSelect = DataTableFilterBase & {
 	type: 'select';
