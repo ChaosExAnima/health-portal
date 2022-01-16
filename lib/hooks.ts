@@ -9,8 +9,7 @@ async function fetcher< ResponseObject >(
 	url: string
 ): Promise< ResponseObject > {
 	const res = await fetch( url );
-	const body = await res.json();
-	return body;
+	return res.json();
 }
 
 /**
