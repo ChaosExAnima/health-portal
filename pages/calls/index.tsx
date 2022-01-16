@@ -7,6 +7,7 @@ import DataTable, {
 } from 'components/data-table';
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
+import Link from 'components/link';
 import rowToCall from 'lib/entities/call';
 import {
 	getIdColumn,
@@ -19,7 +20,7 @@ import { useProvidersForSelect } from 'lib/hooks';
 
 import type { GetStaticProps } from 'next';
 import type { PaginatedPageContext, PaginatedPageProps } from 'global-types';
-import type { Call } from 'lib/entities/types';
+import type { Call, Provider } from 'lib/entities/types';
 
 type CallsProps = PaginatedPageProps< Call >;
 
@@ -64,7 +65,11 @@ const CallsPage: React.FC< CallsProps > = ( {
 		{
 			key: 'provider',
 			name: 'Provider',
-			format: 'name',
+			format: ( provider: Provider ) => (
+				<Link href={ `/providers/${ provider.slug }` } color="inherit">
+					{ provider.name }
+				</Link>
+			),
 		},
 		{
 			key: 'reason',
