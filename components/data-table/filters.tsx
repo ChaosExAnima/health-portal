@@ -33,10 +33,10 @@ const useStyles = makeStyles( ( theme: Theme ) =>
 	} )
 );
 
-const DataTableFilters: React.FC< DataTableFiltersProps > = ( {
+export default function DataTableFilter( {
 	filters,
 	hasDates,
-} ) => {
+}: DataTableFiltersProps ) {
 	const classes = useStyles();
 	const filterComponents: React.ReactNode[] = [];
 
@@ -115,11 +115,9 @@ const DataTableFilters: React.FC< DataTableFiltersProps > = ( {
 				className={ classes.filterHeader }
 			>
 				Filter
-				<FilterListIcon />
 			</Typography>
+			<FilterListIcon />
 			{ filterComponents }
 		</Toolbar>
 	);
-};
-
-export default DataTableFilters;
+}
