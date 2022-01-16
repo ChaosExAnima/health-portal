@@ -61,7 +61,6 @@
     "eslint-plugin-jest": "^25",
     "eslint-plugin-mui-unused-classes": "^1.0.3",
     "jest": "^27",
-    "sqlite3": "^5.0.2",
     "ts-jest": "^27",
     "ts-node": "^10",
     "type-fest": "^2.8",
