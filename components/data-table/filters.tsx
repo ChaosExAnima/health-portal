@@ -27,8 +27,8 @@ const useStyles = makeStyles( ( theme: Theme ) =>
 			margin: theme.spacing( 1 ),
 			minWidth: 120,
 		},
-		filterHeader: {
-			marginRight: theme.spacing( 6 ),
+		filterBar: {
+			gap: theme.spacing( 2 ),
 		},
 	} )
 );
@@ -108,12 +108,8 @@ export default function DataTableFilter( {
 	}
 
 	return (
-		<Toolbar>
-			<Typography
-				variant="h5"
-				component="p"
-				className={ classes.filterHeader }
-			>
+		<Toolbar className={ classes.filterBar }>
+			<Typography variant="h5" component="p">
 				Filter
 			</Typography>
 			<FilterListIcon />
