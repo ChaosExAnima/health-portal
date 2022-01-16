@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import useSWR, { Key, SWRResponse } from 'swr';
+
 import { RecordsResponse } from './api/types';
 
 import type { Provider } from './entities/types';

@@ -1,8 +1,8 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@material-ui/core/styles';
 import { purple, blue } from '@material-ui/core/colors';
 
 // Create a theme instance.
-const theme = createMuiTheme( {
+const theme = createTheme( {
 	typography: {
 		fontSize: 16,
 	},
