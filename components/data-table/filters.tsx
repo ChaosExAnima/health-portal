@@ -47,6 +47,7 @@ const DataTableFilters: React.FC< DataTableFiltersProps > = ( {
 		filterComponents.push(
 			<TextField
 				id="range-start"
+				key="date-range-start"
 				label="Service Start Date"
 				type="date"
 				defaultValue={ monthStart.format( 'YYYY-MM-DD' ) }
@@ -57,6 +58,7 @@ const DataTableFilters: React.FC< DataTableFiltersProps > = ( {
 			/>,
 			<TextField
 				id="range-end"
+				key="date-range-end"
 				label="Service Start Date"
 				type="date"
 				defaultValue={ today.format( 'YYYY-MM-DD' ) }
@@ -75,7 +77,10 @@ const DataTableFilters: React.FC< DataTableFiltersProps > = ( {
 					? filter.values
 					: new Map( Object.entries( filter.values ) );
 			filterComponents.push(
-				<FormControl className={ classes.formControl }>
+				<FormControl
+					className={ classes.formControl }
+					key={ filter.key }
+				>
 					<InputLabel id={ `${ filter.key }-label` }>
 						{ filter.label }
 					</InputLabel>
