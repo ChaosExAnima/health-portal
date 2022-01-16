@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
 	createStyles,
 	Drawer,
-	fade,
+	alpha,
 	makeStyles,
 	IconButton,
 	InputBase,
@@ -37,9 +37,9 @@ const useStyles = makeStyles( ( theme: Theme ) =>
 			[ theme.breakpoints.up( 'sm' ) ]: {
 				marginLeft: theme.spacing( 1 ),
 				width: 'auto',
-				backgroundColor: fade( theme.palette.common.white, 0.15 ),
+				backgroundColor: alpha( theme.palette.common.white, 0.15 ),
 				'&:hover': {
-					backgroundColor: fade( theme.palette.common.white, 0.25 ),
+					backgroundColor: alpha( theme.palette.common.white, 0.25 ),
 				},
 			},
 
