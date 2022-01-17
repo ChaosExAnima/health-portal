@@ -3,6 +3,20 @@ import React from 'react';
 import type { TableCellProps } from '@material-ui/core/TableCell/TableCell';
 import type { StringMap } from 'global-types';
 
+type PaginationQuery = {
+	page: string;
+};
+type DateQuery = {
+	start: string;
+	end: string;
+};
+type ProviderQuery = {
+	provider: string;
+};
+type WithQuery< Query > = {
+	query: Partial< Query >;
+};
+
 type DataTableFilterBase< Key extends string > = {
 	key: Key;
 	label: string;

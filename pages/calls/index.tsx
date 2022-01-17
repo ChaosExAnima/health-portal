@@ -8,28 +8,30 @@ import DataTable, {
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
 import ProviderLink from 'components/provider-link';
-import rowToCall from 'lib/entities/call';
 import {
+	filterQuery,
 	getIdColumn,
 	queryCalls,
-	queryProviderBySlug,
 	queryRelatedProviders,
 } from 'lib/db/helpers';
+import rowToCall from 'lib/entities/call';
 import { useProvidersForSelect } from 'lib/hooks';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { formatDate } from 'lib/strings';
 
 import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import type { PaginatedPageProps, StringKeys } from 'global-types';
+import type {
+	DateQuery,
+	PaginationQuery,
+	ProviderQuery,
+	WithQuery,
+} from 'components/data-table/types';
+import type { ContentDB } from 'lib/db/types';
 import type { Call, Provider } from 'lib/entities/types';
 
-type CallsProps = PaginatedPageProps< Call > & {
-	query: {
-		start?: string;
-		end?: string;
-		provider?: string;
-	};
-};
+type CallsProps = PaginatedPageProps< Call > &
+	WithQuery< DateQuery & PaginationQuery & ProviderQuery >;
 
 const CallsPage: React.FC< CallsProps > = ( {
 	currentPage,
@@ -114,22 +116,7 @@ export async function getServerSideProps(
 	const totalPages = await getTotalPageNumber( queryCalls(), pageSize );
 
 	// Gets records.
-	const callsQuery = queryCalls()
-		.limit( pageSize )
-		.offset( currentPage * pageSize );
-	if ( query.start ) {
-		callsQuery.andWhere( 'created', '>=', query.start );
-	}
-	if ( query.end ) {
-		callsQuery.andWhere( 'created', '<=', query.end );
-	}
-	if ( query.provider && ! Array.isArray( query.provider ) ) {
-		const provider = await queryProviderBySlug( query.provider );
-		if ( provider ) {
-			callsQuery.andWhere( 'providerId', provider.id );
-		}
-	}
-	const calls = await callsQuery;
+	const calls: ContentDB[] = await filterQuery( queryCalls(), query );
 	const providers = await queryRelatedProviders(
 		getIdColumn( calls, 'providerId' )
 	);
