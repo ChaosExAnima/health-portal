@@ -36,17 +36,19 @@ const AppealsPage: React.FC< AppealsProps > = ( {
 			key: 'status',
 			label: 'Status',
 			type: 'select',
-			values: {
-				NEW: 'New',
-				PENDING: 'Pending',
-				CLOSED: 'Closed',
-			},
+			values: new Map(
+				Object.entries( {
+					NEW: 'New',
+					PENDING: 'Pending',
+					CLOSED: 'Closed',
+				} )
+			),
 		},
 		{
 			key: 'provider',
 			label: 'Provider',
 			type: 'select',
-			values: {},
+			values: new Map(),
 		},
 	];
 	const columns: DataTableColumn< keyof Appeal >[] = [
