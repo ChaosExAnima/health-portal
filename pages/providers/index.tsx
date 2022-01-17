@@ -4,7 +4,7 @@ import { Container, Link } from '@material-ui/core';
 import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
 import DataTable, { DataTableColumn } from 'components/data-table';
-import { queryAllProviders } from 'lib/entities/db';
+import { queryAllProviders } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 

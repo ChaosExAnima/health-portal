@@ -8,7 +8,7 @@ import DataTable, {
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
 import rowToAppeal from 'lib/entities/appeal';
-import { queryAppeals } from 'lib/entities/db';
+import { queryAppeals } from 'lib/db/helpers';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { capitalize } from 'lib/strings';
 

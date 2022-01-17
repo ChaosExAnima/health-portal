@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-import { queryAllProviders } from 'lib/entities/db';
+import { queryAllProviders } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 
 import type { NextApiRequest, NextApiResponse } from 'next';

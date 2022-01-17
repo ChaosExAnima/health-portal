@@ -5,7 +5,7 @@ import { toArray } from 'lib/casting';
 import * as constants from 'lib/constants';
 import getDB from 'lib/db';
 
-import type { Entity } from './types';
+import type { Entity } from '../entities/types';
 import type { Nullable, StringKeys } from 'global-types';
 import type {
 	ContentDB,

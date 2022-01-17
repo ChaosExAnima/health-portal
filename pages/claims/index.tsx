@@ -23,7 +23,7 @@ import {
 	queryClaims,
 	queryMeta,
 	queryRelatedProviders,
-} from 'lib/entities/db';
+} from 'lib/db/helpers';
 import { Claim, Provider } from 'lib/entities/types';
 import { isProvider } from 'lib/entities/provider';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';

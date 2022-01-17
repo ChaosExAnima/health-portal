@@ -7,7 +7,7 @@ import {
 	queryProvider,
 	queryRelatedOfType,
 	queryRelatedProviders,
-} from 'lib/entities/db';
+} from 'lib/db/helpers';
 import { Call } from 'lib/entities/types';
 
 import type { GetStaticPathsResult } from 'next';

@@ -14,7 +14,7 @@ import {
 	queryCalls,
 	queryProviderBySlug,
 	queryRelatedProviders,
-} from 'lib/entities/db';
+} from 'lib/db/helpers';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { formatDate } from 'lib/strings';
 import { useProvidersForSelect } from 'lib/hooks';

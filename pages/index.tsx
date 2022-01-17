@@ -16,7 +16,7 @@ import ButtonLink from 'components/button-link';
 import Footer from 'components/footer';
 import InfoRow from 'components/info-row';
 import { extractCount, extractSum } from 'lib/db/utils';
-import { queryAllMeta, queryClaims } from 'lib/entities/db';
+import { queryAllMeta, queryClaims } from 'lib/db/helpers';
 import { formatCurrency } from 'lib/strings';
 
 import type { PageProps } from 'global-types';

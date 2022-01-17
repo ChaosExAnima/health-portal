@@ -11,7 +11,7 @@ import {
 	queryMeta,
 	queryProvider,
 	queryRelated,
-} from 'lib/entities/db';
+} from 'lib/db/helpers';
 import { formatClaimStatus, formatCurrency, formatDate } from 'lib/strings';
 
 import type { GetStaticPathsResult } from 'next';

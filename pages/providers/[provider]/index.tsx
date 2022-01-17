@@ -4,7 +4,7 @@ import { Container } from '@material-ui/core';
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import DetailsBox, { Detail } from 'components/details-box';
-import { queryAllProviders, queryContentType } from 'lib/entities/db';
+import { queryAllProviders, queryContentType } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 
 import type { SetRequired } from 'type-fest';
