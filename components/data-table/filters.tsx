@@ -10,6 +10,7 @@ import {
 import FilterListIcon from '@material-ui/icons/FilterList';
 import dayjs from 'dayjs';
 import React from 'react';
+import { useForm, Controller, Control } from 'react-hook-form';
 
 import type { DataTableFilter } from './types';
 
@@ -35,62 +36,34 @@ export default function DataTableFilter( {
 	hasDates,
 }: DataTableFiltersProps ) {
 	const classes = useStyles();
-	const filterComponents: React.ReactNode[] = [];
 
+	const defaultValues = Object.fromEntries(
+		filters.map( ( { key, default: defaultValue } ) => [
+			key,
+			defaultValue || '',
+		] )
+	);
 	if ( hasDates ) {
 		const today = dayjs();
 		const monthStart = dayjs().startOf( 'month' );
-
-		filterComponents.push(
-			<TextField
-				id="range-start"
-				key="date-range-start"
-				label="Service Start Date"
-				type="date"
-				defaultValue={ monthStart.format( 'YYYY-MM-DD' ) }
-				className={ classes.formControl }
-				InputLabelProps={ {
-					shrink: true,
-				} }
-			/>,
-			<TextField
-				id="range-end"
-				key="date-range-end"
-				label="Service Start Date"
-				type="date"
-				defaultValue={ today.format( 'YYYY-MM-DD' ) }
-				className={ classes.formControl }
-				InputLabelProps={ {
-					shrink: true,
-				} }
-			/>
-		);
+		filters = [
+			{
+				key: 'data-range-start',
+				type: 'date',
+				default: monthStart.format( 'YYYY-MM-DD' ),
+				label: 'Start Date',
+			},
+			{
+				key: 'data-range-end',
+				type: 'date',
+				default: today.format( 'YYYY-MM-DD' ),
+				label: 'End Date',
+			},
+			...filters,
+		];
 	}
 
-	for ( const filter of filters ) {
-		if ( filter.type === 'select' ) {
-			const values =
-				filter.values instanceof Map
-					? filter.values
-					: new Map( Object.entries( filter.values ) );
-			filterComponents.push(
-				<TextField
-					select
-					className={ classes.formControl }
-					key={ filter.key }
-					label={ filter.label }
-					defaultValue={ filter.default || 'all' }
-				>
-					{ ! filter.noAll && <MenuItem value="all">All</MenuItem> }
-					{ Array.from( values, ( [ key, value ] ) => (
-						<MenuItem value={ key } key={ key }>
-							{ value }
-						</MenuItem>
-					) ) }
-				</TextField>
-			);
-		}
-	}
+	const { handleSubmit, control } = useForm( { defaultValues } );
 
 	if ( filters.length === 0 ) {
 		return null;
@@ -102,7 +75,61 @@ export default function DataTableFilter( {
 				Filter
 			</Typography>
 			<FilterListIcon />
-			{ filterComponents }
+			<form
+				noValidate
+				autoComplete="off"
+				onSubmit={ handleSubmit( console.log ) }
+			>
+				{ filters.map( ( filter ) => (
+					<DataTableFilterField
+						key={ filter.key }
+						control={ control }
+						filter={ filter }
+					/>
+				) ) }
+			</form>
 		</Toolbar>
+	);
+}
+
+function DataTableFilterField( {
+	control,
+	filter,
+}: {
+	control: Control;
+	filter: DataTableFilter;
+} ) {
+	const { formControl } = useStyles();
+	const { type } = filter;
+	return (
+		<Controller
+			name={ filter.key }
+			control={ control }
+			render={ ( { field } ) => (
+				<TextField
+					{ ...field }
+					type={ type }
+					label={ filter.label }
+					className={ formControl }
+					InputLabelProps={ {
+						shrink: type === 'date' || undefined,
+					} }
+					select={ type === 'select' }
+				>
+					{ type === 'select' && ! filter.noAll && (
+						<MenuItem value="all">All</MenuItem>
+					) }
+					{ type === 'select' &&
+						Array.from(
+							filter.values.entries(),
+							( [ key, value ] ) => (
+								<MenuItem value={ key } key={ key }>
+									{ value }
+								</MenuItem>
+							)
+						) }
+				</TextField>
+			) }
+		/>
 	);
 }

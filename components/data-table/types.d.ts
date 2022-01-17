@@ -8,13 +8,17 @@ type DataTableFilterBase = {
 	label: string;
 };
 
-type DataTableFilterSelectValues = StringMap | Map< string, string >;
+type DataTableFilterSelectValues = Map< string, string >;
 
 type DataTableFilterSelect = DataTableFilterBase & {
 	type: 'select';
 	values: DataTableFilterSelectValues;
-	default?: 'all' | keyof DataTableFilterSelectValues;
+	default?: string;
 	noAll?: true;
+};
+type DataTableFilterDate = DataTableFilterBase & {
+	type: 'date',
+	default?: string;
 };
 
 export type DataTableRowData = {
@@ -22,7 +26,7 @@ export type DataTableRowData = {
 	[ key: string ]: any;
 };
 
-export type DataTableFilter = DataTableFilterSelect;
+export type DataTableFilter = DataTableFilterSelect | DataTableFilterDate;
 
 export type DataTableRowLink = {
 	slug: string;
