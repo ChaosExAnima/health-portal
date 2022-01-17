@@ -1,10 +1,7 @@
 import {
 	createStyles,
-	FormControl,
-	InputLabel,
 	makeStyles,
 	MenuItem,
-	Select,
 	TextField,
 	Theme,
 	Toolbar,
@@ -77,28 +74,20 @@ export default function DataTableFilter( {
 					? filter.values
 					: new Map( Object.entries( filter.values ) );
 			filterComponents.push(
-				<FormControl
+				<TextField
+					select
 					className={ classes.formControl }
 					key={ filter.key }
+					label={ filter.label }
+					defaultValue={ filter.default || 'all' }
 				>
-					<InputLabel id={ `${ filter.key }-label` }>
-						{ filter.label }
-					</InputLabel>
-					<Select
-						labelId={ `${ filter.key }-label` }
-						autoWidth
-						defaultValue={ filter.default || 'all' }
-					>
-						{ ! filter.noAll && (
-							<MenuItem value="all">All</MenuItem>
-						) }
-						{ Array.from( values, ( [ key, value ] ) => (
-							<MenuItem value={ key } key={ key }>
-								{ value }
-							</MenuItem>
-						) ) }
-					</Select>
-				</FormControl>
+					{ ! filter.noAll && <MenuItem value="all">All</MenuItem> }
+					{ Array.from( values, ( [ key, value ] ) => (
+						<MenuItem value={ key } key={ key }>
+							{ value }
+						</MenuItem>
+					) ) }
+				</TextField>
 			);
 		}
 	}
