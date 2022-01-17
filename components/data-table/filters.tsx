@@ -9,7 +9,9 @@ import {
 } from '@material-ui/core';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import dayjs from 'dayjs';
-import React from 'react';
+import { StringMap } from 'global-types';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
 import { useForm, Controller, Control } from 'react-hook-form';
 
 import type { DataTableFilter } from './types';
@@ -17,6 +19,11 @@ import type { DataTableFilter } from './types';
 type DataTableFiltersProps = {
 	filters: DataTableFilter[];
 	hasDates: boolean;
+};
+
+type DataTableFiltersFieldProps = {
+	control: Control;
+	filter: DataTableFilter;
 };
 
 const useStyles = makeStyles( ( theme: Theme ) =>
@@ -37,24 +44,18 @@ export default function DataTableFilter( {
 }: DataTableFiltersProps ) {
 	const classes = useStyles();
 
-	const defaultValues = Object.fromEntries(
-		filters.map( ( { key, default: defaultValue } ) => [
-			key,
-			defaultValue || '',
-		] )
-	);
+	const today = dayjs();
 	if ( hasDates ) {
-		const today = dayjs();
 		const monthStart = dayjs().startOf( 'month' );
 		filters = [
 			{
-				key: 'data-range-start',
+				key: 'start',
 				type: 'date',
 				default: monthStart.format( 'YYYY-MM-DD' ),
 				label: 'Start Date',
 			},
 			{
-				key: 'data-range-end',
+				key: 'end',
 				type: 'date',
 				default: today.format( 'YYYY-MM-DD' ),
 				label: 'End Date',
@@ -63,7 +64,24 @@ export default function DataTableFilter( {
 		];
 	}
 
-	const { handleSubmit, control } = useForm( { defaultValues } );
+	const defaultValues = Object.fromEntries(
+		filters.map( ( { key, default: defaultValue } ) => [
+			key,
+			defaultValue || '',
+		] )
+	);
+	const { watch, control } = useForm( { defaultValues } );
+	const router = useRouter();
+
+	useEffect( () => {
+		const subscription = watch( ( formValues: StringMap ) => {
+			const url = new URL( router.pathname, 'http://localhost:3000' );
+			const params = new URLSearchParams( formValues );
+			url.search = params.toString();
+			router.push( url );
+		} );
+		return () => subscription.unsubscribe();
+	}, [ watch ] );
 
 	if ( filters.length === 0 ) {
 		return null;
@@ -75,19 +93,13 @@ export default function DataTableFilter( {
 				Filter
 			</Typography>
 			<FilterListIcon />
-			<form
-				noValidate
-				autoComplete="off"
-				onSubmit={ handleSubmit( console.log ) }
-			>
-				{ filters.map( ( filter ) => (
-					<DataTableFilterField
-						key={ filter.key }
-						control={ control }
-						filter={ filter }
-					/>
-				) ) }
-			</form>
+			{ filters.map( ( filter ) => (
+				<DataTableFilterField
+					key={ filter.key }
+					control={ control }
+					filter={ filter }
+				/>
+			) ) }
 		</Toolbar>
 	);
 }
@@ -95,10 +107,7 @@ export default function DataTableFilter( {
 function DataTableFilterField( {
 	control,
 	filter,
-}: {
-	control: Control;
-	filter: DataTableFilter;
-} ) {
+}: DataTableFiltersFieldProps ) {
 	const { formControl } = useStyles();
 	const { type } = filter;
 	return (

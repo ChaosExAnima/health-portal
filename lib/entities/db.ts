@@ -93,6 +93,15 @@ export function queryProvider(
 	return knex( constants.TABLE_PROVIDERS ).where( 'id', providerId ).first();
 }
 
+export function queryProviderBySlug(
+	providerSlug: string
+): Knex.QueryBuilder< ProviderDB, ProviderDB | undefined > {
+	const knex = getDB();
+	return knex( constants.TABLE_PROVIDERS )
+		.where( 'slug', providerSlug )
+		.first();
+}
+
 export function queryAllProviders(): Knex.QueryBuilder<
 	ProviderDB,
 	ProviderDB[]

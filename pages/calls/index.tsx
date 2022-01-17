@@ -12,22 +12,30 @@ import rowToCall from 'lib/entities/call';
 import {
 	getIdColumn,
 	queryCalls,
+	queryProviderBySlug,
 	queryRelatedProviders,
 } from 'lib/entities/db';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { formatDate } from 'lib/strings';
 import { useProvidersForSelect } from 'lib/hooks';
 
-import type { GetStaticProps } from 'next';
-import type { PaginatedPageContext, PaginatedPageProps } from 'global-types';
+import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import type { PaginatedPageProps } from 'global-types';
 import type { Call, Provider } from 'lib/entities/types';
 
-type CallsProps = PaginatedPageProps< Call >;
+type CallsProps = PaginatedPageProps< Call > & {
+	query: {
+		start?: string;
+		end?: string;
+		provider?: string;
+	};
+};
 
 const CallsPage: React.FC< CallsProps > = ( {
 	currentPage,
 	totalPages,
 	records,
+	query,
 } ) => {
 	const providers = useProvidersForSelect();
 	const actions: ActionItem[] = [
@@ -43,6 +51,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 			label: 'Provider',
 			type: 'select',
 			values: providers,
+			default: query.provider,
 		},
 	];
 	const columns: DataTableColumn< keyof Call >[] = [
@@ -97,19 +106,32 @@ const CallsPage: React.FC< CallsProps > = ( {
 	);
 };
 
-export const getStaticProps: GetStaticProps<
-	PaginatedPageProps< Call >,
-	PaginatedPageContext
-> = async ( { params } ) => {
+export async function getServerSideProps(
+	context: GetServerSidePropsContext
+): Promise< GetServerSidePropsResult< CallsProps > > {
+	const { params, query } = context;
 	// Pagination.
 	const pageSize = 20;
 	const currentPage = getPageNumber( params?.page );
 	const totalPages = await getTotalPageNumber( queryCalls(), pageSize );
 
 	// Gets records.
-	const calls = await queryCalls()
+	const callsQuery = queryCalls()
 		.limit( pageSize )
 		.offset( currentPage * pageSize );
+	if ( query.start ) {
+		callsQuery.andWhere( 'created', '>=', query.start );
+	}
+	if ( query.end ) {
+		callsQuery.andWhere( 'created', '<=', query.end );
+	}
+	if ( query.provider && ! Array.isArray( query.provider ) ) {
+		const provider = await queryProviderBySlug( query.provider );
+		if ( provider ) {
+			callsQuery.andWhere( 'providerId', provider.id );
+		}
+	}
+	const calls = await callsQuery;
 	const providers = await queryRelatedProviders(
 		getIdColumn( calls, 'providerId' )
 	);
@@ -120,8 +142,9 @@ export const getStaticProps: GetStaticProps<
 			currentPage,
 			totalPages,
 			records,
+			query,
 		},
 	};
-};
+}
 
 export default CallsPage;
