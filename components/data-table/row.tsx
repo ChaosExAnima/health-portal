@@ -3,7 +3,6 @@ import { TableCell, TableRow } from '@material-ui/core';
 import { get } from 'lodash';
 
 import OptionalLink from 'components/optional-link';
-
 import { DataTableColumn, DataTableRowData } from './types';
 
 type DataTableRowProps< Data > = {

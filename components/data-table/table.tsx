@@ -16,6 +16,7 @@ import DataTableFilters from './filters';
 import DataTableHead from './head';
 import DataTableRow from './row';
 
+import type { StringKeys } from 'global-types';
 import type {
 	DataTableColumn,
 	DataTableFilter,
@@ -24,9 +25,9 @@ import type {
 
 type DataTableProps< Data > = {
 	basePath: string;
-	columns: DataTableColumn< Extract< keyof Data, string > >[];
+	columns: DataTableColumn< StringKeys< Data > >[];
 	currentPage: number;
-	filters?: DataTableFilter[];
+	filters?: DataTableFilter< StringKeys< Data > >[];
 	loading: boolean;
 	rows?: Data[];
 	rowsPerPage?: number;

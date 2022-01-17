@@ -1,7 +1,6 @@
 import { GetStaticPropsContext } from 'next';
 import { Container } from '@material-ui/core';
 import UploadIcon from '@material-ui/icons/CloudUpload';
-import type { SetRequired } from 'type-fest';
 
 import DataTable, {
 	DataTableColumn,
@@ -9,13 +8,14 @@ import DataTable, {
 } from 'components/data-table';
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
-import Link from 'components/link';
+import ProviderLink from 'components/provider-link';
 import {
 	formatClaimStatus,
 	formatClaimType,
 	formatCurrency,
 	formatDate,
 } from 'lib/strings';
+import { CLAIM_STATUSES } from 'lib/constants';
 import rowToClaim from 'lib/entities/claim';
 import {
 	getIdColumn,
@@ -24,10 +24,11 @@ import {
 	queryMeta,
 	queryRelatedProviders,
 } from 'lib/db/helpers';
-import { Claim, Provider } from 'lib/entities/types';
-import { isProvider } from 'lib/entities/provider';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
-import { PageProps } from 'global-types';
+
+import type { SetRequired } from 'type-fest';
+import type { PageProps, StringKeys } from 'global-types';
+import type { Claim, Provider } from 'lib/entities/types';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;
@@ -53,32 +54,31 @@ const Claims: React.FC< ClaimsProps > = ( {
 			color: 'secondary',
 		},
 	];
-	const filters: DataTableFilter[] = [
+	const filters: DataTableFilter< StringKeys< Claim > >[] = [
 		{
 			key: 'type',
 			label: 'Type',
 			type: 'select',
-			values: {
-				MEDICAL: 'Medical',
-				DENTAL: 'Dental',
-				PHARMACY: 'Pharmacy',
-				OTHER: 'Other',
-			},
+			values: new Map( [
+				[ 'medical', 'Medical' ],
+				[ 'dental', 'Dental' ],
+				[ 'pharmacy', 'Pharmacy' ],
+				[ 'other', 'Other' ],
+			] ),
 		},
 		{
 			key: 'status',
 			label: 'Status',
 			type: 'select',
-			values: {
-				PAID: 'Paid',
-				APPROVED: 'Approved',
-				PENDING: 'Pending',
-				DENIED: 'Denied',
-				DELETED: 'Deleted',
-			},
+			values: new Map(
+				CLAIM_STATUSES.map( ( status ) => [
+					status,
+					formatClaimStatus( status ),
+				] )
+			),
 		},
 	];
-	const columns: DataTableColumn< keyof Claim >[] = [
+	const columns: DataTableColumn< StringKeys< Claim > >[] = [
 		{
 			align: 'right',
 			key: 'date',
@@ -95,16 +95,9 @@ const Claims: React.FC< ClaimsProps > = ( {
 		{
 			key: 'provider',
 			name: 'Provider',
-			format: ( value: Provider | unknown ): React.ReactNode => {
-				if ( ! isProvider( value ) ) {
-					return null;
-				}
-				return (
-					<Link href={ `/providers/${ value.slug }` }>
-						{ value.name }
-					</Link>
-				);
-			},
+			format: ( provider: Provider ) => (
+				<ProviderLink color="inherit" provider={ provider } />
+			),
 		},
 		{
 			key: 'type',

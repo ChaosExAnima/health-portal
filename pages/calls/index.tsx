@@ -7,7 +7,7 @@ import DataTable, {
 } from 'components/data-table';
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
-import Link from 'components/link';
+import ProviderLink from 'components/provider-link';
 import rowToCall from 'lib/entities/call';
 import {
 	getIdColumn,
@@ -15,12 +15,12 @@ import {
 	queryProviderBySlug,
 	queryRelatedProviders,
 } from 'lib/db/helpers';
+import { useProvidersForSelect } from 'lib/hooks';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { formatDate } from 'lib/strings';
-import { useProvidersForSelect } from 'lib/hooks';
 
 import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import type { PaginatedPageProps } from 'global-types';
+import type { PaginatedPageProps, StringKeys } from 'global-types';
 import type { Call, Provider } from 'lib/entities/types';
 
 type CallsProps = PaginatedPageProps< Call > & {
@@ -45,7 +45,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 			icon: 'add',
 		},
 	];
-	const filters: DataTableFilter< keyof typeof query >[] = [
+	const filters: DataTableFilter< StringKeys< Call > >[] = [
 		{
 			key: 'provider',
 			label: 'Provider',
@@ -54,7 +54,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 			default: query.provider,
 		},
 	];
-	const columns: DataTableColumn< keyof Call >[] = [
+	const columns: DataTableColumn< StringKeys< Call > >[] = [
 		{
 			key: 'created',
 			link: true,
@@ -75,9 +75,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 			key: 'provider',
 			name: 'Provider',
 			format: ( provider: Provider ) => (
-				<Link href={ `/providers/${ provider.slug }` } color="inherit">
-					{ provider.name }
-				</Link>
+				<ProviderLink color="inherit" provider={ provider } />
 			),
 		},
 		{
@@ -91,7 +89,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 			<Container maxWidth="md">
 				<Header title="Calls" actions={ actions } />
 			</Container>
-			<DataTable
+			<DataTable< Call >
 				basePath="/calls"
 				columns={ columns }
 				currentPage={ currentPage }

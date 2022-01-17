@@ -1,7 +1,7 @@
 import React from 'react';
-import { TableCellProps } from '@material-ui/core/TableCell/TableCell';
 
-import { StringMap } from 'global-types';
+import type { TableCellProps } from '@material-ui/core/TableCell/TableCell';
+import type { StringMap } from 'global-types';
 
 type DataTableFilterBase< Key extends string > = {
 	key: Key;
