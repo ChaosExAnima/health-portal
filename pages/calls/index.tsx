@@ -53,7 +53,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 			label: 'Provider',
 			type: 'select',
 			values: providers,
-			default: query.provider,
+			default: query.provider || 'all',
 		},
 	];
 	const columns: DataTableColumn< StringKeys< Call > >[] = [
