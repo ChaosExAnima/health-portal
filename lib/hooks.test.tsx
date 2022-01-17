@@ -1,10 +1,10 @@
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
-import { SWRConfig } from 'swr';
 import '@testing-library/jest-dom';
 
+import { mock as swrMock, clearResponse, setResponse } from '__mocks__/swr';
 import { useProvidersForSelect } from './hooks';
 
-import type { ErrorResponse, RecordsResponse, Response } from './api/types';
+import type { RecordsResponse, Response } from './api/types';
 import type { Provider } from './entities/types';
 
 function TestFetchComponent< R extends Response >( {
@@ -12,15 +12,7 @@ function TestFetchComponent< R extends Response >( {
 }: {
 	response?: R;
 } ) {
-	global.fetch = jest.fn( () =>
-		Promise.resolve( {
-			json: () =>
-				Promise.resolve< R | ErrorResponse >(
-					response || { success: false, errors: [] }
-				),
-		} )
-	) as jest.Mock;
-
+	setResponse( response );
 	const ProviderComponent = () => {
 		const providerMap = useProvidersForSelect();
 		return (
@@ -34,18 +26,12 @@ function TestFetchComponent< R extends Response >( {
 		);
 	};
 
-	return (
-		<SWRConfig value={ { provider: () => new Map() } }>
-			<ProviderComponent />
-		</SWRConfig>
-	);
+	return ProviderComponent();
 }
 
 describe( 'useProvidersForSelect', () => {
 	afterEach( () => {
-		if ( jest.isMockFunction( global.fetch ) ) {
-			( global.fetch as jest.Mock ).mockRestore();
-		}
+		clearResponse();
 		cleanup();
 	} );
 
@@ -61,8 +47,7 @@ describe( 'useProvidersForSelect', () => {
 
 	it( 'calls the provider API', async () => {
 		await act( async () => render( <TestFetchComponent /> ) );
-
-		expect( global.fetch ).toBeCalledWith( '/api/providers' );
+		expect( swrMock ).toHaveBeenCalled();
 	} );
 
 	it( 'returns a Map of provider slug: name', async () => {
@@ -85,7 +70,6 @@ describe( 'useProvidersForSelect', () => {
 		render( <TestFetchComponent response={ response } /> );
 		await waitFor( () => screen.getByRole( 'combobox' ) );
 
-		expect( global.fetch ).toBeCalled();
 		expect( screen.getAllByRole( 'option' ) ).toHaveLength( 1 );
 		expect( screen.getByRole( 'combobox' ) ).toHaveTextContent(
 			'Test Provider'
@@ -102,7 +86,6 @@ describe( 'useProvidersForSelect', () => {
 		render( <TestFetchComponent response={ response } /> );
 		await waitFor( () => screen.getByRole( 'combobox' ) );
 
-		expect( global.fetch ).toBeCalled();
 		expect( screen.queryAllByRole( 'option' ) ).toHaveLength( 0 );
 	} );
 } );
