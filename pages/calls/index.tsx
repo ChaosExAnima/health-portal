@@ -45,7 +45,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 			icon: 'add',
 		},
 	];
-	const filters: DataTableFilter[] = [
+	const filters: DataTableFilter< keyof typeof query >[] = [
 		{
 			key: 'provider',
 			label: 'Provider',

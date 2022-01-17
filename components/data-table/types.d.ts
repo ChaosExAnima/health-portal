@@ -3,20 +3,20 @@ import { TableCellProps } from '@material-ui/core/TableCell/TableCell';
 
 import { StringMap } from 'global-types';
 
-type DataTableFilterBase = {
-	key: string;
+type DataTableFilterBase< Key extends string > = {
+	key: Key;
 	label: string;
 };
 
 type DataTableFilterSelectValues = Map< string, string >;
 
-type DataTableFilterSelect = DataTableFilterBase & {
+type DataTableFilterSelect< Key extends string > = DataTableFilterBase< Key > & {
 	type: 'select';
 	values: DataTableFilterSelectValues;
 	default?: string;
 	noAll?: true;
 };
-type DataTableFilterDate = DataTableFilterBase & {
+type DataTableFilterDate< Key extends string > = DataTableFilterBase< Key > & {
 	type: 'date',
 	default?: string;
 };
@@ -26,7 +26,7 @@ export type DataTableRowData = {
 	[ key: string ]: any;
 };
 
-export type DataTableFilter = DataTableFilterSelect | DataTableFilterDate;
+export type DataTableFilter< Key = string > = DataTableFilterSelect< Key > | DataTableFilterDate< Key >;
 
 export type DataTableRowLink = {
 	slug: string;
