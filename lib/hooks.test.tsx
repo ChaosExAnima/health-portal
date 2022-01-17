@@ -92,4 +92,17 @@ describe( 'useProvidersForSelect', () => {
 		);
 		expect( screen.getByRole( 'combobox' ) ).toHaveValue( 'test' );
 	} );
+
+	it( 'returns an empty Map on API error', async () => {
+		const response: RecordsResponse< Provider > = {
+			success: false,
+			errors: [],
+		};
+
+		render( <TestFetchComponent response={ response } /> );
+		await waitFor( () => screen.getByRole( 'combobox' ) );
+
+		expect( global.fetch ).toBeCalled();
+		expect( screen.queryAllByRole( 'option' ) ).toHaveLength( 0 );
+	} );
 } );
