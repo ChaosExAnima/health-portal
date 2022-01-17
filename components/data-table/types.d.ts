@@ -21,21 +21,21 @@ type DataTableFilterDate< Key extends string > = DataTableFilterBase< Key > & {
 	default?: string;
 };
 
-export type DataTableRowData = {
+type DataTableRowData = {
 	slug: string;
 	[ key: string ]: any;
 };
 
-export type DataTableFilter< Key = string > = DataTableFilterSelect< Key > | DataTableFilterDate< Key >;
+type DataTableFilter< Key = string > = DataTableFilterSelect< Key > | DataTableFilterDate< Key >;
 
-export type DataTableRowLink = {
+type DataTableRowLink = {
 	slug: string;
 	name: string | React.ReactNode;
 };
 
-export type DataTableFormatter = ( arg0: unknown ) => React.ReactNode;
+type DataTableFormatter = ( arg0: unknown ) => React.ReactNode;
 
-export type DataTableColumn< Key extends keyof DataTableRowData > = TableCellProps & {
+type DataTableColumn< Key extends keyof DataTableRowData > = TableCellProps & {
 	name: string;
 	key: Key;
 	format?: DataTableFormatter | string;
