@@ -1,6 +1,5 @@
 import { Knex } from 'knex';
 import { uniq, map, toSafeInteger } from 'lodash';
-import * as yup from 'yup';
 
 import { toArray } from 'lib/casting';
 import * as constants from 'lib/constants';
