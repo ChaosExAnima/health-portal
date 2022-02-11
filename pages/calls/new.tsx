@@ -1,22 +1,21 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import {
-	Box,
-	Button,
-	Container,
-	TextField,
-	Typography,
-} from '@material-ui/core';
-import { useForm, Controller } from 'react-hook-form';
+import { Container } from '@material-ui/core';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { DevTool } from '@hookform/devtools';
+import { capitalize } from 'lodash';
 
-import AutocompleteField from 'components/autocomplete-field';
 import ErrorNotice from 'components/error-notice';
-import TermField from 'components/term-field';
+import {
+	Form,
+	FormAutocompleteField,
+	FormTermsField,
+	FormTextField,
+} from 'components/form';
+import Header from 'components/header';
 import { formatErrors, handleNewType } from 'lib/api/new';
 import { callSchema, NewCallInput } from 'lib/entities/call';
-import { capitalize } from 'lib/strings';
 
 import type { GetStaticProps } from 'next';
 import type { PageProps } from 'global-types';
@@ -36,7 +35,6 @@ const transformForm = (
 
 function NewCallPage() {
 	const {
-		handleSubmit,
 		control,
 		register,
 		formState: { errors: formErrors },
@@ -54,103 +52,58 @@ function NewCallPage() {
 
 	return (
 		<>
-			<Container maxWidth="md">
-				<Box my={ 4 }>
-					<Typography variant="h4" component="h1">
-						Add new call
-					</Typography>
-				</Box>
+			<Container maxWidth="sm">
+				<Header title="Add new call" />
 				<ErrorNotice errors={ errors } />
-				<Box
-					component="form"
-					onSubmit={ handleSubmit( ( form ) =>
+				<Form
+					schema={ callSchema.transform( transformForm ) }
+					onSubmit={ ( form ) =>
 						handleNewType( form, 'call', handleErrors, router )
-					) }
-					my={ 4 }
+					}
 				>
-					<Controller
+					<FormTextField
 						control={ control }
-						name="date"
-						rules={ { required: true } }
-						render={ ( { field } ) => (
-							<TextField
-								{ ...field }
-								label="Date"
-								type="datetime-local"
-								fullWidth
-								required
-								InputLabelProps={ { shrink: true } }
-							/>
-						) }
+						name="created"
+						label="Date"
 					/>
-					<AutocompleteField
+					<FormAutocompleteField
+						control={ control }
 						name="provider"
 						label="Provider"
-						control={ control }
 						free
 					/>
-					{ formErrors.provider?.id && 'Invalid company' }
-					{ formErrors.provider?.name && 'Invalid company name' }
-					<TermField
+					<FormTermsField
 						control={ control }
 						name="reps"
 						label="Representatives"
 						format={ capitalize }
 						fullWidth
 					/>
-					<Controller
+					<FormTextField
 						control={ control }
 						name="reason"
-						rules={ { required: true } }
-						render={ ( { field } ) => (
-							<TextField
-								{ ...field }
-								label="Reason"
-								multiline
-								fullWidth
-								required
-							/>
-						) }
+						label="Reason"
+						multiline
 					/>
-					<Controller
+					<FormTextField
 						control={ control }
 						name="reference"
-						defaultValue=""
-						render={ ( { field } ) => (
-							<TextField
-								{ ...field }
-								label="Reference #"
-								fullWidth
-							/>
-						) }
+						label="Reference #"
 					/>
-					<Controller
+					<FormTextField
 						control={ control }
 						name="result"
-						rules={ { required: true } }
-						render={ ( { field } ) => (
-							<TextField
-								{ ...field }
-								label="Result"
-								multiline
-								fullWidth
-								required
-							/>
-						) }
+						label="Result"
+						multiline
 					/>
-					<AutocompleteField
+					<FormAutocompleteField
+						control={ control }
 						name="claims"
 						target="claim"
 						label="Linked Claims"
-						control={ control }
 						multiple
 					/>
-					<Box mt={ 2 }>
-						<Button type="submit" color="primary">
-							Submit
-						</Button>
-					</Box>
-				</Box>
+				</Form>
 			</Container>
 			<DevTool control={ control } />
 		</>

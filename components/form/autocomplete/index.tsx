@@ -1,32 +1,38 @@
 import { useState } from 'react';
 import { Autocomplete } from '@material-ui/lab';
 import { CircularProgress, TextField } from '@material-ui/core';
-import { useController } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
 
 import { useDebouncedSWR } from 'lib/hooks';
 import { filterOptions, getOptionLabel, isOptionObject } from './utils';
 
-import type { AutocompleteProps, AutocompleteResponse } from './types';
+import type {
+	FormAutocompleteFieldProps,
+	AutocompleteResponse,
+	Input,
+} from '../types';
 
-export default function AutocompleteField( {
-	control,
+export default function AutocompleteField< Schema extends Input >( {
 	free,
 	label,
 	multiple,
 	name,
-	required,
 	target,
-}: AutocompleteProps ) {
+}: FormAutocompleteFieldProps< Schema > ) {
+	const { control } = useFormContext();
 	const {
 		field: { value, onChange: onChangeForm, ref },
-	} = useController( { control, name, rules: { required } } );
+		fieldState: { error },
+		formState: { isSubmitting },
+	} = useController( { control, name } );
 	const [ searchTerm, setSearchTerm ] = useState< string >( value || '' );
 	const searchPath = searchTerm
 		? `/api/search/${ target || name }/${ searchTerm }`
 		: null;
-	const { data: response, error } = useDebouncedSWR< AutocompleteResponse >(
-		searchPath
-	);
+	const {
+		data: response,
+		error: errorResponse,
+	} = useDebouncedSWR< AutocompleteResponse >( searchPath );
 	const loading = ! response && !! searchTerm;
 
 	const onChange = ( _event: never, option: unknown ) => {
@@ -62,12 +68,14 @@ export default function AutocompleteField( {
 					{ ...params }
 					name={ name }
 					label={ label }
-					error={ error }
+					error={ error || errorResponse }
+					helperText={ error?.message ?? ' ' }
 					inputRef={ ref }
 					onChange={ ( event ) =>
 						setSearchTerm( event.target.value )
 					}
 					value={ searchTerm }
+					disabled={ isSubmitting }
 					InputProps={ {
 						...params.InputProps,
 						endAdornment: (

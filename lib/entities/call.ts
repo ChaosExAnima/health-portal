@@ -1,6 +1,6 @@
 import * as yup from 'yup';
+import { capitalize } from 'lodash';
 
-import { capitalize } from 'lib/strings';
 import { CONTENT_NOTE } from 'lib/constants';
 import { dateToString } from './utils';
 import rowToNote from './note';
@@ -55,18 +55,33 @@ export default function rowToCall< A extends EntityAdditions >(
 	return call as CallWithAdditions< A >;
 }
 
-export const callSchema = yup.object( {
-	date: yup.date().default( () => new Date() ),
-	provider: yup
-		.object( {
-			id: yup.number().min( 0 ).required(),
-			name: yup.string().trim().required(),
-		} )
-		.required(),
-	reps: yup.array( yup.string().trim().transform( capitalize ) ),
-	reason: yup.string().required(),
-	reference: yup.string().trim(),
-	result: yup.string().trim().required(),
-	claims: yup.array( yup.number() ),
-} );
-export type NewCallInput = yup.InferType< typeof callSchema >;
+export type NewCallInput = Omit<
+	Call,
+	'id' | 'provider' | 'notes' | 'slug' | 'created'
+> & {
+	created: Date;
+	provider: {
+		id: number;
+		name: string;
+	};
+};
+export const callSchema: yup.ObjectSchema< NewCallInput > = yup
+	.object( {
+		created: yup.date().default( () => new Date() ),
+		provider: yup
+			.object( {
+				id: yup.number().min( 0 ).required(),
+				name: yup.string().trim().required(),
+			} )
+			.required(),
+		reps: yup
+			.array()
+			.of( yup.string().required().trim().transform( capitalize ) )
+			.ensure()
+			.compact(),
+		reason: yup.string().required(),
+		reference: yup.string().trim(),
+		result: yup.string().trim().required(),
+		claims: yup.array( yup.number() ),
+	} )
+	.required();

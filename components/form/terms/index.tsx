@@ -4,23 +4,23 @@ import { ChangeEvent, useRef, useState } from 'react';
 import { useController } from 'react-hook-form';
 import TermFieldChips from './chips';
 
-import { TermFieldProps } from './types';
+import { FormTermFieldProps, Input } from '../types';
 
-export default function TermField( {
+export default function FormTermField< Schema extends Input >( {
 	control,
 	required,
 	name,
 	unique = true,
 	format = ( term ) => term,
 	...TextFieldProps
-}: TermFieldProps ) {
+}: FormTermFieldProps< Schema > ) {
 	const {
 		field: { onChange: onChangeForm, ref },
+		fieldState: { error },
 	} = useController( {
 		control,
 		name,
 		rules: { required },
-		defaultValue: [],
 	} );
 	const [ terms, setTerms ] = useState< string[] >( [] );
 	const [ text, setText ] = useState( '' );
@@ -82,6 +82,8 @@ export default function TermField( {
 			value={ text }
 			onFocus={ () => setFocus( true ) }
 			onBlur={ () => setFocus( false ) }
+			helperText={ error?.message ?? ' ' }
+			error={ !! error }
 		/>
 	);
 }

@@ -13,6 +13,7 @@
     "db:seed": "yarn db:knex seed:run",
     "db:reset": "yarn db:knex migrate:rollback --all",
     "db:knex": "yarn knex",
+    "db:cli": "docker-compose exec db mysql -uroot -ppassword health",
     "caniuse": "yarn browserslist --update-db",
     "test": "jest",
     "test:ci": "yarn jest --ci --coverage",
@@ -38,7 +39,7 @@
     "react-dropzone": "^11.4.2",
     "react-hook-form": "^7.22.5",
     "swr": "^1.1.1",
-    "yup": "^0.32.11"
+    "yup": "^1.0.0-beta.2"
   },
   "devDependencies": {
     "@babel/core": "^7",

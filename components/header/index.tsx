@@ -33,7 +33,7 @@ export type ActionItem = Omit<
 
 type HeaderProps = {
 	title: string;
-	actions: ActionItem[];
+	actions?: ActionItem[];
 	buttonsBelow?: true;
 	edit?: true;
 	onChange?: ( value: string ) => void;
@@ -112,22 +112,24 @@ const HeaderButton: React.FC< ActionItem > = ( {
 	);
 
 const HeaderButtonsBelow: React.FC< HeaderProps > = ( {
-	actions,
+	actions = [],
 	title,
 	edit,
 	onChange,
 } ) => (
 	<>
 		<HeaderTitle title={ title } edit={ edit } onChange={ onChange } />
-		<Box mt={ 3 }>
-			<Grid container spacing={ 2 }>
-				{ actions.map( ( action ) => (
-					<Grid item key={ action.action }>
-						<HeaderButton { ...action } />
-					</Grid>
-				) ) }
-			</Grid>
-		</Box>
+		{ actions.length && (
+			<Box mt={ 3 }>
+				<Grid container spacing={ 2 }>
+					{ actions.map( ( action ) => (
+						<Grid item key={ action.action }>
+							<HeaderButton { ...action } />
+						</Grid>
+					) ) }
+				</Grid>
+			</Box>
+		) }
 	</>
 );
 
@@ -146,7 +148,7 @@ const HeaderFab: React.FC< ActionItem > = ( {
 
 const HeaderButtonsSide: React.FC<
 	Pick< HeaderProps, 'actions' | 'title' >
-> = ( { actions, title } ) => (
+> = ( { actions = [], title } ) => (
 	<Grid container spacing={ 4 }>
 		<Grid item>
 			<HeaderTitle title={ title } />

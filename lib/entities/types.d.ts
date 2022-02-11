@@ -66,6 +66,7 @@ interface Call extends Content, WithNotes, WithProvider {
 	reps?: string[];
 	reason: string;
 	result: string,
+	reference?: string;
 }
 
 interface Claim extends Content, WithNotes, WithProvider, WithImport {
