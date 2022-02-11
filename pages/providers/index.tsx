@@ -4,11 +4,15 @@ import { Container, Link } from '@material-ui/core';
 import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
 import DataTable, { DataTableColumn } from 'components/data-table';
-import { queryAllProviders } from 'lib/entities/db';
+import { queryAllProviders } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 
-import type { PaginatedPageContext, PaginatedPageProps } from 'global-types';
+import type {
+	PaginatedPageContext,
+	PaginatedPageProps,
+	StringKeys,
+} from 'global-types';
 import type { Provider } from 'lib/entities/types';
 import type { GetStaticProps } from 'next';
 
@@ -24,7 +28,7 @@ const ProvidersPage: React.FC< PaginatedPageProps< Provider > > = ( {
 			icon: 'add',
 		},
 	];
-	const columns: DataTableColumn< keyof Provider >[] = [
+	const columns: DataTableColumn< StringKeys< Provider > >[] = [
 		{
 			key: 'name',
 			name: 'Name',
@@ -46,7 +50,7 @@ const ProvidersPage: React.FC< PaginatedPageProps< Provider > > = ( {
 			<Container maxWidth="md">
 				<Header title="Providers" actions={ actions } />
 			</Container>
-			<DataTable
+			<DataTable< Provider >
 				basePath="/providers"
 				columns={ columns }
 				loading={ false }

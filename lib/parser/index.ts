@@ -14,7 +14,7 @@ import {
 import { getHash } from './utils';
 import * as constants from 'lib/constants';
 import getDB from 'lib/db';
-import { queryMeta } from 'lib/entities/db';
+import { queryMeta } from 'lib/db/helpers';
 import { slugify } from 'lib/strings';
 
 import type { Readable } from 'stream';

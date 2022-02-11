@@ -1,22 +1,40 @@
 import { CONTENTS_TYPE } from 'lib/constants';
-import { MaybeArray } from 'global-types';
+import { MaybeArray, StringMap } from 'global-types';
+import { Entity } from 'lib/entities/types';
 
-type NewTypes = CONTENTS_TYPE | 'provider'
+type NewTypes = CONTENTS_TYPE | 'provider';
 
+// Abstract interfaces
+abstract interface Response {
+	success: boolean;
+}
+abstract interface SuccessResponse extends Response {
+	success: true;
+}
+
+abstract interface ErrorResponse extends Response {
+	success: false;
+	errors: Array< string | ErrorInformation >;
+}
+
+// Specific responses
+interface NewSuccessResponse extends SuccessResponse {
+	slug: string;
+}
+
+type NewResponse = ErrorResponse | NewSuccessResponse; // For /new endpoints.
+
+interface RecordsSuccessResponse< E extends Entity > extends SuccessResponse {
+	records: E[];
+}
+
+type RecordsResponse< E extends Entity > = ErrorResponse | RecordsSuccessResponse< E >;
+
+// Other types
 type ErrorInformation = {
 	code: string;
 	text: string;
 };
-type ErrorResponse = {
-	success: false;
-	errors: Array< string | ErrorInformation >;
-};
-type SuccessResponse = {
-	success: true;
-	slug: string;
-};
-
-type NewResponse = ErrorResponse | SuccessResponse;
 
 type ErrorHandlerArg = undefined | MaybeArray< string | ErrorInformation >;
 type ErrorHandler = ( message: ErrorHandlerArg ) => void;

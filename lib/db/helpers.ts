@@ -5,8 +5,9 @@ import { toArray } from 'lib/casting';
 import * as constants from 'lib/constants';
 import getDB from 'lib/db';
 
-import type { Entity } from './types';
+import type { ParsedUrlQuery } from 'node:querystring';
 import type { Nullable, StringKeys } from 'global-types';
+import type { Entity } from 'lib/entities/types';
 import type {
 	ContentDB,
 	DBCommonFields,
@@ -93,6 +94,15 @@ export function queryProvider(
 	return knex( constants.TABLE_PROVIDERS ).where( 'id', providerId ).first();
 }
 
+export function queryProviderBySlug(
+	providerSlug: string
+): Knex.QueryBuilder< ProviderDB, ProviderDB | undefined > {
+	const knex = getDB();
+	return knex( constants.TABLE_PROVIDERS )
+		.where( 'slug', providerSlug )
+		.first();
+}
+
 export function queryAllProviders(): Knex.QueryBuilder<
 	ProviderDB,
 	ProviderDB[]
@@ -114,4 +124,31 @@ export function queryRelatedProviders(
 export function queryImports(): Knex.QueryBuilder< ImportDB, ImportDB[] > {
 	const knex = getDB();
 	return knex( constants.TABLE_IMPORTS );
+}
+
+export async function filterQuery(
+	qb: Knex.QueryBuilder,
+	query: ParsedUrlQuery,
+	pageSize = 20
+): Promise< Knex.QueryBuilder > {
+	qb.limit( pageSize );
+	const page = toSafeInteger( query.page );
+	if ( page > 1 ) {
+		qb.offset( page - 1 * pageSize );
+	}
+	if ( query.start && ! Array.isArray( query.start ) ) {
+		qb.andWhere( 'created', '>=', query.start );
+	}
+	if ( query.end && ! Array.isArray( query.end ) ) {
+		qb.andWhere( 'created', '<=', query.end );
+	}
+	if ( query.provider ) {
+		const providers = await queryAllProviders()
+			.whereIn( 'slug', toArray( query.provider ) )
+			.limit( 10 );
+		if ( providers.length ) {
+			qb.whereIn( 'providerId', getIdColumn( providers, 'id' ) );
+		}
+	}
+	return qb;
 }

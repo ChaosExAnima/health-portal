@@ -1,4 +1,5 @@
 import { TableCell, TableHead, TableRow } from '@material-ui/core';
+import { omit } from 'lodash';
 
 import type { DataTableColumn, DataTableRowData } from './types';
 
@@ -6,15 +7,16 @@ type DataTableHeadProps = {
 	columns: DataTableColumn< keyof DataTableRowData >[];
 };
 
-const DataTableHeadCell: React.FC< {
+function DataTableHeadCell( {
+	column,
+}: {
 	column: DataTableColumn< keyof DataTableRowData >;
-} > = ( { column } ) => {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { name, link, format, key, ...props } = column;
+} ) {
+	const { name, ...props } = omit( column, 'link', 'format', 'key' );
 	return <TableCell { ...props }>{ name }</TableCell>;
-};
+}
 
-const DataTableHead: React.FC< DataTableHeadProps > = ( { columns } ) => {
+export default function DataTableHead( { columns }: DataTableHeadProps ) {
 	return (
 		<TableHead>
 			<TableRow>
@@ -24,6 +26,4 @@ const DataTableHead: React.FC< DataTableHeadProps > = ( { columns } ) => {
 			</TableRow>
 		</TableHead>
 	);
-};
-
-export default DataTableHead;
+}

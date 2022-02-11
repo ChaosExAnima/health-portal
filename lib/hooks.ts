@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import useSWR, { Key, SWRResponse } from 'swr';
 
+import { RecordsResponse } from './api/types';
+
+import type { Provider } from './entities/types';
+
 async function fetcher< ResponseObject >(
 	url: string
 ): Promise< ResponseObject > {
 	const res = await fetch( url );
-	const body = await res.json();
-	return body;
+	return res.json();
 }
 
 /**
@@ -44,4 +47,18 @@ export function useDebouncedSWR< Response >(
 	const debouncedKey = useDebounce( key, 500 );
 	const response = useSWR< Response >( debouncedKey, fetcher );
 	return response;
+}
+
+export function useProvidersForSelect(): Map< string, string > {
+	const response = useSWR< RecordsResponse< Provider > >(
+		'/api/providers',
+		fetcher
+	);
+	if ( response.error || ! response.data?.success ) {
+		return new Map();
+	}
+
+	return new Map(
+		response.data.records.map( ( { slug, name } ) => [ slug, name ] )
+	);
 }

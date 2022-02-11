@@ -4,7 +4,7 @@ import { Container } from '@material-ui/core';
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import DetailsBox, { Detail } from 'components/details-box';
-import { queryAllProviders, queryContentType } from 'lib/entities/db';
+import { queryAllProviders, queryContentType } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 
 import type { SetRequired } from 'type-fest';
@@ -49,11 +49,9 @@ const ProviderPage: React.FC< SinglePageProps< ProviderWithAdditions > > = ( {
 };
 
 export async function getStaticPaths(): Promise< GetStaticPathsResult > {
-	const claims = await queryAllProviders().select( 'identifier' );
+	const claims = await queryAllProviders().select( 'slug' );
 	return {
-		paths: claims.map(
-			( { identifier } ) => `/claims/${ identifier.toLowerCase() }`
-		),
+		paths: claims.map( ( { slug } ) => `/providers/${ slug }` ),
 		fallback: false,
 	};
 }
@@ -73,10 +71,10 @@ export const getStaticProps: GetSinglePageProps< ProviderWithAdditions > = async
 			notFound: true,
 		};
 	}
-	const relations = await queryContentType( [ 'claim', 'note' ] ).andWhere(
-		'providerId',
-		row.id
-	);
+	const relations = await queryContentType( [ 'claim', 'note' ] )
+		.andWhere( 'providerId', row.id )
+		.limit( 10 )
+		.orderBy( 'created', 'desc' );
 	const record = rowToProvider( row, { relations } );
 	return {
 		props: {

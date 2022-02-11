@@ -7,26 +7,39 @@ import DataTable, {
 } from 'components/data-table';
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
-import rowToCall from 'lib/entities/call';
+import ProviderLink from 'components/provider-link';
 import {
+	filterQuery,
 	getIdColumn,
 	queryCalls,
 	queryRelatedProviders,
-} from 'lib/entities/db';
+} from 'lib/db/helpers';
+import rowToCall from 'lib/entities/call';
+import { useProvidersForSelect } from 'lib/hooks';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { formatDate } from 'lib/strings';
 
-import type { GetStaticProps } from 'next';
-import type { PaginatedPageContext, PaginatedPageProps } from 'global-types';
-import type { Call } from 'lib/entities/types';
+import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import type { PaginatedPageProps, StringKeys } from 'global-types';
+import type {
+	DateQuery,
+	PaginationQuery,
+	ProviderQuery,
+	WithQuery,
+} from 'components/data-table/types';
+import type { ContentDB } from 'lib/db/types';
+import type { Call, Provider } from 'lib/entities/types';
 
-type CallsProps = PaginatedPageProps< Call >;
+type CallsProps = PaginatedPageProps< Call > &
+	WithQuery< DateQuery & PaginationQuery & ProviderQuery >;
 
 const CallsPage: React.FC< CallsProps > = ( {
 	currentPage,
 	totalPages,
 	records,
+	query,
 } ) => {
+	const providers = useProvidersForSelect();
 	const actions: ActionItem[] = [
 		{
 			href: '/calls/new',
@@ -34,15 +47,16 @@ const CallsPage: React.FC< CallsProps > = ( {
 			icon: 'add',
 		},
 	];
-	const filters: DataTableFilter[] = [
+	const filters: DataTableFilter< StringKeys< Call > >[] = [
 		{
 			key: 'provider',
 			label: 'Provider',
 			type: 'select',
-			values: {},
+			values: providers,
+			default: query.provider || 'all',
 		},
 	];
-	const columns: DataTableColumn< keyof Call >[] = [
+	const columns: DataTableColumn< StringKeys< Call > >[] = [
 		{
 			key: 'created',
 			link: true,
@@ -62,7 +76,9 @@ const CallsPage: React.FC< CallsProps > = ( {
 		{
 			key: 'provider',
 			name: 'Provider',
-			format: 'name',
+			format: ( provider: Provider ) => (
+				<ProviderLink color="inherit" provider={ provider } />
+			),
 		},
 		{
 			key: 'reason',
@@ -75,7 +91,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 			<Container maxWidth="md">
 				<Header title="Calls" actions={ actions } />
 			</Container>
-			<DataTable
+			<DataTable< Call >
 				basePath="/calls"
 				columns={ columns }
 				currentPage={ currentPage }
@@ -90,19 +106,17 @@ const CallsPage: React.FC< CallsProps > = ( {
 	);
 };
 
-export const getStaticProps: GetStaticProps<
-	PaginatedPageProps< Call >,
-	PaginatedPageContext
-> = async ( { params } ) => {
+export async function getServerSideProps(
+	context: GetServerSidePropsContext
+): Promise< GetServerSidePropsResult< CallsProps > > {
+	const { params, query } = context;
 	// Pagination.
 	const pageSize = 20;
 	const currentPage = getPageNumber( params?.page );
 	const totalPages = await getTotalPageNumber( queryCalls(), pageSize );
 
 	// Gets records.
-	const calls = await queryCalls()
-		.limit( pageSize )
-		.offset( currentPage * pageSize );
+	const calls: ContentDB[] = await filterQuery( queryCalls(), query );
 	const providers = await queryRelatedProviders(
 		getIdColumn( calls, 'providerId' )
 	);
@@ -113,8 +127,9 @@ export const getStaticProps: GetStaticProps<
 			currentPage,
 			totalPages,
 			records,
+			query,
 		},
 	};
-};
+}
 
 export default CallsPage;

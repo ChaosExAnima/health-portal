@@ -1,35 +1,55 @@
 import React from 'react';
-import type { TableCellProps } from '@material-ui/core/TableCell/TableCell';
 
-type DataTableFilterBase = {
-	key: string;
+import type { TableCellProps } from '@material-ui/core/TableCell/TableCell';
+import type { StringMap } from 'global-types';
+
+type PaginationQuery = {
+	page: string;
+};
+type DateQuery = {
+	start: string;
+	end: string;
+};
+type ProviderQuery = {
+	provider: string;
+};
+type WithQuery< Query > = {
+	query: Partial< Query >;
+};
+
+type DataTableFilterBase< Key extends string > = {
+	key: Key;
 	label: string;
 };
 
-type DataTableFilterSelectValues = Record< string, string >;
+type DataTableFilterSelectValues = Map< string, string >;
 
-type DataTableFilterSelect = DataTableFilterBase & {
+type DataTableFilterSelect< Key extends string > = DataTableFilterBase< Key > & {
 	type: 'select';
 	values: DataTableFilterSelectValues;
-	default?: 'all' | keyof DataTableFilterSelectValues;
+	default?: string;
 	noAll?: true;
 };
+type DataTableFilterDate< Key extends string > = DataTableFilterBase< Key > & {
+	type: 'date',
+	default?: string;
+};
 
-export type DataTableRowData = {
+type DataTableRowData = {
 	slug: string;
 	[ key: string ]: any;
 };
 
-export type DataTableFilter = DataTableFilterSelect;
+type DataTableFilter< Key = string > = DataTableFilterSelect< Key > | DataTableFilterDate< Key >;
 
-export type DataTableRowLink = {
+type DataTableRowLink = {
 	slug: string;
 	name: string | React.ReactNode;
 };
 
-export type DataTableFormatter = ( arg0: unknown ) => React.ReactNode;
+type DataTableFormatter = ( arg0: unknown ) => React.ReactNode;
 
-export type DataTableColumn< Key extends keyof DataTableRowData > = TableCellProps & {
+type DataTableColumn< Key extends keyof DataTableRowData > = TableCellProps & {
 	name: string;
 	key: Key;
 	format?: DataTableFormatter | string;

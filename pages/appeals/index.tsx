@@ -8,11 +8,12 @@ import DataTable, {
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
 import rowToAppeal from 'lib/entities/appeal';
-import { queryAppeals } from 'lib/entities/db';
+import { queryAppeals } from 'lib/db/helpers';
+import { useProvidersForSelect } from 'lib/hooks';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { capitalize } from 'lib/strings';
 
-import type { PaginatedPageProps } from 'global-types';
+import type { PaginatedPageProps, StringKeys } from 'global-types';
 import type { GetStaticPropsContext } from 'next';
 import type { Appeal } from 'lib/entities/types';
 
@@ -24,6 +25,7 @@ const AppealsPage: React.FC< AppealsProps > = ( {
 	totalPages,
 	records,
 } ) => {
+	const providers = useProvidersForSelect();
 	const actions: ActionItem[] = [
 		{
 			href: '/appeals/new',
@@ -31,25 +33,27 @@ const AppealsPage: React.FC< AppealsProps > = ( {
 			icon: 'add',
 		},
 	];
-	const filters: DataTableFilter[] = [
+	const filters: DataTableFilter< StringKeys< Appeal > >[] = [
 		{
 			key: 'status',
 			label: 'Status',
 			type: 'select',
-			values: {
-				NEW: 'New',
-				PENDING: 'Pending',
-				CLOSED: 'Closed',
-			},
+			values: new Map(
+				Object.entries( {
+					NEW: 'New',
+					PENDING: 'Pending',
+					CLOSED: 'Closed',
+				} )
+			),
 		},
 		{
 			key: 'provider',
 			label: 'Provider',
 			type: 'select',
-			values: {},
+			values: providers,
 		},
 	];
-	const columns: DataTableColumn< keyof Appeal >[] = [
+	const columns: DataTableColumn< StringKeys< Appeal > >[] = [
 		{
 			align: 'right',
 			key: 'created',

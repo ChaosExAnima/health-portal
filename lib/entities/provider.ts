@@ -28,7 +28,6 @@ export function isProvider( input: unknown ): input is Provider {
 	return (
 		isEntity( input ) &&
 		isObjectWithKeys( input, [
-			'slug',
 			'name',
 			'address',
 			'phone',

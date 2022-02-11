@@ -8,7 +8,7 @@ import Claims, {
 	ClaimsProps,
 	getStaticProps as getRootStaticProps,
 } from '../index';
-import { queryClaims } from 'lib/entities/db';
+import { queryClaims } from 'lib/db/helpers';
 import { getPageNumber } from 'lib/static-helpers';
 import { PaginatedPageContext } from 'global-types';
 

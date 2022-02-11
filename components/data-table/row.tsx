@@ -3,7 +3,6 @@ import { TableCell, TableRow } from '@material-ui/core';
 import { get } from 'lodash';
 
 import OptionalLink from 'components/optional-link';
-
 import { DataTableColumn, DataTableRowData } from './types';
 
 type DataTableRowProps< Data > = {
@@ -23,7 +22,7 @@ type DataTableCellProps< Data > = DataTableColumn<
 function DataTableCell< Data >(
 	props: DataTableCellProps< Data >
 ): JSX.Element {
-	const { value, link, slug, format, basePath = '' } = props;
+	const { value, link, slug, format, basePath = '', ...cellProps } = props;
 	let text = value;
 	if ( typeof format === 'function' ) {
 		text = format( value );
@@ -31,7 +30,7 @@ function DataTableCell< Data >(
 		text = get( value, format, '' );
 	}
 	return (
-		<TableCell>
+		<TableCell { ...cellProps }>
 			<OptionalLink
 				href={ link ? `${ basePath }/${ slug }` : '' }
 				color="inherit"

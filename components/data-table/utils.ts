@@ -1,4 +1,4 @@
-import { DataTableRowLink } from './types';
+import type { DataTableRowLink } from './types';
 
 export function isLinkObject( value: unknown ): value is DataTableRowLink {
 	return (
