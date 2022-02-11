@@ -1,5 +1,5 @@
 import { ReactElement, MutableRefObject } from 'react';
-import { Control, UnpackNestedValue, UseFormRegister, Path } from 'react-hook-form';
+import { Control, UnpackNestedValue, UseFormRegister, Path, UseFormReturn } from 'react-hook-form';
 import { Promisable } from 'type-fest';
 import { StandardTextFieldProps as MuiTextFieldProps, ChipProps as MuiChipProps } from '@material-ui/core';
 
@@ -9,9 +9,8 @@ export { AnyObjectSchema as Schema } from 'yup';
 export type Input = Record< string, any >;
 
 export interface FormProps<Schema extends AnyObjectSchema> {
-	schema: Schema;
-	onSubmit: ( form: UnpackNestedValue<Schema> ) => Promisable<void>;
-	children: ReactElement< FormBaseFieldProps<Schema> >[];
+	onSubmit: UseFormHandleSubmit<Schema>;
+	children: ReactElement[];
 }
 
 export interface FormBaseFieldProps<Schema extends Input> {

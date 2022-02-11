@@ -34,7 +34,7 @@ const transformForm = (
 } );
 
 function NewCallPage() {
-	const { control } = useForm< NewCallInput >( {
+	const { control, handleSubmit } = useForm< NewCallInput >( {
 		resolver: yupResolver( callSchema.transform( transformForm ) ),
 	} );
 	const [ errors, setErrors ] = useState< string[] >( [] );
@@ -49,10 +49,9 @@ function NewCallPage() {
 				<Header title="Add new call" />
 				<ErrorNotice errors={ errors } />
 				<Form
-					schema={ callSchema.transform( transformForm ) }
-					onSubmit={ ( form ) =>
+					onSubmit={ handleSubmit( ( form ) =>
 						handleNewType( form, 'call', handleErrors, router )
-					}
+					) }
 				>
 					<FormTextField
 						control={ control }
