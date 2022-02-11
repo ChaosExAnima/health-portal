@@ -34,11 +34,7 @@ const transformForm = (
 } );
 
 function NewCallPage() {
-	const {
-		control,
-		register,
-		formState: { errors: formErrors },
-	} = useForm< NewCallInput >( {
+	const { control } = useForm< NewCallInput >( {
 		resolver: yupResolver( callSchema.transform( transformForm ) ),
 	} );
 	const [ errors, setErrors ] = useState< string[] >( [] );
@@ -46,9 +42,6 @@ function NewCallPage() {
 
 	const handleErrors: ErrorHandler = ( errs ) =>
 		setErrors( formatErrors( errs ) );
-
-	register( 'reps' );
-	console.log( formErrors );
 
 	return (
 		<>
@@ -65,12 +58,14 @@ function NewCallPage() {
 						control={ control }
 						name="created"
 						label="Date"
+						required
 					/>
 					<FormAutocompleteField
 						control={ control }
 						name="provider"
 						label="Provider"
 						free
+						required
 					/>
 					<FormTermsField
 						control={ control }
@@ -84,6 +79,7 @@ function NewCallPage() {
 						name="reason"
 						label="Reason"
 						multiline
+						required
 					/>
 					<FormTextField
 						control={ control }
@@ -95,6 +91,7 @@ function NewCallPage() {
 						name="result"
 						label="Result"
 						multiline
+						required
 					/>
 					<FormAutocompleteField
 						control={ control }
