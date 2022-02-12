@@ -1,12 +1,8 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import { Container } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { DevTool } from '@hookform/devtools';
 import { capitalize } from 'lodash';
 
-import ErrorNotice from 'components/error-notice';
 import {
 	Form,
 	FormAutocompleteField,
@@ -14,13 +10,11 @@ import {
 	FormTermsField,
 	FormTextField,
 } from 'components/form';
-import Header from 'components/header';
-import { formatErrors, handleNewType } from 'lib/api/new';
+import Page from 'components/page';
 import { callSchema, NewCallInput } from 'lib/entities/call';
 
 import type { GetStaticProps } from 'next';
 import type { PageProps } from 'global-types';
-import type { ErrorHandler } from 'lib/api/types';
 
 const transformForm = (
 	value: Omit< NewCallInput, 'provider' > & {
@@ -34,26 +28,18 @@ const transformForm = (
 	},
 } );
 
-function NewCallPage() {
+function NewCallPage( { title }: PageProps ) {
 	const { control, handleSubmit } = useForm< NewCallInput >( {
 		resolver: yupResolver( callSchema.transform( transformForm ) ),
 	} );
-	const [ errors, setErrors ] = useState< string[] >( [] );
-	const router = useRouter();
-
-	const handleErrors: ErrorHandler = ( errs ) =>
-		setErrors( formatErrors( errs ) );
-
 	return (
 		<>
-			<Container maxWidth="sm">
-				<Header title="Add new call" />
-				<ErrorNotice errors={ errors } />
-				<Form
-					onSubmit={ handleSubmit( ( form ) =>
-						handleNewType( form, 'call', handleErrors, router )
-					) }
-				>
+			<Page
+				title={ title }
+				maxWidth="sm"
+				breadcrumbs={ [ { href: '/calls', name: 'Calls' }, title ] }
+			>
+				<Form handleSubmit={ handleSubmit } type="call" new>
 					<FormDateTimeField
 						control={ control }
 						name="date"
@@ -103,7 +89,7 @@ function NewCallPage() {
 						multiple
 					/>
 				</Form>
-			</Container>
+			</Page>
 			<DevTool control={ control } />
 		</>
 	);

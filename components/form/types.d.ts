@@ -1,5 +1,5 @@
 import { ReactElement, MutableRefObject } from 'react';
-import { Control, UnpackNestedValue, UseFormRegister, Path, UseFormReturn } from 'react-hook-form';
+import { Control, UnpackNestedValue, UseFormRegister, Path, UseFormReturn, UseFormHandleSubmit } from 'react-hook-form';
 import { Promisable } from 'type-fest';
 import { StandardTextFieldProps as MuiTextFieldProps, ChipProps as MuiChipProps } from '@mui/material';
 import {
@@ -8,13 +8,17 @@ import {
 	DateTimePickerProps as MuiDateTimePickerProps,
 } from '@mui/lab';
 
+import { NewTypes } from 'lib/api/types';
+
 export { AnyObjectSchema as Schema } from 'yup';
 
 
 export type Input = Record< string, any >;
 
 export interface FormProps<Schema extends AnyObjectSchema> {
-	onSubmit: UseFormHandleSubmit<Schema>;
+	handleSubmit: UseFormHandleSubmit;
+	type: NewTypes;
+	new?: boolean;
 	children: ReactElement[];
 }
 

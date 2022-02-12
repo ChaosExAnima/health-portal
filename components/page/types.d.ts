@@ -7,7 +7,7 @@ import { Breadcrumb } from 'components/breadcrumbs';
 interface PageProps {
 	maxWidth?: ContainerProps["maxWidth"];
 	title: HeaderProps["title"];
-	children: ReactChild;
+	children: ReactChild | ReactChild[];
 	header?: HeaderProps;
 	breadcrumbs?: Breadcrumb[];
 }

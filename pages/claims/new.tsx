@@ -5,7 +5,14 @@ import type { PageProps } from 'global-types';
 type ClaimNewPageProps = PageProps;
 
 function ClaimNewPage( { title }: ClaimNewPageProps ) {
-	return <Page title={ title }>Test</Page>;
+	return (
+		<Page
+			title={ title }
+			breadcrumbs={ [ { href: '/claims', name: 'Claims' }, title ] }
+		>
+			Test
+		</Page>
+	);
 }
 
 export async function getStaticProps(): Promise< {
