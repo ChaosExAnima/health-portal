@@ -8,7 +8,6 @@ import {
 	Tooltip,
 	Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -16,18 +15,6 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ButtonLink from 'components/button-link';
 import Link from 'next/link';
 import React from 'react';
-
-const PREFIX = 'Header';
-
-const classes = {
-	editTitle: `${ PREFIX }-editTitle`,
-};
-
-const StyledBox = styled( Box )( ( { theme } ) => ( {
-	[ `& .${ classes.editTitle }` ]: {
-		fontSize: theme.typography.h4.fontSize,
-	},
-} ) );
 
 type ActionItemIcon = 'add' | 'edit' | 'save' | 'cancel' | React.ReactElement;
 
@@ -75,7 +62,7 @@ const HeaderTitle: React.FC<
 				}
 				placeholder="Title"
 				value={ title }
-				InputProps={ { className: classes.editTitle } }
+				InputProps={ { sx: { fontSize: 'h4.fontSize' } } }
 			/>
 		);
 	}
@@ -120,7 +107,7 @@ const HeaderButtonsBelow: React.FC< HeaderProps > = ( {
 } ) => (
 	<>
 		<HeaderTitle title={ title } edit={ edit } onChange={ onChange } />
-		<StyledBox mt={ 3 }>
+		<Box mt={ 3 }>
 			<Grid container spacing={ 2 }>
 				{ actions.map( ( action ) => (
 					<Grid item key={ action.action }>
@@ -128,7 +115,7 @@ const HeaderButtonsBelow: React.FC< HeaderProps > = ( {
 					</Grid>
 				) ) }
 			</Grid>
-		</StyledBox>
+		</Box>
 	</>
 );
 

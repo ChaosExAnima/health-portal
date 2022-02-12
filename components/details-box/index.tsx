@@ -1,6 +1,5 @@
 import React from 'react';
-import { styled } from '@mui/material/styles';
-import { Box, Paper, Grid, Theme } from '@mui/material';
+import { Box, Paper, Grid } from '@mui/material';
 
 type onChangeRootFunc = ( key: string, value: string ) => void;
 type DetailsContextType = {
@@ -25,33 +24,22 @@ const DetailsBox: React.FC< DetailsBoxProps > = ( {
 		onChange,
 	};
 	return (
-		<StyledBox my={ 4 }>
+		<Box my={ 4 }>
 			<Grid
 				component={ Paper }
 				container
-				className={ classes.detailsContainer }
+				sx={ { padding: 2 } }
 				spacing={ 2 }
 			>
 				<DetailsContext.Provider value={ context }>
 					{ children }
 				</DetailsContext.Provider>
 			</Grid>
-		</StyledBox>
+		</Box>
 	);
 };
 
 import Detail from './detail';
-const PREFIX = 'DetailsBox';
-
-const classes = {
-	detailsContainer: `${ PREFIX }-detailsContainer`,
-};
-
-const StyledBox = styled( Box )( ( { theme } ) => ( {
-	[ `& .${ classes.detailsContainer }` ]: {
-		padding: theme.spacing( 2 ),
-	},
-} ) );
 
 export { Detail };
 
