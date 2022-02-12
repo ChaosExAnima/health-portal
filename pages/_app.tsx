@@ -1,37 +1,31 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import Head from 'next/head';
-import {
-	ThemeProvider,
-	Theme,
-	StyledEngineProvider,
-} from '@mui/material/styles';
-import { useEffect } from 'react';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import { CacheProvider, EmotionCache } from '@emotion/react';
 
 import Navigation from 'components/navigation';
+import createEmotionCache from 'config/emotion-cache';
 import theme from 'config/theme';
 
 import type { AppProps } from 'next/app';
 
-declare module '@mui/styles/defaultTheme' {
-	// eslint-disable-next-line @typescript-eslint/no-empty-interface
-	interface DefaultTheme extends Theme {}
-}
+const clientSideEmotionCache = createEmotionCache();
 
-const App: React.FC< AppProps > = ( { Component, pageProps } ) => {
-	useEffect( () => {
-		// Remove the server-side injected CSS.
-		const jssStyles = document.querySelector( '#jss-server-side' );
-		if ( jssStyles && jssStyles.parentElement ) {
-			jssStyles.parentElement.removeChild( jssStyles );
-		}
-	}, [] );
+const App: React.FC< AppProps & { emotionCache?: EmotionCache } > = (
+	props
+) => {
+	const {
+		Component,
+		pageProps,
+		emotionCache = clientSideEmotionCache,
+	} = props;
 
 	const title = pageProps.title
 		? `${ pageProps.title } - Health Portal`
 		: 'Health Portal';
 
 	return (
-		<>
+		<CacheProvider value={ emotionCache }>
 			<Head>
 				<title>{ title }</title>
 				<meta
@@ -46,7 +40,7 @@ const App: React.FC< AppProps > = ( { Component, pageProps } ) => {
 					<Component { ...pageProps } />
 				</ThemeProvider>
 			</StyledEngineProvider>
-		</>
+		</CacheProvider>
 	);
 };
 

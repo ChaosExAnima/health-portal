@@ -1,5 +1,4 @@
 import { Box, Container, Grid, Paper, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import UploadIcon from '@mui/icons-material/CloudUpload';
 import CallIcon from '@mui/icons-material/Phone';
 import { toInteger } from 'lodash';
@@ -13,23 +12,6 @@ import { formatCurrency } from 'lib/strings';
 
 import type { PageProps } from 'global-types';
 import type { Claim } from 'lib/entities/types';
-
-const PREFIX = 'Home';
-
-const classes = {
-	actionButtons: `${ PREFIX }-actionButtons`,
-	info: `${ PREFIX }-info`,
-};
-
-const StyledPage = styled( Container )( ( { theme: { spacing } } ) => ( {
-	[ `& .${ classes.actionButtons }` ]: {
-		marginTop: spacing( 1 ),
-	},
-
-	[ `& .${ classes.info }` ]: {
-		padding: spacing( 3 ),
-	},
-} ) );
 
 type HomeProps = PageProps & {
 	welcomeMessage: string;
