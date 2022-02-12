@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Grid, TextField, Typography } from '@material-ui/core';
+import { Grid, TextField, Typography } from '@mui/material';
 
 import { DetailsContext } from './index';
 import { onChangeFunc } from 'global-types';
@@ -50,7 +50,6 @@ const DetailText: React.FC< Omit< DetailProps, 'name' > > = ( {
 			value={ children || '' }
 			type={ type || 'text' }
 			onChange={ ( event ) => onChange( event.target.value ) }
-			fullWidth
 		/>
 	);
 };

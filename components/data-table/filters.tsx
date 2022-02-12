@@ -1,13 +1,5 @@
-import {
-	createStyles,
-	makeStyles,
-	MenuItem,
-	TextField,
-	Theme,
-	Toolbar,
-	Typography,
-} from '@material-ui/core';
-import FilterListIcon from '@material-ui/icons/FilterList';
+import { MenuItem, TextField, Toolbar, Typography } from '@mui/material';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import dayjs from 'dayjs';
 import { StringMap } from 'global-types';
 import { useRouter } from 'next/router';
@@ -30,19 +22,6 @@ type DataTableFiltersFieldProps = {
 	error?: FieldErrors;
 };
 
-const useStyles = makeStyles( ( theme: Theme ) =>
-	createStyles( {
-		formControl: {
-			margin: theme.spacing( 1 ),
-			minWidth: 120,
-			height: 80,
-		},
-		filterBar: {
-			gap: theme.spacing( 2 ),
-		},
-	} )
-);
-
 const dateSchema = () => {
 	const inFive = dayjs().add( 5, 'min' ).toDate();
 	return yup.object( {
@@ -64,8 +43,6 @@ export default function DataTableFilter( {
 	hasDates,
 	schema,
 }: DataTableFiltersProps ) {
-	const classes = useStyles();
-
 	if ( hasDates ) {
 		if ( schema ) {
 			schema = schema.concat( dateSchema() );
@@ -126,7 +103,7 @@ export default function DataTableFilter( {
 	}
 
 	return (
-		<Toolbar className={ classes.filterBar }>
+		<Toolbar sx={ { gap: 2 } }>
 			<Typography variant="h5" component="p">
 				Filter
 			</Typography>
@@ -148,7 +125,6 @@ function DataTableFilterField( {
 	filter,
 	error,
 }: DataTableFiltersFieldProps ) {
-	const { formControl } = useStyles();
 	const { type } = filter;
 	return (
 		<Controller
@@ -159,7 +135,11 @@ function DataTableFilterField( {
 					{ ...field }
 					type={ type }
 					label={ filter.label }
-					className={ formControl }
+					sx={ {
+						margin: 1,
+						minWidth: 120,
+						height: 80,
+					} }
 					error={ !! error }
 					helperText={ error?.message }
 					InputLabelProps={ {

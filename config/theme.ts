@@ -1,5 +1,5 @@
-import { createTheme } from '@material-ui/core/styles';
-import { purple, blue } from '@material-ui/core/colors';
+import { createTheme } from '@mui/material/styles';
+import { purple, blue } from '@mui/material/colors';
 
 // Create a theme instance.
 const theme = createTheme( {
@@ -7,16 +7,21 @@ const theme = createTheme( {
 		fontSize: 16,
 	},
 	palette: {
-		type: 'dark',
+		mode: 'dark',
 		primary: purple,
 		secondary: blue,
 	},
-	props: {
+	components: {
 		MuiButton: {
-			variant: 'contained',
+			defaultProps: {
+				variant: 'contained',
+			},
 		},
 		MuiTextField: {
-			margin: 'normal',
+			defaultProps: {
+				margin: 'normal',
+				fullWidth: true,
+			},
 		},
 	},
 } );

@@ -1,15 +1,6 @@
-import {
-	Box,
-	Container,
-	Grid,
-	Paper,
-	Theme,
-	Typography,
-	createStyles,
-	makeStyles,
-} from '@material-ui/core';
-import UploadIcon from '@material-ui/icons/CloudUpload';
-import CallIcon from '@material-ui/icons/Phone';
+import { Box, Container, Grid, Paper, Typography } from '@mui/material';
+import UploadIcon from '@mui/icons-material/CloudUpload';
+import CallIcon from '@mui/icons-material/Phone';
 import { toInteger } from 'lodash';
 
 import ButtonLink from 'components/button-link';
@@ -29,36 +20,19 @@ type HomeProps = PageProps & {
 	totalClaims: number;
 };
 
-const useStyles = makeStyles( ( { spacing }: Theme ) =>
-	createStyles( {
-		actionButtons: {
-			marginTop: spacing( 1 ),
-		},
-		info: {
-			padding: spacing( 3 ),
-		},
-	} )
-);
-
 const Home: React.FC< HomeProps > = ( {
 	welcomeMessage,
 	totalSpent,
 	totalCovered,
 	totalClaims,
 } ) => {
-	const classes = useStyles();
-
 	return (
 		<Container maxWidth="md" component="main">
 			<Box my={ 4 }>
 				<Typography variant="h4" component="h1">
 					{ welcomeMessage }
 				</Typography>
-				<Grid
-					container
-					spacing={ 4 }
-					className={ classes.actionButtons }
-				>
+				<Grid container spacing={ 4 } sx={ { marginTop: 1 } }>
 					<Grid item>
 						<ButtonLink
 							href="/calls/new"
@@ -82,11 +56,7 @@ const Home: React.FC< HomeProps > = ( {
 				</Grid>
 			</Box>
 			{ /* TODO: Unify design for info boxes. */ }
-			<Paper
-				elevation={ 2 }
-				className={ classes.info }
-				component="section"
-			>
+			<Paper elevation={ 2 } component="section" sx={ { padding: 3 } }>
 				<Grid container spacing={ 4 } direction="column">
 					<InfoRow
 						info="You&lsquo;ve spent"

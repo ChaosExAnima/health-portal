@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Container } from '@material-ui/core';
+import { Container } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { DevTool } from '@hookform/devtools';
@@ -56,7 +56,7 @@ function NewCallPage() {
 				>
 					<FormDateTimeField
 						control={ control }
-						name="created"
+						name="date"
 						label="Call Date"
 						type="datetime"
 						required
@@ -74,7 +74,6 @@ function NewCallPage() {
 						name="reps"
 						label="Representatives"
 						format={ capitalize }
-						fullWidth
 					/>
 					<FormTextField
 						control={ control }

@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Autocomplete } from '@material-ui/lab';
-import { CircularProgress, TextField } from '@material-ui/core';
-import { useController, useFormContext } from 'react-hook-form';
+import { Autocomplete, CircularProgress, TextField } from '@mui/material';
+import { useController } from 'react-hook-form';
 
 import { useDebouncedSWR } from 'lib/hooks';
 import { filterOptions, getOptionLabel, isOptionObject } from './utils';
@@ -48,7 +47,7 @@ export default function AutocompleteField< Schema extends Input >( {
 			clearOnEscape
 			freeSolo={ free }
 			getOptionLabel={ getOptionLabel }
-			getOptionSelected={ ( option, selectedValue: string ) =>
+			isOptionEqualToValue={ ( option, selectedValue: string ) =>
 				!! selectedValue &&
 				isOptionObject( option ) &&
 				option.label === selectedValue

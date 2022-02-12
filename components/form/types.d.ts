@@ -1,12 +1,12 @@
 import { ReactElement, MutableRefObject } from 'react';
 import { Control, UnpackNestedValue, UseFormRegister, Path, UseFormReturn } from 'react-hook-form';
 import { Promisable } from 'type-fest';
-import { StandardTextFieldProps as MuiTextFieldProps, ChipProps as MuiChipProps } from '@material-ui/core';
+import { StandardTextFieldProps as MuiTextFieldProps, ChipProps as MuiChipProps } from '@mui/material';
 import {
 	DatePickerProps as MuiDatePickerProps,
 	TimePickerProps as MuiTimePickerProps,
 	DateTimePickerProps as MuiDateTimePickerProps,
-} from '@material-ui/pickers';
+} from '@mui/lab';
 
 export { AnyObjectSchema as Schema } from 'yup';
 

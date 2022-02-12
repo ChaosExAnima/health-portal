@@ -1,8 +1,4 @@
-import {
-	Box,
-	Breadcrumbs as BreadcrumbsUI,
-	Typography,
-} from '@material-ui/core';
+import { Box, Breadcrumbs as BreadcrumbsUI, Typography } from '@mui/material';
 
 import Link from 'components/link';
 

@@ -1,4 +1,4 @@
-import { Container } from '@material-ui/core';
+import { Container } from '@mui/material';
 
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';

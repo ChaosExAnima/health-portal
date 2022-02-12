@@ -1,74 +1,45 @@
 import {
+	Alert,
 	Box,
-	Breadcrumbs,
 	Button,
 	Container,
-	createStyles,
-	makeStyles,
 	Paper,
-	Theme,
 	Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useDropzone } from 'react-dropzone';
-import { useMemo } from 'react';
-import { Alert } from '@material-ui/lab';
 
-import Link from 'components/link';
+import Breadcrumbs from 'components/breadcrumbs';
 import ButtonLink from 'components/button-link';
+import Footer from 'components/footer';
+import Header from 'components/header';
 
 import type { PageProps } from 'global-types';
 
 type ClaimUploadPageProps = PageProps;
 
-const useStyles = makeStyles( ( { palette, shape, spacing }: Theme ) =>
-	createStyles( {
-		'@keyframes progress': {
-			'0%': {
-				backgroundPosition: '0 0',
-			},
-			'100%': {
-				backgroundPosition: '-70px 0',
-			},
-		},
-		uploadError: {
-			marginBottom: spacing( 4 ),
-		},
-		dropzone: {
-			borderColor: palette.divider,
-			borderRadius: shape.borderRadius,
-			borderStyle: 'dashed',
-			borderWidth: 4,
-			padding: spacing( 6 ),
-			cursor: 'pointer',
-		},
-		dropzoneAccept: {
-			animation: '$progress 2s linear infinite !important',
-			backgroundImage: `repeating-linear-gradient(
-			-45deg,
-			${ palette.background.paper },
-			${ palette.background.paper } 25px,
-			${ palette.divider } 25px,
-			${ palette.divider } 50px
-		)`,
-			backgroundSize: '150% 100%',
-			border: 'solid',
-			borderColor: palette.success.dark,
-			color: palette.success.light,
-		},
-		dropzoneReject: {
-			color: palette.error.main,
-		},
-		uploadSuccess: {
-			borderColor: palette.divider,
-			borderRadius: shape.borderRadius,
-			borderWidth: 4,
-			padding: spacing( 6 ),
-		},
-		resetButton: {
-			marginLeft: spacing( 1 ),
-		},
-	} )
-);
+const styles = {
+	dropzone: {
+		borderColor: 'divider',
+		borderRadius: 1,
+		borderStyle: 'dashed',
+		borderWidth: 4,
+		padding: 6,
+		cursor: 'pointer',
+	},
+	dropzoneAccept: {
+		borderColor: 'success.dark',
+		color: 'success.light',
+	},
+	dropzoneReject: {
+		borderColor: 'error.dark',
+	},
+	uploadSuccess: {
+		borderColor: 'divider',
+		borderRadius: 1,
+		borderWidth: 4,
+		padding: 6,
+	},
+};
 
 const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 	const {
@@ -81,45 +52,30 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 		// eslint-disable-next-line no-console
 		onDropAccepted: ( files ) => console.log( files ),
 	} );
-	const classes = useStyles();
-
-	const dropzoneClasses = useMemo(
-		() =>
-			[
-				classes.dropzone,
-				isDragAccept && classes.dropzoneAccept,
-				isDragReject && classes.dropzoneReject,
-			]
-				.filter( Boolean )
-				.join( ' ' ),
-		[ isDragReject, isDragAccept ]
-	);
 
 	const hasUploadError = false;
 
 	return (
 		<Container maxWidth="md">
-			<Box my={ 2 }>
-				<Breadcrumbs>
-					<Link color="inherit" href="/claims">
-						Claims
-					</Link>
-					<Typography>Upload claims</Typography>
-				</Breadcrumbs>
-			</Box>
-			<Box my={ 4 }>
-				<Typography variant="h4" component="h1">
-					Upload Claims
-				</Typography>
-			</Box>
+			<Breadcrumbs
+				breadcrumbs={ [
+					{ href: '/claims', name: 'Claims' },
+					'Upload claims',
+				] }
+			/>
+			<Header title="Upload Claims" />
 			{ hasUploadError && (
-				<Alert severity="error" className={ classes.uploadError }>
-					{ false || 'There was an error processing your uploads.' }
+				<Alert severity="error" sx={ { marginBottom: 4 } }>
+					There was an error processing your uploads.
 				</Alert>
 			) }
 			<Paper
 				{ ...getRootProps() }
-				className={ dropzoneClasses }
+				sx={ [
+					styles.dropzone,
+					isDragAccept && styles.dropzoneAccept,
+					isDragReject && styles.dropzoneReject,
+				] }
 				elevation={ isDragAccept ? 3 : 0 }
 			>
 				<input { ...getInputProps() } />
@@ -130,7 +86,7 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 			</Paper>
 			{ false && (
 				<>
-					<Paper className={ classes.uploadSuccess }>
+					<Paper sx={ styles.uploadSuccess }>
 						<Typography variant="h6" component="p" align="center">
 							-1 claims processed!
 						</Typography>
@@ -139,15 +95,13 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 						<ButtonLink href="/claims" color="primary">
 							Go back to claims
 						</ButtonLink>
-						<Button
-							color="secondary"
-							className={ classes.resetButton }
-						>
+						<Button color="secondary" sx={ { marginLeft: 1 } }>
 							Upload another file
 						</Button>
 					</Box>
 				</>
 			) }
+			<Footer />
 		</Container>
 	);
 };

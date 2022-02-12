@@ -1,10 +1,4 @@
-import {
-	createStyles,
-	IconButton,
-	makeStyles,
-	Theme,
-	Tooltip,
-} from '@material-ui/core';
+import { IconButton, Tooltip } from '@mui/material';
 import Link from 'next/link';
 
 type NavItemLinkProps = {
@@ -14,24 +8,12 @@ type NavItemLinkProps = {
 	path: string;
 };
 
-const useStyles = makeStyles( ( theme: Theme ) =>
-	createStyles( {
-		inactive: {
-			color: theme.palette.primary.light,
-			'&:hover': {
-				color: 'inherit',
-			},
-		},
-	} )
-);
-
 const NavItem: React.FC< NavItemLinkProps > = ( {
 	name,
 	icon,
 	href,
 	path,
 } ) => {
-	const classes = useStyles();
 	let active = false;
 	if ( href === '/' ) {
 		active = path === '/';
@@ -43,7 +25,13 @@ const NavItem: React.FC< NavItemLinkProps > = ( {
 			<Tooltip title={ name }>
 				<IconButton
 					aria-label={ name }
-					className={ active ? '' : classes.inactive }
+					sx={ [
+						active && {
+							color: 'primary.light',
+							'&:hover': { color: 'inherit' },
+						},
+					] }
+					size="large"
 				>
 					{ icon }
 				</IconButton>

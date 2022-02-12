@@ -1,31 +1,31 @@
-import CssBaseline from '@material-ui/core/CssBaseline';
+import CssBaseline from '@mui/material/CssBaseline';
 import Head from 'next/head';
-import { ThemeProvider } from '@material-ui/core/styles';
-import { useEffect } from 'react';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import { CacheProvider, EmotionCache } from '@emotion/react';
 
 import Navigation from 'components/navigation';
+import createEmotionCache from 'config/emotion-cache';
 import theme from 'config/theme';
 
 import type { AppProps } from 'next/app';
 
-const App: React.FC< AppProps > = ( {
-	Component: PageComponent,
-	pageProps,
-} ) => {
-	useEffect( () => {
-		// Remove the server-side injected CSS.
-		const jssStyles = document.querySelector( '#jss-server-side' );
-		if ( jssStyles && jssStyles.parentElement ) {
-			jssStyles.parentElement.removeChild( jssStyles );
-		}
-	}, [] );
+const clientSideEmotionCache = createEmotionCache();
+
+const App: React.FC< AppProps & { emotionCache?: EmotionCache } > = (
+	props
+) => {
+	const {
+		Component: PageComponent,
+		pageProps,
+		emotionCache = clientSideEmotionCache,
+	} = props;
 
 	const title = pageProps.title
 		? `${ pageProps.title } - Health Portal`
 		: 'Health Portal';
 
 	return (
-		<>
+		<CacheProvider value={ emotionCache }>
 			<Head>
 				<title>{ title }</title>
 				<meta
@@ -33,12 +33,14 @@ const App: React.FC< AppProps > = ( {
 					content="minimum-scale=1, initial-scale=1, width=device-width"
 				/>
 			</Head>
-			<ThemeProvider theme={ theme }>
-				<CssBaseline />
-				<Navigation title="Health Portal ⚕️" />
-				<PageComponent { ...pageProps } />
-			</ThemeProvider>
-		</>
+			<StyledEngineProvider injectFirst>
+				<ThemeProvider theme={ theme }>
+					<CssBaseline />
+					<Navigation title="Health Portal ⚕️" />
+					<PageComponent { ...pageProps } />
+				</ThemeProvider>
+			</StyledEngineProvider>
+		</CacheProvider>
 	);
 };
 

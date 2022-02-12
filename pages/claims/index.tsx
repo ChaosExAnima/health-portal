@@ -1,6 +1,6 @@
 import { GetStaticPropsContext } from 'next';
-import { Container } from '@material-ui/core';
-import UploadIcon from '@material-ui/icons/CloudUpload';
+import { Container } from '@mui/material';
+import UploadIcon from '@mui/icons-material/CloudUpload';
 
 import DataTable, {
 	DataTableColumn,

@@ -1,41 +1,19 @@
 import {
 	AppBar,
 	Container,
-	Theme,
 	Toolbar,
 	Typography,
-	createStyles,
-	makeStyles,
 	useMediaQuery,
 	useTheme,
-} from '@material-ui/core';
-
-import SearchBar, { SearchOption } from 'components/search-bar';
-import Link from 'components/link';
-import NavItem from './nav-item';
-import navigation from 'config/navigation';
+} from '@mui/material';
 import { useRouter } from 'next/router';
 
-const useStyles = makeStyles( ( theme: Theme ) =>
-	createStyles( {
-		title: {
-			flexGrow: 1,
-			display: 'none',
-			color: 'transparent',
-			textShadow: '0 0 white',
-			[ theme.breakpoints.up( 'sm' ) ]: {
-				display: 'block',
-			},
-		},
-		toolbar: {
-			flexGrow: 1,
-			justifyContent: 'center',
-			[ theme.breakpoints.up( 'sm' ) ]: {
-				justifyContent: 'right',
-			},
-		},
-	} )
-);
+import SearchBar from 'components/search-bar';
+import Link from 'components/link';
+import navigation from 'config/navigation';
+import NavItem from './nav-item';
+
+import type { SearchOption } from 'components/search-bar/types';
 
 type NavigationProps = {
 	title: string;
@@ -53,11 +31,10 @@ const placeholderData: SearchOption[] = [
 	},
 ];
 
-const Navigation: React.FC< NavigationProps > = ( {
+export default function Navigation( {
 	title,
 	maxWidth = 'md',
-} ) => {
-	const classes = useStyles();
+}: NavigationProps ) {
 	const { breakpoints } = useTheme();
 	const isXSmall = useMediaQuery( breakpoints.only( 'xs' ) );
 	const { pathname } = useRouter();
@@ -65,9 +42,22 @@ const Navigation: React.FC< NavigationProps > = ( {
 	return (
 		<AppBar position="static">
 			<Container maxWidth={ maxWidth }>
-				<Toolbar className={ classes.toolbar }>
+				<Toolbar
+					sx={ {
+						flexGrow: 1,
+						justifyContent: { xs: 'center', sm: 'right' },
+					} }
+				>
 					{ title && (
-						<Typography variant="h6" className={ classes.title }>
+						<Typography
+							variant="h6"
+							sx={ {
+								flexGrow: 1,
+								display: { xs: 'none', sm: 'block' },
+								textShadow: '0 0 white',
+								color: 'transparent',
+							} }
+						>
 							<Link href="/" color="inherit" underline="none">
 								{ title }
 							</Link>
@@ -88,6 +78,4 @@ const Navigation: React.FC< NavigationProps > = ( {
 			</Container>
 		</AppBar>
 	);
-};
-
-export default Navigation;
+}
