@@ -1,7 +1,21 @@
-import { IconButton, Theme, Tooltip } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { IconButton, Tooltip } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import Link from 'next/link';
+
+const PREFIX = 'NavItem';
+
+const classes = {
+	inactive: `${ PREFIX }-inactive`,
+};
+
+const StyledLink = styled( Link )( ( { theme } ) => ( {
+	[ `& .${ classes.inactive }` ]: {
+		color: theme.palette.primary.light,
+		'&:hover': {
+			color: 'inherit',
+		},
+	},
+} ) );
 
 type NavItemLinkProps = {
 	name: string;
@@ -10,24 +24,12 @@ type NavItemLinkProps = {
 	path: string;
 };
 
-const useStyles = makeStyles( ( theme: Theme ) =>
-	createStyles( {
-		inactive: {
-			color: theme.palette.primary.light,
-			'&:hover': {
-				color: 'inherit',
-			},
-		},
-	} )
-);
-
 const NavItem: React.FC< NavItemLinkProps > = ( {
 	name,
 	icon,
 	href,
 	path,
 } ) => {
-	const classes = useStyles();
 	let active = false;
 	if ( href === '/' ) {
 		active = path === '/';
@@ -35,7 +37,7 @@ const NavItem: React.FC< NavItemLinkProps > = ( {
 		active = true;
 	}
 	return (
-		<Link href={ href }>
+		<StyledLink href={ href }>
 			<Tooltip title={ name }>
 				<IconButton
 					aria-label={ name }
@@ -45,7 +47,7 @@ const NavItem: React.FC< NavItemLinkProps > = ( {
 					{ icon }
 				</IconButton>
 			</Tooltip>
-		</Link>
+		</StyledLink>
 	);
 };
 

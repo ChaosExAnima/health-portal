@@ -5,11 +5,9 @@ import {
 	Container,
 	Grid,
 	Paper,
-	Theme,
 	Typography,
 } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -25,39 +23,47 @@ import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 import type { GetStaticPaths } from 'next';
 import type { GetSinglePageProps, SinglePageProps } from 'global-types';
 
-const useStyles = makeStyles( ( theme: Theme ) =>
-	createStyles( {
-		actionButtons: {
-			marginTop: theme.spacing( 2 ),
+const PREFIX = 'ClaimPageEdit';
+
+const classes = {
+	actionButtons: `${ PREFIX }-actionButtons`,
+	deleteButton: `${ PREFIX }-deleteButton`,
+	detailsContainer: `${ PREFIX }-detailsContainer`,
+	detailsName: `${ PREFIX }-detailsName`,
+};
+
+const StyledPage = styled( Container )( ( { theme } ) => ( {
+	[ `& .${ classes.actionButtons }` ]: {
+		marginTop: theme.spacing( 2 ),
+	},
+
+	[ `& .${ classes.deleteButton }` ]: {
+		backgroundColor: theme.palette.error.main,
+		color: theme.palette.error.contrastText,
+		'&:hover': {
+			backgroundColor: theme.palette.error.light,
 		},
-		deleteButton: {
-			backgroundColor: theme.palette.error.main,
-			color: theme.palette.error.contrastText,
-			'&:hover': {
-				backgroundColor: theme.palette.error.light,
-			},
-		},
-		detailsContainer: {
-			padding: theme.spacing( 2 ),
-		},
-		detailsName: {
-			minWidth: 200,
-		},
-	} )
-);
+	},
+
+	[ `& .${ classes.detailsContainer }` ]: {
+		padding: theme.spacing( 2 ),
+	},
+
+	[ `& .${ classes.detailsName }` ]: {
+		minWidth: 200,
+	},
+} ) );
 
 const ClaimPageEdit: React.FC< SinglePageProps< ClaimWithAdditions > > = ( {
 	slug,
 	title,
 } ) => {
-	const classes = useStyles();
-
 	if ( ! slug ) {
 		return null;
 	}
 
 	return (
-		<Container maxWidth="md">
+		<StyledPage maxWidth="md" as="main">
 			<Box my={ 2 }>
 				<Breadcrumbs aria-label="breadcrumb">
 					<Link color="inherit" href="/claims">
@@ -104,7 +110,7 @@ const ClaimPageEdit: React.FC< SinglePageProps< ClaimWithAdditions > > = ( {
 					spacing={ 2 }
 				></Grid>
 			</Box>
-		</Container>
+		</StyledPage>
 	);
 };
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
 	Autocomplete,
 	Drawer,
@@ -9,11 +10,74 @@ import {
 	PopperProps,
 	CircularProgress,
 	TextField,
-	Theme,
 } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import SearchIcon from '@mui/icons-material/Search';
+
+const PREFIX = 'SearchBar';
+
+const classes = {
+	search: `${ PREFIX }-search`,
+	searchIcon: `${ PREFIX }-searchIcon`,
+	inputRoot: `${ PREFIX }-inputRoot`,
+	inputInput: `${ PREFIX }-inputInput`,
+	inputPopper: `${ PREFIX }-inputPopper`,
+};
+
+const StyledSearch = styled( 'div' )( ( { theme } ) => ( {
+	[ `&` ]: {
+		position: 'relative',
+		borderRadius: theme.shape.borderRadius,
+		marginLeft: 0,
+		width: '100%',
+		[ theme.breakpoints.up( 'sm' ) ]: {
+			marginLeft: theme.spacing( 1 ),
+			width: 'auto',
+			backgroundColor: alpha( theme.palette.common.white, 0.15 ),
+			'&:hover': {
+				backgroundColor: alpha( theme.palette.common.white, 0.25 ),
+			},
+		},
+
+		'& svg': {
+			color: theme.palette.primary.light,
+		},
+		'&:hover svg': {
+			color: 'inherit',
+		},
+	},
+
+	[ `& .${ classes.searchIcon }` ]: {
+		padding: theme.spacing( 0, 2 ),
+		height: '100%',
+		position: 'absolute',
+		pointerEvents: 'none',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+
+	[ `& .${ classes.inputRoot }` ]: {
+		color: 'inherit',
+	},
+
+	[ `& .${ classes.inputInput }` ]: {
+		padding: theme.spacing( 0, 1, 0, 0 ),
+		// vertical padding + font size from searchIcon
+		paddingLeft: `calc(1em + ${ theme.spacing( 4 ) }px)`,
+		transition: theme.transitions.create( 'width' ),
+		width: '100%',
+		[ theme.breakpoints.up( 'sm' ) ]: {
+			width: '12ch',
+			'&:focus': {
+				width: '20ch',
+			},
+		},
+	},
+
+	[ `& .${ classes.inputPopper }` ]: {
+		width: '100% !important',
+	},
+} ) );
 
 type SearchBarProps = {
 	minimized?: boolean;
@@ -27,66 +91,11 @@ export type SearchOption = {
 	type?: string;
 };
 
-const useStyles = makeStyles( ( theme: Theme ) =>
-	createStyles( {
-		search: {
-			position: 'relative',
-			borderRadius: theme.shape.borderRadius,
-			marginLeft: 0,
-			width: '100%',
-			[ theme.breakpoints.up( 'sm' ) ]: {
-				marginLeft: theme.spacing( 1 ),
-				width: 'auto',
-				backgroundColor: alpha( theme.palette.common.white, 0.15 ),
-				'&:hover': {
-					backgroundColor: alpha( theme.palette.common.white, 0.25 ),
-				},
-			},
-
-			'& svg': {
-				color: theme.palette.primary.light,
-			},
-			'&:hover svg': {
-				color: 'inherit',
-			},
-		},
-		searchIcon: {
-			padding: theme.spacing( 0, 2 ),
-			height: '100%',
-			position: 'absolute',
-			pointerEvents: 'none',
-			display: 'flex',
-			alignItems: 'center',
-			justifyContent: 'center',
-		},
-		inputRoot: {
-			color: 'inherit',
-		},
-		inputInput: {
-			padding: theme.spacing( 0, 1, 0, 0 ),
-			// vertical padding + font size from searchIcon
-			paddingLeft: `calc(1em + ${ theme.spacing( 4 ) }px)`,
-			transition: theme.transitions.create( 'width' ),
-			width: '100%',
-			[ theme.breakpoints.up( 'sm' ) ]: {
-				width: '12ch',
-				'&:focus': {
-					width: '20ch',
-				},
-			},
-		},
-		inputPopper: {
-			width: '100% !important',
-		},
-	} )
-);
-
 const SearchBar: React.FC< SearchBarProps > = ( {
 	minimized = false,
 	inputId = 'search',
 	options,
 } ) => {
-	const classes = useStyles();
 	const [ open, setOpen ] = useState( false );
 	const loading = open && options.length === 0;
 
@@ -99,7 +108,7 @@ const SearchBar: React.FC< SearchBarProps > = ( {
 	);
 
 	return (
-		<div className={ classes.search }>
+		<StyledSearch>
 			<div className={ classes.searchIcon }>
 				<SearchIcon />
 			</div>
@@ -148,12 +157,11 @@ const SearchBar: React.FC< SearchBarProps > = ( {
 					/>
 				) }
 			/>
-		</div>
+		</StyledSearch>
 	);
 };
 
 const MinimizedSearchBar: React.FC = () => {
-	const classes = useStyles();
 	const [ searchOpen, setSearchOpen ] = useState( false );
 	return (
 		<>

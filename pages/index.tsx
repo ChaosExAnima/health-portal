@@ -1,6 +1,5 @@
-import { Box, Container, Grid, Paper, Theme, Typography } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { Box, Container, Grid, Paper, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import UploadIcon from '@mui/icons-material/CloudUpload';
 import CallIcon from '@mui/icons-material/Phone';
 import { toInteger } from 'lodash';
@@ -15,6 +14,23 @@ import { formatCurrency } from 'lib/strings';
 import type { PageProps } from 'global-types';
 import type { Claim } from 'lib/entities/types';
 
+const PREFIX = 'Home';
+
+const classes = {
+	actionButtons: `${ PREFIX }-actionButtons`,
+	info: `${ PREFIX }-info`,
+};
+
+const StyledPage = styled( Container )( ( { theme: { spacing } } ) => ( {
+	[ `& .${ classes.actionButtons }` ]: {
+		marginTop: spacing( 1 ),
+	},
+
+	[ `& .${ classes.info }` ]: {
+		padding: spacing( 3 ),
+	},
+} ) );
+
 type HomeProps = PageProps & {
 	welcomeMessage: string;
 	totalSpent: number;
@@ -22,36 +38,19 @@ type HomeProps = PageProps & {
 	totalClaims: number;
 };
 
-const useStyles = makeStyles( ( { spacing }: Theme ) =>
-	createStyles( {
-		actionButtons: {
-			marginTop: spacing( 1 ),
-		},
-		info: {
-			padding: spacing( 3 ),
-		},
-	} )
-);
-
 const Home: React.FC< HomeProps > = ( {
 	welcomeMessage,
 	totalSpent,
 	totalCovered,
 	totalClaims,
 } ) => {
-	const classes = useStyles();
-
 	return (
 		<Container maxWidth="md" component="main">
 			<Box my={ 4 }>
 				<Typography variant="h4" component="h1">
 					{ welcomeMessage }
 				</Typography>
-				<Grid
-					container
-					spacing={ 4 }
-					className={ classes.actionButtons }
-				>
+				<Grid container spacing={ 4 } sx={ { marginTop: 1 } }>
 					<Grid item>
 						<ButtonLink
 							href="/calls/new"
@@ -75,11 +74,7 @@ const Home: React.FC< HomeProps > = ( {
 				</Grid>
 			</Box>
 			{ /* TODO: Unify design for info boxes. */ }
-			<Paper
-				elevation={ 2 }
-				className={ classes.info }
-				component="section"
-			>
+			<Paper elevation={ 2 } component="section" sx={ { padding: 3 } }>
 				<Grid container spacing={ 4 } direction="column">
 					<InfoRow
 						info="You&lsquo;ve spent"

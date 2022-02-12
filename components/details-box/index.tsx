@@ -1,8 +1,6 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { Box, Paper, Grid, Theme } from '@mui/material';
-
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
 
 type onChangeRootFunc = ( key: string, value: string ) => void;
 type DetailsContextType = {
@@ -17,26 +15,17 @@ export const DetailsContext = React.createContext< DetailsContextType >( {
 	edit: false,
 } );
 
-const useStyles = makeStyles( ( theme: Theme ) =>
-	createStyles( {
-		detailsContainer: {
-			padding: theme.spacing( 2 ),
-		},
-	} )
-);
-
 const DetailsBox: React.FC< DetailsBoxProps > = ( {
 	edit,
 	children,
 	onChange,
 } ) => {
-	const classes = useStyles();
 	const context: DetailsContextType = {
 		edit: edit || false,
 		onChange,
 	};
 	return (
-		<Box my={ 4 }>
+		<StyledBox my={ 4 }>
 			<Grid
 				component={ Paper }
 				container
@@ -47,11 +36,23 @@ const DetailsBox: React.FC< DetailsBoxProps > = ( {
 					{ children }
 				</DetailsContext.Provider>
 			</Grid>
-		</Box>
+		</StyledBox>
 	);
 };
 
 import Detail from './detail';
+const PREFIX = 'DetailsBox';
+
+const classes = {
+	detailsContainer: `${ PREFIX }-detailsContainer`,
+};
+
+const StyledBox = styled( Box )( ( { theme } ) => ( {
+	[ `& .${ classes.detailsContainer }` ]: {
+		padding: theme.spacing( 2 ),
+	},
+} ) );
+
 export { Detail };
 
 export default DetailsBox;

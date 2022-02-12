@@ -5,12 +5,10 @@ import {
 	Fab,
 	Grid,
 	TextField,
-	Theme,
 	Tooltip,
 	Typography,
 } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -18,6 +16,18 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ButtonLink from 'components/button-link';
 import Link from 'next/link';
 import React from 'react';
+
+const PREFIX = 'Header';
+
+const classes = {
+	editTitle: `${ PREFIX }-editTitle`,
+};
+
+const StyledBox = styled( Box )( ( { theme } ) => ( {
+	[ `& .${ classes.editTitle }` ]: {
+		fontSize: theme.typography.h4.fontSize,
+	},
+} ) );
 
 type ActionItemIcon = 'add' | 'edit' | 'save' | 'cancel' | React.ReactElement;
 
@@ -28,7 +38,7 @@ export type ActionItem = Omit<
 	href?: string;
 	action: string;
 	icon: ActionItemIcon;
-	color?: 'default' | 'primary' | 'secondary';
+	color?: 'primary' | 'secondary';
 };
 
 type HeaderProps = {
@@ -38,14 +48,6 @@ type HeaderProps = {
 	edit?: true;
 	onChange?: ( value: string ) => void;
 };
-
-const useStyles = makeStyles( ( theme: Theme ) =>
-	createStyles( {
-		editTitle: {
-			fontSize: theme.typography.h4.fontSize,
-		},
-	} )
-);
 
 const ActionIcon: React.FC< { icon: ActionItemIcon } > = ( { icon } ) => {
 	if ( icon === 'add' ) {
@@ -63,7 +65,6 @@ const ActionIcon: React.FC< { icon: ActionItemIcon } > = ( { icon } ) => {
 const HeaderTitle: React.FC<
 	Pick< HeaderProps, 'title' | 'edit' | 'onChange' >
 > = ( { title, edit, onChange } ) => {
-	const classes = useStyles();
 	if ( edit ) {
 		return (
 			<TextField
@@ -119,7 +120,7 @@ const HeaderButtonsBelow: React.FC< HeaderProps > = ( {
 } ) => (
 	<>
 		<HeaderTitle title={ title } edit={ edit } onChange={ onChange } />
-		<Box mt={ 3 }>
+		<StyledBox mt={ 3 }>
 			<Grid container spacing={ 2 }>
 				{ actions.map( ( action ) => (
 					<Grid item key={ action.action }>
@@ -127,21 +128,18 @@ const HeaderButtonsBelow: React.FC< HeaderProps > = ( {
 					</Grid>
 				) ) }
 			</Grid>
-		</Box>
+		</StyledBox>
 	</>
 );
 
-const HeaderFab: React.FC< ActionItem > = ( {
-	icon,
-	action,
-	color = 'primary',
-	...props
-} ) => (
-	<Tooltip title={ action }>
-		<Fab aria-label={ action } color={ color } { ...props }>
-			<ActionIcon icon={ icon } />
-		</Fab>
-	</Tooltip>
+const HeaderFab: React.FC< ActionItem > = React.forwardRef(
+	( { icon, action, color = 'primary', ...props }, ref ) => (
+		<Tooltip title={ action }>
+			<Fab aria-label={ action } color={ color } { ...props } ref={ ref }>
+				<ActionIcon icon={ icon } />
+			</Fab>
+		</Tooltip>
+	)
 );
 
 const HeaderButtonsSide: React.FC<
@@ -154,7 +152,7 @@ const HeaderButtonsSide: React.FC<
 		{ actions.map( ( { href, ...props } ) => (
 			<Grid item key={ props.action }>
 				{ href ? (
-					<Link href={ href }>
+					<Link href={ href } passHref>
 						<HeaderFab { ...props } />
 					</Link>
 				) : (

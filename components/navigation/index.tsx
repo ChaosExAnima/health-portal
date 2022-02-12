@@ -1,15 +1,12 @@
 import {
 	AppBar,
 	Container,
-	Theme,
 	Toolbar,
 	Typography,
 	useMediaQuery,
 	useTheme,
 } from '@mui/material';
-
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 
 import SearchBar, { SearchOption } from 'components/search-bar';
 import Link from 'components/link';
@@ -17,26 +14,32 @@ import NavItem from './nav-item';
 import navigation from 'config/navigation';
 import { useRouter } from 'next/router';
 
-const useStyles = makeStyles( ( theme: Theme ) =>
-	createStyles( {
-		title: {
-			flexGrow: 1,
-			display: 'none',
-			color: 'transparent',
-			textShadow: '0 0 white',
-			[ theme.breakpoints.up( 'sm' ) ]: {
-				display: 'block',
-			},
+const PREFIX = 'Navigation';
+
+const classes = {
+	title: `${ PREFIX }-title`,
+	toolbar: `${ PREFIX }-toolbar`,
+};
+
+const StyledAppBar = styled( AppBar )( ( { theme } ) => ( {
+	[ `& .${ classes.title }` ]: {
+		flexGrow: 1,
+		display: 'none',
+		color: 'transparent',
+		textShadow: '0 0 white',
+		[ theme.breakpoints.up( 'sm' ) ]: {
+			display: 'block',
 		},
-		toolbar: {
-			flexGrow: 1,
-			justifyContent: 'center',
-			[ theme.breakpoints.up( 'sm' ) ]: {
-				justifyContent: 'right',
-			},
+	},
+
+	[ `& .${ classes.toolbar }` ]: {
+		flexGrow: 1,
+		justifyContent: 'center',
+		[ theme.breakpoints.up( 'sm' ) ]: {
+			justifyContent: 'right',
 		},
-	} )
-);
+	},
+} ) );
 
 type NavigationProps = {
 	title: string;
@@ -58,13 +61,12 @@ const Navigation: React.FC< NavigationProps > = ( {
 	title,
 	maxWidth = 'md',
 } ) => {
-	const classes = useStyles();
 	const { breakpoints } = useTheme();
 	const isXSmall = useMediaQuery( breakpoints.only( 'xs' ) );
 	const { pathname } = useRouter();
 
 	return (
-		<AppBar position="static">
+		<StyledAppBar position="static">
 			<Container maxWidth={ maxWidth }>
 				<Toolbar className={ classes.toolbar }>
 					{ title && (
@@ -87,7 +89,7 @@ const Navigation: React.FC< NavigationProps > = ( {
 					) ) }
 				</Toolbar>
 			</Container>
-		</AppBar>
+		</StyledAppBar>
 	);
 };
 
