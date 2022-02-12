@@ -1,6 +1,5 @@
 import React from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
-import ServerStyleSheets from '@mui/styles/ServerStyleSheets';
 import theme from 'config/theme';
 import createEmotionServer from '@emotion/server/create-instance';
 import createEmotionCache from 'config/emotion-cache';
@@ -55,7 +54,6 @@ HealthPortal.getInitialProps = async ( ctx ) => {
 	// 4. page.render
 
 	// Render app and page and get the context of the page with collected side effects.
-	const sheets = new ServerStyleSheets();
 	const originalRenderPage = ctx.renderPage;
 
 	// You can consider sharing the same emotion cache between all the SSR requests to speed up performance.
@@ -65,8 +63,9 @@ HealthPortal.getInitialProps = async ( ctx ) => {
 
 	ctx.renderPage = () =>
 		originalRenderPage( {
-			enhanceApp: ( App: any ) => ( props ) =>
-				sheets.collect( <App emotionCache={ cache } { ...props } /> ),
+			enhanceApp: ( App: any ) => ( props ) => (
+				<App emotionCache={ cache } { ...props } />
+			),
 		} );
 
 	const initialProps = await Document.getInitialProps( ctx );
