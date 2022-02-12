@@ -3,16 +3,16 @@ import {
 	Breadcrumbs,
 	Button,
 	Container,
-	createStyles,
 	Grid,
-	makeStyles,
 	Paper,
 	Theme,
 	Typography,
-} from '@material-ui/core';
-import SaveIcon from '@material-ui/icons/Save';
-import CancelIcon from '@material-ui/icons/Cancel';
-import DeleteIcon from '@material-ui/icons/Delete';
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import {
 	ClaimWithAdditions,

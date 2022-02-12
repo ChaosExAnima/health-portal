@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import {
-	createStyles,
+	Autocomplete,
 	Drawer,
 	alpha,
-	makeStyles,
 	IconButton,
 	InputBase,
 	Popper,
@@ -11,9 +10,10 @@ import {
 	CircularProgress,
 	TextField,
 	Theme,
-} from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import { Autocomplete } from '@material-ui/lab';
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import SearchIcon from '@mui/icons-material/Search';
 
 type SearchBarProps = {
 	minimized?: boolean;
@@ -157,7 +157,7 @@ const MinimizedSearchBar: React.FC = () => {
 	const [ searchOpen, setSearchOpen ] = useState( false );
 	return (
 		<>
-			<IconButton onClick={ () => setSearchOpen( true ) }>
+			<IconButton onClick={ () => setSearchOpen( true ) } size="large">
 				<SearchIcon />
 			</IconButton>
 			<Drawer

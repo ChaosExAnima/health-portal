@@ -2,19 +2,19 @@ import {
 	Box,
 	Button,
 	ButtonBaseProps,
-	createStyles,
 	Fab,
 	Grid,
-	makeStyles,
 	TextField,
 	Theme,
 	Tooltip,
 	Typography,
-} from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
-import SaveIcon from '@material-ui/icons/Save';
-import CancelIcon from '@material-ui/icons/Cancel';
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 import ButtonLink from 'components/button-link';
 import Link from 'next/link';
 import React from 'react';

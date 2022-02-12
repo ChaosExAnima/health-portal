@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Link } from '@material-ui/core';
+import { Container, Link } from '@mui/material';
 
 import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';

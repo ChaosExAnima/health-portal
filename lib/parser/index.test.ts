@@ -121,11 +121,9 @@ describe( 'getAndInsertProviders', () => {
 		// const em = getEntityManager();
 		// const providerRepo = em.getRepository( 'Provider' );
 		// const importEntity = await getImportEntity( em );
-
 		// const createSpy = jest.spyOn( providerRepo, 'create' );
 		// const saveSpy = jest.spyOn( providerRepo, 'save' );
 		// jest.spyOn( em, 'getRepository' ).mockReturnValueOnce( providerRepo );
-
 		// const providers = await getAndInsertProviders( [], em, importEntity );
 		// expect( providers ).toHaveLength( 0 );
 		// expect( createSpy ).not.toHaveBeenCalled();
@@ -216,7 +214,6 @@ describe( 'saveClaims', () => {
 		// const em = await getEntityManager();
 		// const importEntity = await getImportEntity( em );
 		// await saveClaims( [ rawClaim ], [], importEntity, em );
-
 		// const claim = await em.findOne< Claim >( 'Claim' );
 		// expect( claim ).not.toBeFalsy();
 		// await expect( claim?.import ).resolves.toEqual( importEntity );
@@ -281,15 +278,12 @@ describe( 'parseCSV', () => {
 
 	test.skip( 'uses a transaction', async () => {
 		// const csvStream = new Readable();
-
 		// const em = getEntityManager();
 		// const transactionSpy = jest
 		// 	.spyOn( em, 'transaction' )
 		// 	.mockImplementation( () => Promise.resolve() );
-
 		// const parse = parseCSV( csvStream, em );
 		// await expect( parse ).resolves.toEqual( 0 );
-
 		// expect( transactionSpy ).toHaveBeenCalled();
 	} );
 
@@ -304,7 +298,6 @@ describe( 'parseCSV', () => {
 		// 	Object.values( rawClaimWithProvider )
 		// );
 		// await expect( parseCSV( csvStream, em ) ).resolves.toEqual( 1 );
-
 		// const importRepo = em.getRepository< Import >( 'Import' );
 		// await expect( importRepo.findOneOrFail() ).resolves.toMatchObject( {
 		// 	inserted: 1,
@@ -324,7 +317,6 @@ describe( 'parseCSV', () => {
 		// 	Object.values( rawClaimWithProvider )
 		// );
 		// await expect( parseCSV( csvStream, em ) ).resolves.toEqual( 1 );
-
 		// const importRepo = em.getRepository< Import >( 'Import' );
 		// await expect( importRepo.findOneOrFail() ).resolves.toMatchObject( {
 		// 	inserted: 0,

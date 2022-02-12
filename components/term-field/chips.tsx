@@ -1,5 +1,6 @@
-import { Chip, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { Chip } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import { makeStyles } from '@mui/styles';
 import { without } from 'lodash';
 import { TermFieldChipsProps } from './types';
 

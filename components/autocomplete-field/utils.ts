@@ -1,4 +1,4 @@
-import type { FilterOptionsState } from '@material-ui/lab';
+import { FilterOptionsState } from '@mui/material/useAutocomplete';
 import type { AutocompleteOption, AutocompleteOptionNew } from './types';
 
 /**

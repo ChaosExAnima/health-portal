@@ -1,10 +1,6 @@
-import {
-	createStyles,
-	IconButton,
-	makeStyles,
-	Theme,
-	Tooltip,
-} from '@material-ui/core';
+import { IconButton, Theme, Tooltip } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import Link from 'next/link';
 
 type NavItemLinkProps = {
@@ -44,6 +40,7 @@ const NavItem: React.FC< NavItemLinkProps > = ( {
 				<IconButton
 					aria-label={ name }
 					className={ active ? '' : classes.inactive }
+					size="large"
 				>
 					{ icon }
 				</IconButton>

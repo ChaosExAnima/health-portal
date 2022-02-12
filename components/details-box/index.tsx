@@ -1,12 +1,8 @@
 import React from 'react';
-import {
-	Box,
-	Paper,
-	Grid,
-	makeStyles,
-	Theme,
-	createStyles,
-} from '@material-ui/core';
+import { Box, Paper, Grid, Theme } from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 
 type onChangeRootFunc = ( key: string, value: string ) => void;
 type DetailsContextType = {

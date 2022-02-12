@@ -1,12 +1,21 @@
-import CssBaseline from '@material-ui/core/CssBaseline';
+import CssBaseline from '@mui/material/CssBaseline';
 import Head from 'next/head';
-import { ThemeProvider } from '@material-ui/core/styles';
+import {
+	ThemeProvider,
+	Theme,
+	StyledEngineProvider,
+} from '@mui/material/styles';
 import { useEffect } from 'react';
 
 import Navigation from 'components/navigation';
 import theme from 'config/theme';
 
 import type { AppProps } from 'next/app';
+
+declare module '@mui/styles/defaultTheme' {
+	// eslint-disable-next-line @typescript-eslint/no-empty-interface
+	interface DefaultTheme extends Theme {}
+}
 
 const App: React.FC< AppProps > = ( { Component, pageProps } ) => {
 	useEffect( () => {
@@ -30,11 +39,13 @@ const App: React.FC< AppProps > = ( { Component, pageProps } ) => {
 					content="minimum-scale=1, initial-scale=1, width=device-width"
 				/>
 			</Head>
-			<ThemeProvider theme={ theme }>
-				<CssBaseline />
-				<Navigation title="Health Portal ⚕️" />
-				<Component { ...pageProps } />
-			</ThemeProvider>
+			<StyledEngineProvider injectFirst>
+				<ThemeProvider theme={ theme }>
+					<CssBaseline />
+					<Navigation title="Health Portal ⚕️" />
+					<Component { ...pageProps } />
+				</ThemeProvider>
+			</StyledEngineProvider>
 		</>
 	);
 };

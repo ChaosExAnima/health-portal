@@ -1,17 +1,17 @@
 import {
+	Alert,
 	Box,
 	Breadcrumbs,
 	Button,
 	Container,
-	createStyles,
-	makeStyles,
 	Paper,
 	Theme,
 	Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useDropzone } from 'react-dropzone';
 import { useMemo } from 'react';
-import { Alert } from '@material-ui/lab';
 
 import Link from 'components/link';
 import ButtonLink from 'components/button-link';

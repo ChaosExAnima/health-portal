@@ -4,11 +4,12 @@ import {
 	Theme,
 	Toolbar,
 	Typography,
-	createStyles,
-	makeStyles,
 	useMediaQuery,
 	useTheme,
-} from '@material-ui/core';
+} from '@mui/material';
+
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
 import SearchBar, { SearchOption } from 'components/search-bar';
 import Link from 'components/link';

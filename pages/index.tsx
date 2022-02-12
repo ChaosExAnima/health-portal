@@ -1,15 +1,8 @@
-import {
-	Box,
-	Container,
-	Grid,
-	Paper,
-	Theme,
-	Typography,
-	createStyles,
-	makeStyles,
-} from '@material-ui/core';
-import UploadIcon from '@material-ui/icons/CloudUpload';
-import CallIcon from '@material-ui/icons/Phone';
+import { Box, Container, Grid, Paper, Theme, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import UploadIcon from '@mui/icons-material/CloudUpload';
+import CallIcon from '@mui/icons-material/Phone';
 import { toInteger } from 'lodash';
 
 import ButtonLink from 'components/button-link';

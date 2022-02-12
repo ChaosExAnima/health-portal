@@ -68,7 +68,9 @@ describe( 'claimType', () => {
 			[ constants.CLAIM_TYPE_OTHER ]: 'Other',
 		};
 		for ( const [ input, output ] of Object.entries( typeMap ) ) {
-			expect( formatClaimType( input as constants.CLAIM_TYPES_TYPE ) ).toEqual( output );
+			expect(
+				formatClaimType( input as constants.CLAIM_TYPES_TYPE )
+			).toEqual( output );
 		}
 	} );
 } );
@@ -83,7 +85,9 @@ describe( 'claimStatus', () => {
 			[ constants.CLAIM_STATUS_UNKNOWN ]: 'Unknown',
 		};
 		for ( const [ input, output ] of Object.entries( typeMap ) ) {
-			expect( formatClaimStatus( input as constants.CLAIM_STATUS_TYPE ) ).toEqual( output );
+			expect(
+				formatClaimStatus( input as constants.CLAIM_STATUS_TYPE )
+			).toEqual( output );
 		}
 	} );
 } );

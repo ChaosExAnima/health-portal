@@ -1,24 +1,26 @@
-import { createTheme } from '@material-ui/core/styles';
-import { purple, blue } from '@material-ui/core/colors';
+import { createTheme, adaptV4Theme } from '@mui/material/styles';
+import { purple, blue } from '@mui/material/colors';
 
 // Create a theme instance.
-const theme = createTheme( {
-	typography: {
-		fontSize: 16,
-	},
-	palette: {
-		type: 'dark',
-		primary: purple,
-		secondary: blue,
-	},
-	props: {
-		MuiButton: {
-			variant: 'contained',
+const theme = createTheme(
+	adaptV4Theme( {
+		typography: {
+			fontSize: 16,
 		},
-		MuiTextField: {
-			margin: 'normal',
+		palette: {
+			mode: 'dark',
+			primary: purple,
+			secondary: blue,
 		},
-	},
-} );
+		props: {
+			MuiButton: {
+				variant: 'contained',
+			},
+			MuiTextField: {
+				margin: 'normal',
+			},
+		},
+	} )
+);
 
 export default theme;

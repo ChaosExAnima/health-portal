@@ -9,7 +9,7 @@ import {
 	TablePagination,
 	TableRow,
 	Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useRouter } from 'next/router';
 
 import DataTableFilters from './filters';
