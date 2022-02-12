@@ -61,6 +61,7 @@ function NewCallPage() {
 						type="datetime"
 						required
 						disableFuture
+						showTodayButton
 					/>
 					<FormAutocompleteField
 						control={ control }

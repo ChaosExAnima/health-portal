@@ -1,4 +1,4 @@
-import { TextField as MuiTextField } from '@mui/material';
+import { TextField as MuiTextField, TextField } from '@mui/material';
 import {
 	DatePicker,
 	DateTimePicker,
@@ -6,7 +6,13 @@ import {
 	TimePickerProps,
 } from '@mui/lab';
 import { useController } from 'react-hook-form';
-import { FormDateTimeAnyFieldProps, FormTextFieldProps, Input } from './types';
+import { omit } from 'lodash';
+
+import type {
+	FormDateTimeFieldProps,
+	FormTextFieldProps,
+	Input,
+} from './types';
 
 export function FormTextField< Schema extends Input >( {
 	name,
@@ -30,7 +36,6 @@ export function FormTextField< Schema extends Input >( {
 			helperText={ errorText }
 			error={ !! error }
 			label={ label }
-			fullWidth
 		/>
 	);
 }
@@ -38,31 +43,30 @@ export function FormTextField< Schema extends Input >( {
 export function FormDateTimeField< S extends Input >( {
 	control,
 	name,
-	type = 'date',
-}: FormDateTimeAnyFieldProps< S > ) {
+	label,
+	...fieldProps
+}: FormDateTimeFieldProps< S > ) {
 	const {
 		field,
 		fieldState: { error },
 	} = useController( { name, control } );
-
-	let PickerComponent;
-	if ( type === 'time' ) {
-		PickerComponent = TimePicker;
-	} else if ( type === 'datetime' ) {
-		PickerComponent = DateTimePicker;
-	} else {
-		PickerComponent = DatePicker;
-	}
 
 	let errorText = ' ';
 	if ( error ) {
 		errorText = error.message ?? errorText;
 	}
 	return (
-		<PickerComponent
+		<DateTimePicker
 			{ ...field }
-			helperText={ errorText }
-			error={ !! error }
+			{ ...fieldProps }
+			label={ label }
+			renderInput={ ( params ) => (
+				<TextField
+					{ ...params }
+					helperText={ errorText }
+					error={ !! error }
+				/>
+			) }
 		/>
 	);
 }

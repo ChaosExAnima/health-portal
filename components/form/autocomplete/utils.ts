@@ -1,5 +1,5 @@
 import { FilterOptionsState } from '@mui/material/useAutocomplete';
-import type { AutocompleteOption, AutocompleteOptionNew } from './types';
+import type { AutocompleteOption, AutocompleteOptionNew } from '../types';
 
 /**
  * Checks whether this is an AutocompleteOption.

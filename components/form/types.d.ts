@@ -66,7 +66,7 @@ export interface FormTermFieldChipsProps extends MuiChipProps {
 }
 
 // Date/time picker
-type WithoutFormValues<I> = Omit<I, 'value' | 'onChange'>;
+type WithoutFormValues<I> = Omit<I, 'value' | 'onChange' | 'renderInput'>;
 export interface FormDateFieldProps<S> extends FormBaseFieldProps<S>, WithoutFormValues<MuiDatePickerProps> {
 	type?: 'date';
 }

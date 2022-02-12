@@ -1,10 +1,10 @@
-import { Box, Button } from '@material-ui/core';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import dayjs from 'dayjs';
+import { Box, Button } from '@mui/material';
+import DateAdaptor from '@mui/lab/AdapterDayjs';
 import React from 'react';
 import { AnyObjectSchema } from 'yup';
 
 import { FormProps } from './types';
+import { LocalizationProvider } from '@mui/lab';
 
 export default function Form< Schema extends AnyObjectSchema >( {
 	onSubmit,
@@ -12,9 +12,9 @@ export default function Form< Schema extends AnyObjectSchema >( {
 }: FormProps< Schema > ) {
 	return (
 		<Box component="form" onSubmit={ onSubmit }>
-			<MuiPickersUtilsProvider utils={ dayjs }>
+			<LocalizationProvider dateAdapter={ DateAdaptor }>
 				{ children }
-			</MuiPickersUtilsProvider>
+			</LocalizationProvider>
 			<Box mt={ 2 }>
 				<Button type="submit" color="primary">
 					Submit

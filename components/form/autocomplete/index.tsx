@@ -58,7 +58,7 @@ export default function AutocompleteField< Schema extends Input >( {
 			options={ response?.success ? response.options : [] }
 			onChange={ onChange }
 			noOptionsText="Not found"
-			renderOption={ ( option ) =>
+			renderOption={ ( option: unknown ) =>
 				isOptionObject( option )
 					? option.label
 					: getOptionLabel( option )
