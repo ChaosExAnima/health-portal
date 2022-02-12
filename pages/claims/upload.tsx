@@ -5,11 +5,10 @@ import {
 	Button,
 	Container,
 	Paper,
+	styled,
 	Theme,
 	Typography,
 } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import { useDropzone } from 'react-dropzone';
 import { useMemo } from 'react';
 
@@ -20,8 +19,8 @@ import type { PageProps } from 'global-types';
 
 type ClaimUploadPageProps = PageProps;
 
-const useStyles = makeStyles( ( { palette, shape, spacing }: Theme ) =>
-	createStyles( {
+const StyledContainer = styled( Container )(
+	( { theme: { palette, shape, spacing } } ) => ( {
 		'@keyframes progress': {
 			'0%': {
 				backgroundPosition: '0 0',
@@ -30,10 +29,7 @@ const useStyles = makeStyles( ( { palette, shape, spacing }: Theme ) =>
 				backgroundPosition: '-70px 0',
 			},
 		},
-		uploadError: {
-			marginBottom: spacing( 4 ),
-		},
-		dropzone: {
+		[ `& .dropzone` ]: {
 			borderColor: palette.divider,
 			borderRadius: shape.borderRadius,
 			borderStyle: 'dashed',
@@ -41,31 +37,25 @@ const useStyles = makeStyles( ( { palette, shape, spacing }: Theme ) =>
 			padding: spacing( 6 ),
 			cursor: 'pointer',
 		},
-		dropzoneAccept: {
+		[ `& .dropzoneAccept` ]: {
 			animation: '$progress 2s linear infinite !important',
 			backgroundImage: `repeating-linear-gradient(
-			-45deg,
-			${ palette.background.paper },
-			${ palette.background.paper } 25px,
-			${ palette.divider } 25px,
-			${ palette.divider } 50px
-		)`,
+				-45deg,
+				${ palette.background.paper },
+				${ palette.background.paper } 25px,
+				${ palette.divider } 25px,
+				${ palette.divider } 50px
+			)`,
 			backgroundSize: '150% 100%',
 			border: 'solid',
 			borderColor: palette.success.dark,
 			color: palette.success.light,
 		},
-		dropzoneReject: {
-			color: palette.error.main,
-		},
-		uploadSuccess: {
+		[ `& .uploadSuccess` ]: {
 			borderColor: palette.divider,
 			borderRadius: shape.borderRadius,
 			borderWidth: 4,
 			padding: spacing( 6 ),
-		},
-		resetButton: {
-			marginLeft: spacing( 1 ),
 		},
 	} )
 );
@@ -81,14 +71,12 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 		// eslint-disable-next-line no-console
 		onDropAccepted: ( files ) => console.log( files ),
 	} );
-	const classes = useStyles();
-
 	const dropzoneClasses = useMemo(
 		() =>
 			[
-				classes.dropzone,
-				isDragAccept && classes.dropzoneAccept,
-				isDragReject && classes.dropzoneReject,
+				'dropzone',
+				isDragAccept && 'dropzoneAccept',
+				isDragReject && 'dropzoneReject',
 			]
 				.filter( Boolean )
 				.join( ' ' ),
@@ -98,7 +86,7 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 	const hasUploadError = false;
 
 	return (
-		<Container maxWidth="md">
+		<StyledContainer maxWidth="md">
 			<Box my={ 2 }>
 				<Breadcrumbs>
 					<Link color="inherit" href="/claims">
@@ -113,7 +101,7 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 				</Typography>
 			</Box>
 			{ hasUploadError && (
-				<Alert severity="error" className={ classes.uploadError }>
+				<Alert severity="error" sx={ { marginBottom: 4 } }>
 					{ false || 'There was an error processing your uploads.' }
 				</Alert>
 			) }
@@ -130,7 +118,7 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 			</Paper>
 			{ false && (
 				<>
-					<Paper className={ classes.uploadSuccess }>
+					<Paper className="uploadSuccess">
 						<Typography variant="h6" component="p" align="center">
 							-1 claims processed!
 						</Typography>
@@ -139,16 +127,13 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 						<ButtonLink href="/claims" color="primary">
 							Go back to claims
 						</ButtonLink>
-						<Button
-							color="secondary"
-							className={ classes.resetButton }
-						>
+						<Button color="secondary" sx={ { marginLeft: 1 } }>
 							Upload another file
 						</Button>
 					</Box>
 				</>
 			) }
-		</Container>
+		</StyledContainer>
 	);
 };
 
