@@ -1,64 +1,45 @@
 import {
 	Alert,
 	Box,
-	Breadcrumbs,
 	Button,
 	Container,
 	Paper,
-	styled,
-	Theme,
 	Typography,
 } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
-import { useMemo } from 'react';
 
-import Link from 'components/link';
+import Breadcrumbs from 'components/breadcrumbs';
 import ButtonLink from 'components/button-link';
+import Footer from 'components/footer';
+import Header from 'components/header';
 
 import type { PageProps } from 'global-types';
 
 type ClaimUploadPageProps = PageProps;
 
-const StyledContainer = styled( Container )(
-	( { theme: { palette, shape, spacing } } ) => ( {
-		'@keyframes progress': {
-			'0%': {
-				backgroundPosition: '0 0',
-			},
-			'100%': {
-				backgroundPosition: '-70px 0',
-			},
-		},
-		[ `& .dropzone` ]: {
-			borderColor: palette.divider,
-			borderRadius: shape.borderRadius,
-			borderStyle: 'dashed',
-			borderWidth: 4,
-			padding: spacing( 6 ),
-			cursor: 'pointer',
-		},
-		[ `& .dropzoneAccept` ]: {
-			animation: '$progress 2s linear infinite !important',
-			backgroundImage: `repeating-linear-gradient(
-				-45deg,
-				${ palette.background.paper },
-				${ palette.background.paper } 25px,
-				${ palette.divider } 25px,
-				${ palette.divider } 50px
-			)`,
-			backgroundSize: '150% 100%',
-			border: 'solid',
-			borderColor: palette.success.dark,
-			color: palette.success.light,
-		},
-		[ `& .uploadSuccess` ]: {
-			borderColor: palette.divider,
-			borderRadius: shape.borderRadius,
-			borderWidth: 4,
-			padding: spacing( 6 ),
-		},
-	} )
-);
+const styles = {
+	dropzone: {
+		borderColor: 'divider',
+		borderRadius: 1,
+		borderStyle: 'dashed',
+		borderWidth: 4,
+		padding: 6,
+		cursor: 'pointer',
+	},
+	dropzoneAccept: {
+		borderColor: 'success.dark',
+		color: 'success.light',
+	},
+	dropzoneReject: {
+		borderColor: 'error.dark',
+	},
+	uploadSuccess: {
+		borderColor: 'divider',
+		borderRadius: 1,
+		borderWidth: 4,
+		padding: 6,
+	},
+};
 
 const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 	const {
@@ -71,43 +52,30 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 		// eslint-disable-next-line no-console
 		onDropAccepted: ( files ) => console.log( files ),
 	} );
-	const dropzoneClasses = useMemo(
-		() =>
-			[
-				'dropzone',
-				isDragAccept && 'dropzoneAccept',
-				isDragReject && 'dropzoneReject',
-			]
-				.filter( Boolean )
-				.join( ' ' ),
-		[ isDragReject, isDragAccept ]
-	);
 
 	const hasUploadError = false;
 
 	return (
-		<StyledContainer maxWidth="md">
-			<Box my={ 2 }>
-				<Breadcrumbs>
-					<Link color="inherit" href="/claims">
-						Claims
-					</Link>
-					<Typography>Upload claims</Typography>
-				</Breadcrumbs>
-			</Box>
-			<Box my={ 4 }>
-				<Typography variant="h4" component="h1">
-					Upload Claims
-				</Typography>
-			</Box>
+		<Container maxWidth="md">
+			<Breadcrumbs
+				breadcrumbs={ [
+					{ href: '/claims', name: 'Claims' },
+					'Upload claims',
+				] }
+			/>
+			<Header title="Upload Claims" />
 			{ hasUploadError && (
 				<Alert severity="error" sx={ { marginBottom: 4 } }>
-					{ false || 'There was an error processing your uploads.' }
+					There was an error processing your uploads.
 				</Alert>
 			) }
 			<Paper
 				{ ...getRootProps() }
-				className={ dropzoneClasses }
+				sx={ [
+					styles.dropzone,
+					isDragAccept && styles.dropzoneAccept,
+					isDragReject && styles.dropzoneReject,
+				] }
 				elevation={ isDragAccept ? 3 : 0 }
 			>
 				<input { ...getInputProps() } />
@@ -118,7 +86,7 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 			</Paper>
 			{ false && (
 				<>
-					<Paper className="uploadSuccess">
+					<Paper sx={ styles.uploadSuccess }>
 						<Typography variant="h6" component="p" align="center">
 							-1 claims processed!
 						</Typography>
@@ -133,7 +101,8 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 					</Box>
 				</>
 			) }
-		</StyledContainer>
+			<Footer />
+		</Container>
 	);
 };
 
