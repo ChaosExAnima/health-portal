@@ -53,7 +53,7 @@
     "@types/react": "^17",
     "@typescript-eslint/eslint-plugin": "^5.8",
     "@typescript-eslint/parser": "^5.8",
-    "@wordpress/eslint-plugin": "^9",
+    "@wordpress/eslint-plugin": "^10.0.1",
     "babel-jest": "^27",
     "babel-plugin-transform-typescript-metadata": "^0.3.1",
     "eslint": "^8.5",
