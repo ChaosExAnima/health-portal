@@ -1,4 +1,5 @@
-import { TextField } from '@material-ui/core';
+import { IconButton, TextField } from '@mui/material';
+import { Close } from '@mui/icons-material';
 import { uniq } from 'lodash';
 import { ChangeEvent, useRef, useState } from 'react';
 import { useController } from 'react-hook-form';
@@ -35,6 +36,8 @@ export default function TermField( {
 		setTerms( uniqueTerms );
 		onChangeForm( uniqueTerms );
 		setText( '' );
+		inputRef.current?.focus();
+		setFocus( true );
 	};
 	const onKeyDown = ( event: React.KeyboardEvent< HTMLInputElement > ) => {
 		switch ( event.key ) {
@@ -46,6 +49,7 @@ export default function TermField( {
 			case 'Escape':
 				setText( '' );
 				inputRef.current?.blur();
+				setFocus( false );
 				break;
 			case 'Tab':
 				setText( '' );
@@ -65,12 +69,35 @@ export default function TermField( {
 			} }
 			InputProps={ {
 				...TextFieldProps.InputProps,
+				sx: {
+					flexWrap: 'wrap',
+					gap: 1,
+					paddingTop: 2,
+					'& > input': {
+						paddingTop: 0,
+					},
+				},
 				startAdornment: (
 					<TermFieldChips
 						terms={ terms }
 						setTerms={ setTermsSafe }
 						inputRef={ inputRef }
 					/>
+				),
+				endAdornment: !! terms.length && (
+					<IconButton
+						aria-label="Clear field"
+						size="small"
+						onClick={ () => setTermsSafe( [] ) }
+						sx={ {
+							position: 'absolute',
+							right: 0,
+							bottom: 0,
+							margin: 1,
+						} }
+					>
+						<Close />
+					</IconButton>
 				),
 			} }
 			InputLabelProps={ {

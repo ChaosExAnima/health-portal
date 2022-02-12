@@ -1,12 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import {
-	Box,
-	Button,
-	Container,
-	TextField,
-	Typography,
-} from '@material-ui/core';
+import { Box, Button, Container, TextField, Typography } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { DevTool } from '@hookform/devtools';
@@ -77,7 +71,6 @@ function NewCallPage() {
 								{ ...field }
 								label="Date"
 								type="datetime-local"
-								fullWidth
 								required
 								InputLabelProps={ { shrink: true } }
 							/>
@@ -96,7 +89,6 @@ function NewCallPage() {
 						name="reps"
 						label="Representatives"
 						format={ capitalize }
-						fullWidth
 					/>
 					<Controller
 						control={ control }
@@ -107,7 +99,6 @@ function NewCallPage() {
 								{ ...field }
 								label="Reason"
 								multiline
-								fullWidth
 								required
 							/>
 						) }
@@ -117,11 +108,7 @@ function NewCallPage() {
 						name="reference"
 						defaultValue=""
 						render={ ( { field } ) => (
-							<TextField
-								{ ...field }
-								label="Reference #"
-								fullWidth
-							/>
+							<TextField { ...field } label="Reference #" />
 						) }
 					/>
 					<Controller
@@ -133,7 +120,6 @@ function NewCallPage() {
 								{ ...field }
 								label="Result"
 								multiline
-								fullWidth
 								required
 							/>
 						) }

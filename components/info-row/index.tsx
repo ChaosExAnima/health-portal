@@ -1,12 +1,22 @@
-import {
-	createStyles,
-	makeStyles,
-	Grid,
-	Theme,
-	Typography,
-} from '@material-ui/core';
+import { Grid, Typography } from '@mui/material';
+
+import { styled } from '@mui/material/styles';
 
 import OptionalLink from 'components/optional-link';
+
+const StyledGrid = styled( Grid )( ( { theme } ) => ( {
+	[ `&` ]: ( { href }: InfoRowProps ) => ( {
+		'& > div': {
+			transition: theme.transitions.create( 'background-color', {
+				duration: theme.transitions.duration.standard,
+			} ),
+			cursor: href ? 'pointer' : 'inherit',
+		},
+		'&:hover > div': {
+			'background-color': href ? theme.palette.primary.dark : 'inherit',
+		},
+	} ),
+} ) );
 
 type InfoRowProps = {
 	info: React.ReactNode;
@@ -14,29 +24,11 @@ type InfoRowProps = {
 	href?: string;
 };
 
-const useStyles = makeStyles( ( theme: Theme ) =>
-	createStyles( {
-		panel: ( { href }: InfoRowProps ) => ( {
-			'& > div': {
-				transition: theme.transitions.create( 'background-color', {
-					duration: theme.transitions.duration.standard,
-				} ),
-				cursor: href ? 'pointer' : 'inherit',
-			},
-			'&:hover > div': {
-				'background-color': href
-					? theme.palette.primary.dark
-					: 'inherit',
-			},
-		} ),
-	} )
-);
-
 const InfoRow: React.FC< InfoRowProps > = ( props ) => {
 	const { info, value, href } = props;
-	const styles = useStyles( props );
+
 	return (
-		<Grid container item spacing={ 4 } className={ styles.panel }>
+		<StyledGrid container item spacing={ 4 }>
 			<Grid item sm={ 3 }>
 				<OptionalLink href={ href }>
 					<Typography variant="body1" component="p">
@@ -51,7 +43,7 @@ const InfoRow: React.FC< InfoRowProps > = ( props ) => {
 					</Typography>
 				</OptionalLink>
 			</Grid>
-		</Grid>
+		</StyledGrid>
 	);
 };
 

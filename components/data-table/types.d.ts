@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { TableCellProps } from '@material-ui/core/TableCell/TableCell';
+import type { TableCellProps } from '@mui/material/TableCell/TableCell';
 import type { StringMap } from 'global-types';
 
 type PaginationQuery = {

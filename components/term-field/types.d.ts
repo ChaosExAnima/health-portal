@@ -1,4 +1,4 @@
-import { ChipProps, TextFieldProps } from '@material-ui/core';
+import { ChipProps, TextFieldProps } from '@mui/material';
 import { MutableRefObject } from 'react';
 import { Control } from 'react-hook-form';
 

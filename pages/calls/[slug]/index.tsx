@@ -1,4 +1,4 @@
-import { Box, Container } from '@material-ui/core';
+import { Box, Container } from '@mui/material';
 
 import rowToCall from 'lib/entities/call';
 import {

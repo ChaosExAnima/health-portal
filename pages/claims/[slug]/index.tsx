@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container } from '@material-ui/core';
+import { Container } from '@mui/material';
 
 import DetailsBox, { Detail } from 'components/details-box';
 import Header from 'components/header';

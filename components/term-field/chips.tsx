@@ -1,16 +1,6 @@
-import { Chip, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { Chip } from '@mui/material';
 import { without } from 'lodash';
 import { TermFieldChipsProps } from './types';
-
-const useStyles = makeStyles( () =>
-	createStyles( {
-		chip: {
-			margin: 3,
-			maxWidth: 'calc( 100% - 6px)',
-		},
-	} )
-);
 
 export default function TermFieldChips( {
 	terms,
@@ -18,7 +8,6 @@ export default function TermFieldChips( {
 	inputRef,
 	...ChipProps
 }: TermFieldChipsProps ) {
-	const classes = useStyles();
 	const onDelete = ( term: string ) => () => {
 		const newTerms = without( terms, term );
 		setTerms( newTerms );
@@ -31,12 +20,13 @@ export default function TermFieldChips( {
 				<Chip
 					key={ term }
 					{ ...ChipProps }
-					className={ classes.chip }
+					sx={ ( theme ) => ( {
+						maxWidth: `calc( 100% - ${ theme.spacing( 3 ) } )`,
+					} ) }
 					label={ term }
 					onDelete={ onDelete( term ) }
 				/>
 			) ) }
-			&nbsp;
 		</>
 	);
 }

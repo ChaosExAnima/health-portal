@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@material-ui/core';
+import { Button, ButtonProps } from '@mui/material';
 import Link, { LinkProps } from 'next/link';
 
 type ButtonLinkProps = LinkProps & Omit< ButtonProps, 'href' >;
