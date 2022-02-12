@@ -1,10 +1,10 @@
-import { TextField as MuiTextField } from '@material-ui/core';
+import { TextField as MuiTextField } from '@mui/material';
 import {
 	DatePicker,
 	DateTimePicker,
 	TimePicker,
 	TimePickerProps,
-} from '@material-ui/pickers';
+} from '@mui/lab';
 import { useController } from 'react-hook-form';
 import { FormDateTimeAnyFieldProps, FormTextFieldProps, Input } from './types';
 
@@ -39,7 +39,6 @@ export function FormDateTimeField< S extends Input >( {
 	control,
 	name,
 	type = 'date',
-	...rawProps
 }: FormDateTimeAnyFieldProps< S > ) {
 	const {
 		field,
@@ -47,7 +46,6 @@ export function FormDateTimeField< S extends Input >( {
 	} = useController( { name, control } );
 
 	let PickerComponent;
-	let fieldProps;
 	if ( type === 'time' ) {
 		PickerComponent = TimePicker;
 	} else if ( type === 'datetime' ) {
