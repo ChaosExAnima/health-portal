@@ -10,6 +10,7 @@ import ErrorNotice from 'components/error-notice';
 import {
 	Form,
 	FormAutocompleteField,
+	FormDateTimeField,
 	FormTermsField,
 	FormTextField,
 } from 'components/form';
@@ -53,11 +54,13 @@ function NewCallPage() {
 						handleNewType( form, 'call', handleErrors, router )
 					) }
 				>
-					<FormTextField
+					<FormDateTimeField
 						control={ control }
 						name="created"
-						label="Date"
+						label="Call Date"
+						type="datetime"
 						required
+						disableFuture
 					/>
 					<FormAutocompleteField
 						control={ control }

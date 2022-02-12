@@ -1,4 +1,6 @@
 import { Box, Button } from '@material-ui/core';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import dayjs from 'dayjs';
 import React from 'react';
 import { AnyObjectSchema } from 'yup';
 
@@ -10,7 +12,9 @@ export default function Form< Schema extends AnyObjectSchema >( {
 }: FormProps< Schema > ) {
 	return (
 		<Box component="form" onSubmit={ onSubmit }>
-			{ children }
+			<MuiPickersUtilsProvider utils={ dayjs }>
+				{ children }
+			</MuiPickersUtilsProvider>
 			<Box mt={ 2 }>
 				<Button type="submit" color="primary">
 					Submit

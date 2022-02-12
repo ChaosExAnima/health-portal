@@ -8,7 +8,10 @@ import theme from 'config/theme';
 
 import type { AppProps } from 'next/app';
 
-const App: React.FC< AppProps > = ( { Component, pageProps } ) => {
+const App: React.FC< AppProps > = ( {
+	Component: PageComponent,
+	pageProps,
+} ) => {
 	useEffect( () => {
 		// Remove the server-side injected CSS.
 		const jssStyles = document.querySelector( '#jss-server-side' );
@@ -33,7 +36,7 @@ const App: React.FC< AppProps > = ( { Component, pageProps } ) => {
 			<ThemeProvider theme={ theme }>
 				<CssBaseline />
 				<Navigation title="Health Portal ⚕️" />
-				<Component { ...pageProps } />
+				<PageComponent { ...pageProps } />
 			</ThemeProvider>
 		</>
 	);

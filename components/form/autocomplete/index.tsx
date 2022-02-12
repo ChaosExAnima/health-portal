@@ -13,18 +13,19 @@ import type {
 } from '../types';
 
 export default function AutocompleteField< Schema extends Input >( {
+	control,
 	free,
 	label,
 	multiple,
 	name,
 	target,
+	required,
 }: FormAutocompleteFieldProps< Schema > ) {
-	const { control } = useFormContext();
 	const {
 		field: { value, onChange: onChangeForm, ref },
 		fieldState: { error },
 		formState: { isSubmitting },
-	} = useController( { control, name } );
+	} = useController( { control, name, rules: { required } } );
 	const [ searchTerm, setSearchTerm ] = useState< string >( value || '' );
 	const searchPath = searchTerm
 		? `/api/search/${ target || name }/${ searchTerm }`

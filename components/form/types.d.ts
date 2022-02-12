@@ -2,6 +2,11 @@ import { ReactElement, MutableRefObject } from 'react';
 import { Control, UnpackNestedValue, UseFormRegister, Path, UseFormReturn } from 'react-hook-form';
 import { Promisable } from 'type-fest';
 import { StandardTextFieldProps as MuiTextFieldProps, ChipProps as MuiChipProps } from '@material-ui/core';
+import {
+	DatePickerProps as MuiDatePickerProps,
+	TimePickerProps as MuiTimePickerProps,
+	DateTimePickerProps as MuiDateTimePickerProps,
+} from '@material-ui/pickers';
 
 export { AnyObjectSchema as Schema } from 'yup';
 
@@ -23,8 +28,6 @@ export interface FormTextFieldProps<Schema> extends FormBaseFieldProps<Schema>, 
 
 // Autocomplete
 export interface FormAutocompleteFieldProps<Schema> extends FormBaseFieldProps<Schema> {
-	name: string;
-	label: string;
 	target?: string;
 	multiple?: boolean;
 	free?: boolean;
@@ -61,3 +64,16 @@ export interface FormTermFieldChipsProps extends MuiChipProps {
 	setTerms: ( arg0: string[] ) => void;
 	inputRef?: MutableRefObject< HTMLInputElement | null >;
 }
+
+// Date/time picker
+type WithoutFormValues<I> = Omit<I, 'value' | 'onChange'>;
+export interface FormDateFieldProps<S> extends FormBaseFieldProps<S>, WithoutFormValues<MuiDatePickerProps> {
+	type?: 'date';
+}
+export interface FormTimeFieldProps<S> extends FormBaseFieldProps<S>, WithoutFormValues<MuiTimePickerProps> {
+	type: 'time';
+}
+export interface FormDateTimeFieldProps<S> extends FormBaseFieldProps<S>, WithoutFormValues<MuiDateTimePickerProps> {
+	type: 'datetime';
+}
+export type FormDateTimeAnyFieldProps<S> = FormDateFieldProps<S> | FormTimeFieldProps<S> | FormDateTimeFieldProps<S>;
