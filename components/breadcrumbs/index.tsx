@@ -2,14 +2,14 @@ import { Box, Breadcrumbs as BreadcrumbsUI, Typography } from '@mui/material';
 
 import Link from 'components/link';
 
-type Breadcrumb =
+export type Breadcrumb =
 	| string
 	| {
 			name: string;
 			href: string;
 	  };
 
-type BreadcrumbsProps = {
+export type BreadcrumbsProps = {
 	breadcrumbs: Breadcrumb[];
 };
 

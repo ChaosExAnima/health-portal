@@ -1,6 +1,10 @@
-import CssBaseline from '@mui/material/CssBaseline';
+import {
+	Box,
+	CssBaseline,
+	ThemeProvider,
+	StyledEngineProvider,
+} from '@mui/material';
 import Head from 'next/head';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 
 import Navigation from 'components/navigation';
@@ -11,9 +15,7 @@ import type { AppProps } from 'next/app';
 
 const clientSideEmotionCache = createEmotionCache();
 
-const App: React.FC< AppProps & { emotionCache?: EmotionCache } > = (
-	props
-) => {
+function App( props: AppProps & { emotionCache?: EmotionCache } ) {
 	const {
 		Component: PageComponent,
 		pageProps,
@@ -36,12 +38,20 @@ const App: React.FC< AppProps & { emotionCache?: EmotionCache } > = (
 			<StyledEngineProvider injectFirst>
 				<ThemeProvider theme={ theme }>
 					<CssBaseline />
-					<Navigation title="Health Portal ⚕️" />
-					<PageComponent { ...pageProps } />
+					<Box
+						sx={ {
+							display: 'flex',
+							flexDirection: 'column',
+							minHeight: '100vh',
+						} }
+					>
+						<Navigation title="Health Portal ⚕️" />
+						<PageComponent { ...pageProps } />
+					</Box>
 				</ThemeProvider>
 			</StyledEngineProvider>
 		</CacheProvider>
 	);
-};
+}
 
 export default App;

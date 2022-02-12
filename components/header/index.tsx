@@ -28,13 +28,13 @@ export type ActionItem = Omit<
 	color?: 'primary' | 'secondary';
 };
 
-type HeaderProps = {
+export interface HeaderProps {
 	title: string;
 	actions?: ActionItem[];
 	buttonsBelow?: true;
 	edit?: true;
 	onChange?: ( value: string ) => void;
-};
+}
 
 const ActionIcon: React.FC< { icon: ActionItemIcon } > = ( { icon } ) => {
 	if ( icon === 'add' ) {
