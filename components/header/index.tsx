@@ -56,7 +56,6 @@ const HeaderTitle: React.FC<
 		return (
 			<TextField
 				error={ ! title }
-				fullWidth
 				onChange={ ( event ) =>
 					onChange && onChange( event.target.value )
 				}

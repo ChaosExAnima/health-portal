@@ -71,7 +71,6 @@ function NewCallPage() {
 								{ ...field }
 								label="Date"
 								type="datetime-local"
-								fullWidth
 								required
 								InputLabelProps={ { shrink: true } }
 							/>
@@ -90,7 +89,6 @@ function NewCallPage() {
 						name="reps"
 						label="Representatives"
 						format={ capitalize }
-						fullWidth
 					/>
 					<Controller
 						control={ control }
@@ -101,7 +99,6 @@ function NewCallPage() {
 								{ ...field }
 								label="Reason"
 								multiline
-								fullWidth
 								required
 							/>
 						) }
@@ -111,11 +108,7 @@ function NewCallPage() {
 						name="reference"
 						defaultValue=""
 						render={ ( { field } ) => (
-							<TextField
-								{ ...field }
-								label="Reference #"
-								fullWidth
-							/>
+							<TextField { ...field } label="Reference #" />
 						) }
 					/>
 					<Controller
@@ -127,7 +120,6 @@ function NewCallPage() {
 								{ ...field }
 								label="Result"
 								multiline
-								fullWidth
 								required
 							/>
 						) }

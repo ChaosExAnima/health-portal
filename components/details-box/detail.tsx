@@ -50,7 +50,6 @@ const DetailText: React.FC< Omit< DetailProps, 'name' > > = ( {
 			value={ children || '' }
 			type={ type || 'text' }
 			onChange={ ( event ) => onChange( event.target.value ) }
-			fullWidth
 		/>
 	);
 };

@@ -20,6 +20,7 @@ const theme = createTheme( {
 		MuiTextField: {
 			defaultProps: {
 				margin: 'normal',
+				fullWidth: true,
 			},
 		},
 	},
