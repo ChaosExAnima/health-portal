@@ -1,6 +1,7 @@
 import { Box, Button } from '@mui/material';
 import DateAdaptor from '@mui/lab/AdapterDayjs';
 import React from 'react';
+// eslint-disable-next-line import/named
 import { AnyObjectSchema } from 'yup';
 
 import { FormProps } from './types';
