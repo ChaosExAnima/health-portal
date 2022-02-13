@@ -59,15 +59,16 @@ export type NewCallInput = Omit<
 	Call,
 	'id' | 'provider' | 'notes' | 'slug' | 'created'
 > & {
-	created: Date;
+	date: Date;
 	provider: {
 		id: number;
 		name: string;
 	};
+	claims: number[];
 };
 export const callSchema: yup.ObjectSchema< NewCallInput > = yup
 	.object( {
-		created: yup.date().default( () => new Date() ),
+		date: yup.date().default( () => new Date() ),
 		provider: yup
 			.object( {
 				id: yup.number().min( 0 ).required(),
@@ -82,6 +83,6 @@ export const callSchema: yup.ObjectSchema< NewCallInput > = yup
 		reason: yup.string().required(),
 		reference: yup.string().trim(),
 		result: yup.string().trim().required(),
-		claims: yup.array( yup.number() ),
+		claims: yup.array( yup.number().required() ).ensure().required(),
 	} )
 	.required();
