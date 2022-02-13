@@ -2,7 +2,7 @@ import { GetStaticProps } from 'next';
 import { Entity } from 'lib/entities/types';
 import { SxProps } from '@mui/material';
 
-type Optional< T, K extends keyof T > = Omit< T, K > & Partial< T >;
+// Utils
 type Nullable< T > = T | null;
 type StringKeys< T > = Extract< keyof T, string >;
 type MaybeArray< T > = T | T[];
