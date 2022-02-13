@@ -3,6 +3,7 @@ import {
 	Claim,
 	EntityAdditions,
 	EntityWithAdditions,
+	Id,
 	WithMetaAdditions,
 } from './types';
 import {
@@ -32,7 +33,7 @@ export default function rowToClaim< T extends EntityAdditions >(
 	const { id, identifier: number, created: createdDate, info, status } = row;
 	const created = dateToString( createdDate );
 	const claim: Claim = {
-		id,
+		id: id as Id,
 		number,
 		slug: slugify( number ),
 		date: created,

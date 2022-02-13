@@ -1,4 +1,4 @@
-import { SetRequired } from 'type-fest';
+import { ConditionalExcept, ConditionalKeys, NonNegativeInteger, Opaque, SetRequired } from 'type-fest';
 import { Nullable } from 'global-types';
 import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
 import { ContentDB, ImportDB, LoadedRelationDB, MetaDB, ProviderDB } from 'lib/db/types';
@@ -21,13 +21,17 @@ type EntityWithAdditions< E extends Entity, A extends EntityAdditions > = E & {
 	notes: E extends WithNotes & SetRequired< A, 'relations' > ? Note[] : never;
 }
 
+// Opaque types
+type Id = Opaque< number, 'id' >;
+type Slug = Opaque< string, 'slug' >;
+
 // Abstract interfaces.
 abstract interface Entity {
-	id: number;
+	id: Id;
 	created: string;
 }
 abstract interface Content extends Entity {
-	slug: string;
+	slug: Slug;
 }
 abstract interface WithProvider {
 	provider?: Provider;
@@ -40,7 +44,7 @@ abstract interface WithNotes {
 }
 
 interface Provider extends Entity, WithNotes, WithImport {
-	slug: string;
+	slug: Slug;
 	name: string;
 	address: Nullable< string >;
 	phone: Nullable< string >;
@@ -88,3 +92,9 @@ interface Note extends Content {
 	due?: Nullable< Date >;
 	resolved?: boolean;
 }
+
+// Validation utils
+type NewId = 0;
+type ValidId< I extends number > = I extends NewId ? never : I extends NonNegativeInteger< I > ? I : never;
+
+type ReplaceWith< Object, Type, Replacement > = ConditionalExcept< Object, Type > & Record< ConditionalKeys< Object, Type >, Replacement >;

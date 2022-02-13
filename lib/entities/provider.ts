@@ -9,7 +9,7 @@ import { dateToString, isEntity, relatedOfType } from './utils';
 
 import type { SetRequired } from 'type-fest';
 import type { ContentDB, ImportDB, ProviderDB } from 'lib/db/types';
-import type { Claim, Import, Note, Provider } from './types';
+import type { Claim, Import, Note, Provider, Id, Slug } from './types';
 
 type ProviderAdditions = {
 	relations?: ContentDB[];
@@ -42,7 +42,9 @@ export function rowToProvider< A extends ProviderAdditions >(
 	additions: A = {} as A
 ): ProviderWithAdditions< A > {
 	const provider: Provider = {
-		...omit( row, 'importId' ),
+		...omit( row, 'importId', 'slug', 'id' ),
+		id: row.id as Id,
+		slug: row.slug as Slug,
 		created: dateToString( row.created ),
 	};
 

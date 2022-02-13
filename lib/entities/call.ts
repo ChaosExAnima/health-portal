@@ -11,6 +11,8 @@ import type {
 	Call,
 	EntityAdditions,
 	EntityWithAdditions,
+	Id,
+	Slug,
 	WithMetaAdditions,
 } from './types';
 
@@ -27,8 +29,8 @@ export default function rowToCall< A extends EntityAdditions >(
 ): CallWithAdditions< A > {
 	const { id, identifier: slug, info, status } = row;
 	const call: Call = {
-		id,
-		slug,
+		id: id as Id,
+		slug: slug as Slug,
 		created: dateToString( row.created ),
 		reason: info,
 		result: status,
