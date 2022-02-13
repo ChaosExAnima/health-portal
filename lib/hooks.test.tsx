@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { mock as swrMock, clearResponse, setResponse } from '__mocks__/swr';
@@ -41,12 +41,12 @@ describe( 'useProvidersForSelect', () => {
 			providers = useProvidersForSelect();
 			return <>Test</>;
 		};
-		await act( async () => render( <Component /> ) );
+		await render( <Component /> );
 		expect( providers ).toBeInstanceOf( Map );
 	} );
 
 	it( 'calls the provider API', async () => {
-		await act( async () => render( <TestFetchComponent /> ) );
+		await render( <TestFetchComponent /> );
 		expect( swrMock ).toHaveBeenCalled();
 	} );
 
