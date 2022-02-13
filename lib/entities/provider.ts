@@ -5,7 +5,7 @@ import { CONTENT_CLAIM, CONTENT_NOTE } from 'lib/constants';
 import rowToClaim from './claim';
 import rowToImport from './import';
 import rowToNote from './note';
-import { dateToString, isEntity, relatedOfType } from './utils';
+import { isEntity, relatedOfType } from './utils';
 
 import type { SetRequired } from 'type-fest';
 import type { ContentDB, ImportDB, ProviderDB } from 'lib/db/types';
@@ -45,7 +45,7 @@ export function rowToProvider< A extends ProviderAdditions >(
 		...omit( row, 'importId', 'slug', 'id' ),
 		id: row.id as Id,
 		slug: row.slug as Slug,
-		created: dateToString( row.created ),
+		created: row.created,
 	};
 
 	const { import: importObj, relations } = additions;

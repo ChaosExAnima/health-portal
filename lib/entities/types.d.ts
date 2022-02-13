@@ -1,10 +1,30 @@
-import { ConditionalExcept, ConditionalKeys, NonNegativeInteger, Opaque, SetRequired } from 'type-fest';
-import { Nullable } from 'global-types';
+import {
+	ConditionalExcept,
+	ConditionalKeys,
+	Except,
+	NonNegativeInteger,
+	Opaque,
+	SetRequired,
+	Simplify,
+} from 'type-fest';
+import { ObjectSchema } from 'yup';
+
+import { DeepReplace, Nullable, RemoveNever } from 'global-types';
 import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
-import { ContentDB, ImportDB, LoadedRelationDB, MetaDB, ProviderDB } from 'lib/db/types';
+import {
+	ContentDB,
+	ImportDB,
+	LoadedRelationDB,
+	MetaDB,
+	ProviderDB,
+} from 'lib/db/types';
 
-type WithField< E extends Entity, Column extends keyof E > = Omit< E, Column > & Required< Pick< E, Column > >;
+// Opaque types
+type Id = Opaque< number, 'id' >;
+type NewId = Opaque< 0, 'NewId' >;
+type Slug = Opaque< string, 'slug' >;
 
+// Additions
 type EntityAdditions = {
 	relations?: LoadedRelationDB[];
 	import?: ImportDB;
@@ -12,27 +32,6 @@ type EntityAdditions = {
 	providers?: ProviderDB[];
 	meta?: MetaDB[];
 };
-type WithMetaAdditions< A extends EntityAdditions > = SetRequired< A, 'meta' >;
-type WithRelationAdditions< A extends EntityAdditions > = SetRequired< A, 'relations' >;
-type EntityWithAdditions< E extends Entity, A extends EntityAdditions > = E & {
-	provider: E extends WithProvider & SetRequired< A, 'provider' > ? Provider : never;
-	providers: E extends WithProvider & SetRequired< A, 'providers' > ? Provider[]: never;
-	import: E extends WithImport & SetRequired< A, 'import' > ? Import : never;
-	notes: E extends WithNotes & SetRequired< A, 'relations' > ? Note[] : never;
-}
-
-// Opaque types
-type Id = Opaque< number, 'id' >;
-type Slug = Opaque< string, 'slug' >;
-
-// Abstract interfaces.
-abstract interface Entity {
-	id: Id;
-	created: string;
-}
-abstract interface Content extends Entity {
-	slug: Slug;
-}
 abstract interface WithProvider {
 	provider?: Provider;
 }
@@ -42,14 +41,38 @@ abstract interface WithImport {
 abstract interface WithNotes {
 	notes?: Note[];
 }
+abstract interface WithLinks {
+	links?: Id[];
+}
+type EntityWithAdditions< E extends Entity, A extends EntityAdditions > = E & {
+	provider: E extends WithProvider & SetRequired< A, 'provider' >
+		? Provider
+		: never;
+	providers: E extends WithProvider & SetRequired< A, 'providers' >
+		? Provider[]
+		: never;
+	import: E extends WithImport & SetRequired< A, 'import' > ? Import : never;
+	notes: E extends WithNotes & SetRequired< A, 'relations' > ? Note[] : never;
+};
+type WithMetaAdditions< A extends EntityAdditions > = SetRequired< A, 'meta' >;
+type WithRelationAdditions< A extends EntityAdditions > = SetRequired< A, 'relations' >;
+
+// Entity types
+abstract interface Entity {
+	id: Id;
+	created: Date;
+}
+abstract interface Content extends Entity {
+	slug: Slug;
+}
 
 interface Provider extends Entity, WithNotes, WithImport {
 	slug: Slug;
 	name: string;
-	address: Nullable< string >;
-	phone: Nullable< string >;
-	email: Nullable< string >;
-	website: Nullable< string >;
+	address?: Nullable< string >;
+	phone?: Nullable< string >;
+	email?: Nullable< string >;
+	website?: Nullable< string >;
 	claims?: Claim[];
 }
 
@@ -57,7 +80,7 @@ interface Import extends Entity {
 	hash: string;
 	inserted: Nullable< number >;
 	updated: Nullable< number >;
-	file?: File;
+	file?: FileEntity;
 }
 
 interface Appeal extends Content, WithNotes, WithProvider {
@@ -69,12 +92,12 @@ interface Appeal extends Content, WithNotes, WithProvider {
 interface Call extends Content, WithNotes, WithProvider {
 	reps?: string[];
 	reason: string;
-	result: string,
+	result: string;
+	reference?: string;
 }
 
 interface Claim extends Content, WithNotes, WithProvider, WithImport {
 	number: string;
-	date: string;
 	type?: typeof CLAIM_TYPES[ number ];
 	status: typeof CLAIM_STATUSES[ number ];
 	billed?: Nullable< number >;
@@ -82,19 +105,41 @@ interface Claim extends Content, WithNotes, WithProvider, WithImport {
 	appeals?: Appeal[];
 }
 
-interface File extends Content, WithNotes {
-	path: string;
+interface FileEntity extends Content, WithNotes {
+	url: string;
+	source: string;
 }
 
-interface Note extends Content {
-	description: string;
-	files?: File[];
+interface Note extends Content, WithLinks {
+	description?: string;
+	files?: FileEntity[];
 	due?: Nullable< Date >;
 	resolved?: boolean;
 }
 
-// Validation utils
-type NewId = 0;
-type ValidId< I extends number > = I extends NewId ? never : I extends NonNegativeInteger< I > ? I : never;
+// Input utils
+type MaybeNewEntity = { id: Id | NewId | undefined };
+type ProviderEntity = { provider?: Omit< ProviderInput, 'id' > | Id };
+type WithMaybeNewId< Input extends Entity > = MaybeNewEntity &
+	Omit< Input, 'id' >;
+type WithInput< Input extends Entity > = MaybeNewEntity &
+	Omit<
+		Input,
+		'id' | 'created' | 'slug' | 'import' | 'notes' | 'provider' | 'claims'
+	>;
+type WithNumberIds< Input > = DeepReplace< Input, Id | NewId, number >;
+type ToSchema< Input > = ObjectSchema<
+	Simplify< WithNumberIds< Required< Input > > >
+>;
 
-type ReplaceWith< Object, Type, Replacement > = ConditionalExcept< Object, Type > & Record< ConditionalKeys< Object, Type >, Replacement >;
+// Entity inputs
+type ProviderInput = Simplify< WithInput< Provider > & { slug?: string } >;
+type AppealInput = Simplify< WithInput< Appeal > & WithLinks & ProviderEntity >;
+type CallInput = Simplify< WithInput< Call > & WithLinks & ProviderEntity >;
+type ClaimInput = Simplify<
+	WithInput< Omit< Claim, 'appeals' > > &
+		WithLinks &
+		Required< ProviderEntity > & { created: Date }
+>;
+type FileInput = Omit< FileEntity, 'id' > | { file?: File };
+type NoteInput = Simplify< WithInput< Omit< Note, 'files' > > & WithLinks >;

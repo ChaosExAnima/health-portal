@@ -6,12 +6,7 @@ import {
 	Id,
 	WithMetaAdditions,
 } from './types';
-import {
-	dateToString,
-	getNumericMeta,
-	inReadonlyArray,
-	relatedOfType,
-} from './utils';
+import { getNumericMeta, inReadonlyArray, relatedOfType } from './utils';
 import * as constants from 'lib/constants';
 import { ContentDB } from 'lib/db/types';
 import { slugify } from 'lib/strings';
@@ -30,19 +25,17 @@ export default function rowToClaim< T extends EntityAdditions >(
 	additions: T = {} as T
 ): ClaimWithAdditions< T > {
 	const { meta, provider, relations } = additions;
-	const { id, identifier: number, created: createdDate, info, status } = row;
-	const created = dateToString( createdDate );
+	const { id, identifier: number, created, info, status } = row;
 	const claim: Claim = {
 		id: id as Id,
 		number,
 		slug: slugify( number ),
-		date: created,
+		created,
 		status: inReadonlyArray(
 			status,
 			constants.CLAIM_STATUSES,
 			constants.CLAIM_STATUS_UNKNOWN
 		),
-		created,
 		type: inReadonlyArray(
 			info,
 			constants.CLAIM_TYPES,

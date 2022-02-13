@@ -1,5 +1,4 @@
 import { CONTENT_NOTE } from 'lib/constants';
-import { dateToString } from './utils';
 import rowToNote from './note';
 import { rowToProvider } from './provider';
 
@@ -28,7 +27,7 @@ export default function rowToCall< A extends EntityAdditions >(
 	const call: Call = {
 		id: id as Id,
 		slug: slug as Slug,
-		created: dateToString( row.created ),
+		created: row.created,
 		reason: info,
 		result: status,
 	};

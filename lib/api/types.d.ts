@@ -28,7 +28,9 @@ interface RecordsSuccessResponse< E extends Entity > extends SuccessResponse {
 	records: E[];
 }
 
-type RecordsResponse< E extends Entity > = ErrorResponse | RecordsSuccessResponse< E >;
+type RecordsResponse< E extends Entity > =
+	| ErrorResponse
+	| RecordsSuccessResponse< E >;
 
 // Other types
 type ErrorInformation = {

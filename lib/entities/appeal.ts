@@ -1,6 +1,6 @@
 import rowToClaim from './claim';
 import rowToNote from './note';
-import { dateToString, inReadonlyArray } from './utils';
+import { inReadonlyArray } from './utils';
 import * as constants from 'lib/constants';
 import { slugify } from 'lib/strings';
 
@@ -32,8 +32,7 @@ export default function rowToAppeal< A extends EntityAdditions >(
 	additions: A = {} as A
 ): AppealWithAdditions< A > {
 	const { relations } = additions;
-	const { id, identifier: name, created: createdDate, status } = row;
-	const created = dateToString( createdDate );
+	const { id, identifier: name, created, status } = row;
 	const appeal: Appeal = {
 		id: id as Id,
 		slug: slugify( name ),
