@@ -118,12 +118,12 @@ interface Note extends Content, WithLinks {
 }
 
 // Input utils
-type MaybeNewEntity = { id: Id | NewId | undefined };
-type ProviderEntity = { provider?: Omit< ProviderInput, 'id' > | Id };
+type MaybeNewEntity = { id?: Id | NewId };
+type ProviderEntity = { provider?: Except< ProviderInput, 'id' > | Id };
 type WithMaybeNewId< Input extends Entity > = MaybeNewEntity &
-	Omit< Input, 'id' >;
+	Except< Input, 'id' >;
 type WithInput< Input extends Entity > = MaybeNewEntity &
-	Omit<
+	Except<
 		Input,
 		'id' | 'created' | 'slug' | 'import' | 'notes' | 'provider' | 'claims'
 	>;
@@ -137,9 +137,9 @@ type ProviderInput = Simplify< WithInput< Provider > & { slug?: string } >;
 type AppealInput = Simplify< WithInput< Appeal > & WithLinks & ProviderEntity >;
 type CallInput = Simplify< WithInput< Call > & WithLinks & ProviderEntity >;
 type ClaimInput = Simplify<
-	WithInput< Omit< Claim, 'appeals' > > &
+	WithInput< Except< Claim, 'appeals' > > &
 		WithLinks &
 		Required< ProviderEntity > & { created: Date }
 >;
-type FileInput = Omit< FileEntity, 'id' > | { file?: File };
-type NoteInput = Simplify< WithInput< Omit< Note, 'files' > > & WithLinks >;
+type FileInput = Except< FileEntity, 'id' > | { file?: File };
+type NoteInput = Simplify< WithInput< Except< Note, 'files' > > & WithLinks >;
