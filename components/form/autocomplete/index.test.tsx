@@ -1,13 +1,22 @@
 import '@testing-library/dom';
 import { render, screen } from '@testing-library/react';
-import { useForm } from 'react-hook-form';
+import { UseControllerReturn, useForm } from 'react-hook-form';
+import { PartialDeep } from 'type-fest';
 
 import AutocompleteField from '.';
 
 jest.mock( 'react-hook-form', () => ( {
 	...jest.requireActual( 'react-hook-form' ),
-	useController: () => ( {
-		field: { value: '', onChange: () => null, ref: () => null },
+	useController: (): PartialDeep< UseControllerReturn > => ( {
+		field: {
+			value: '',
+			onChange: () => null,
+			ref: () => null,
+		},
+		fieldState: {},
+		formState: {
+			isSubmitting: false,
+		},
 	} ),
 } ) );
 
