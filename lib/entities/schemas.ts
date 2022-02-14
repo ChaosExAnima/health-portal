@@ -98,7 +98,7 @@ export const fileSchema: ToSchema< FileInput > = yup
 			is: ( file: unknown ) => !! file,
 			then: ( schema ) => schema.strip(),
 		} ),
-		file: yup.mixed().default( null ),
+		file: yup.mixed().nullable().default( null ),
 		url: stringSchema.url().when( 'file', {
 			is: null,
 			then: ( schema ) => schema.required(),
