@@ -2,9 +2,14 @@ import {
 	appealSchema,
 	callSchema,
 	claimSchema,
+	createdSchema,
 	fileSchema,
+	idSchema,
+	linksSchema,
 	noteSchema,
 	providerSchema,
+	savedIdSchema,
+	stringSchema,
 } from './schemas';
 
 import { NewId, ProviderInput } from './types';
@@ -39,6 +44,39 @@ function withExpect< T >(
 	}
 	return tests;
 }
+
+describe( 'field schemas', () => {
+	it( 'string gets trimmed', () =>
+		expect( stringSchema.validate( ' ' ) ).resolves.toBe( '' ) );
+	it( 'id cannot be negative', () =>
+		expect( () => idSchema.validate( -1 ) ).rejects.toThrow() );
+	it( 'id cannot be a float', () =>
+		expect( () => idSchema.validate( 0.1 ) ).rejects.toThrow() );
+	it( 'id is coerced to 0', () =>
+		expect( idSchema.validate( undefined ) ).resolves.toBe( 0 ) );
+	it( 'saved id cannot be negative', () =>
+		expect( () => savedIdSchema.validate( -1 ) ).rejects.toThrow() );
+	it( 'saved id cannot be zero', () =>
+		expect( () => savedIdSchema.validate( 0 ) ).rejects.toThrow() );
+	it( 'saved id cannot be coerced', () =>
+		expect( () => savedIdSchema.validate( undefined ) ).rejects.toThrow() );
+	it( 'created defaults to now', () =>
+		expect( createdSchema.validate( undefined ) ).resolves.toBeInstanceOf(
+			Date
+		) );
+	it( 'links are an array of ids', () =>
+		expect( linksSchema.validate( [ 1, 2, 3 ] ) ).resolves.toEqual( [
+			1,
+			2,
+			3,
+		] ) );
+	it( 'links are coerced to an array', () =>
+		expect( linksSchema.validate( undefined ) ).resolves.toEqual( [] ) );
+	it( 'links throws for non-numbers', () =>
+		expect( () => linksSchema.validate( [ 'test' ] ) ).rejects.toThrow() );
+	it( 'links throws for invalid ids', () =>
+		expect( () => linksSchema.validate( [ -1, 0 ] ) ).rejects.toThrow() );
+} );
 
 describe( 'schemas with ids', () => {
 	const schemasWithIds = schemas(

@@ -13,13 +13,13 @@ import {
 } from './types';
 
 // Primitives
-const stringSchema = yup.string().trim();
+export const stringSchema = yup.string().trim();
 
 // Fields
-const idSchema = yup.number().integer().min( 0 ).default( 0 );
-const savedIdSchema = idSchema.positive().required();
-const createdSchema = yup.date().default( () => new Date() );
-const linksSchema = yup.array().of( savedIdSchema ).ensure();
+export const idSchema = yup.number().integer().min( 0 ).default( 0 );
+export const savedIdSchema = yup.number().integer().positive().required();
+export const createdSchema = yup.date().default( () => new Date() );
+export const linksSchema = yup.array().of( savedIdSchema ).ensure();
 
 // Entities
 export const providerSchema: ToSchema< ProviderInput > = yup
