@@ -1,7 +1,16 @@
 import { isObjectWithKeys } from 'lib/casting';
 import { CONTENTS_TYPE } from 'lib/constants';
 import { ContentDB, MetaDB } from 'lib/db/types';
-import { Entity } from './types';
+import { isInteger } from 'lodash';
+import { Entity, Id, Slug } from './types';
+
+export function isValidId( id: number ): id is Id {
+	return isInteger( id ) && id > 0;
+}
+
+export function isSlug( slug: string ): slug is Slug {
+	return !! slug;
+}
 
 export function dateToString( date: Date ): string {
 	return date.toUTCString();

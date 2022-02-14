@@ -99,9 +99,6 @@
       "react/prop-types": "off",
       "react/display-name": "off"
     },
-    "ignorePatterns": [
-      "**/*.d.ts"
-    ],
     "settings": {
       "import/resolver": {
         "typescript": {}

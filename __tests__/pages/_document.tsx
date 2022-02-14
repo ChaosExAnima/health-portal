@@ -1,12 +1,6 @@
 import { Container } from '@mui/material';
 import { DocumentContext } from 'next/document';
 
-jest.mock( 'next/document', () => ( {
-	Document: jest.fn( () => ( {
-		getInitialProps: jest.fn(),
-	} ) ),
-} ) );
-
 import CustomDocument from 'pages/_document';
 
 describe( 'Document', () => {

@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 
 import { toFloat } from './casting';
 import * as constants from './constants';
+import { Slug } from './entities/types';
 
 export function capitalize( word: string ): string {
 	word = word.trim();
@@ -10,13 +11,13 @@ export function capitalize( word: string ): string {
 	);
 }
 
-export function slugify( text: string ): string {
+export function slugify( text: string ): Slug {
 	return text
 		.toLowerCase()
 		.trim()
 		.replace( /[^a-z0-9]/g, '-' )
 		.replace( /-{2,}/g, '-' )
-		.replace( /^-|-$/g, '' );
+		.replace( /^-|-$/g, '' ) as Slug;
 }
 
 const formatter = new Intl.NumberFormat( 'en-US', {

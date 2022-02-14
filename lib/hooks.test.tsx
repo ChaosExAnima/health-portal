@@ -1,11 +1,11 @@
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { mock as swrMock, clearResponse, setResponse } from '__mocks__/swr';
 import { useProvidersForSelect } from './hooks';
 
 import type { RecordsResponse, Response } from './api/types';
-import type { Provider } from './entities/types';
+import type { Id, Provider, Slug } from './entities/types';
 
 function TestFetchComponent< R extends Response >( {
 	response,
@@ -41,12 +41,12 @@ describe( 'useProvidersForSelect', () => {
 			providers = useProvidersForSelect();
 			return <>Test</>;
 		};
-		await act( async () => render( <Component /> ) );
+		await render( <Component /> );
 		expect( providers ).toBeInstanceOf( Map );
 	} );
 
 	it( 'calls the provider API', async () => {
-		await act( async () => render( <TestFetchComponent /> ) );
+		await render( <TestFetchComponent /> );
 		expect( swrMock ).toHaveBeenCalled();
 	} );
 
@@ -55,13 +55,13 @@ describe( 'useProvidersForSelect', () => {
 			success: true,
 			records: [
 				{
-					slug: 'test',
+					slug: 'test' as Slug,
 					name: 'Test Provider',
 					address: null,
 					phone: null,
 					website: null,
 					email: null,
-					id: 1,
+					id: 1 as Id,
 					created: '2022-01-01',
 				},
 			],

@@ -9,7 +9,7 @@ import AutocompleteField from 'components/autocomplete-field';
 import ErrorNotice from 'components/error-notice';
 import TermField from 'components/term-field';
 import { formatErrors, handleNewType } from 'lib/api/new';
-import { callSchema, NewCallInput } from 'lib/entities/call';
+import { callSchema } from 'lib/entities/schemas';
 import { capitalize } from 'lib/strings';
 
 import type { GetStaticProps } from 'next';
