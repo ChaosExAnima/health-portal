@@ -1,13 +1,13 @@
-import { File } from './types';
-import { dateToString } from './utils';
+import { FileEntity, Id, Slug } from './types';
 import { ContentDB } from 'lib/db/types';
 
-export function rowToFile( row: ContentDB ): File {
-	const { id, identifier: slug, info: path } = row;
+export function rowToFile( row: ContentDB ): FileEntity {
+	const { id, created, identifier: slug, info: url, status: source } = row;
 	return {
-		id,
-		slug,
-		path,
-		created: dateToString( row.created ),
+		id: id as Id,
+		created,
+		slug: slug as Slug,
+		url,
+		source,
 	};
 }

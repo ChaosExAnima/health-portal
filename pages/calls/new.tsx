@@ -11,26 +11,15 @@ import {
 	FormTextField,
 } from 'components/form';
 import Page from 'components/page';
-import { callSchema, NewCallInput } from 'lib/entities/call';
+import { callSchema } from 'lib/entities/schemas';
 
 import type { GetStaticProps } from 'next';
 import type { PageProps } from 'global-types';
-
-const transformForm = (
-	value: Omit< NewCallInput, 'provider' > & {
-		provider: { id: number; value: string };
-	}
-): NewCallInput => ( {
-	...value,
-	provider: {
-		id: value.provider.id,
-		name: value.provider.value,
-	},
-} );
+import { CallInput, WithNumberIds } from 'lib/entities/types';
 
 function NewCallPage( { title }: PageProps ) {
-	const { control, handleSubmit } = useForm< NewCallInput >( {
-		resolver: yupResolver( callSchema.transform( transformForm ) ),
+	const { control, handleSubmit } = useForm< WithNumberIds< CallInput > >( {
+		resolver: yupResolver( callSchema ),
 	} );
 	return (
 		<>
@@ -42,7 +31,7 @@ function NewCallPage( { title }: PageProps ) {
 				<Form handleSubmit={ handleSubmit } type="call" new>
 					<FormDateTimeField
 						control={ control }
-						name="date"
+						name="created"
 						label="Call Date"
 						type="datetime"
 						required
@@ -83,7 +72,7 @@ function NewCallPage( { title }: PageProps ) {
 					/>
 					<FormAutocompleteField
 						control={ control }
-						name="claims"
+						name="links"
 						target="claim"
 						label="Linked Claims"
 						multiple

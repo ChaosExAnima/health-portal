@@ -5,7 +5,7 @@ import { mock as swrMock, clearResponse, setResponse } from '__mocks__/swr';
 import { useProvidersForSelect } from './hooks';
 
 import type { RecordsResponse, Response } from './api/types';
-import type { Provider } from './entities/types';
+import type { Id, Provider, Slug } from './entities/types';
 
 function TestFetchComponent< R extends Response >( {
 	response,
@@ -55,13 +55,13 @@ describe( 'useProvidersForSelect', () => {
 			success: true,
 			records: [
 				{
-					slug: 'test',
+					slug: 'test' as Slug,
 					name: 'Test Provider',
 					address: null,
 					phone: null,
 					website: null,
 					email: null,
-					id: 1,
+					id: 1 as Id,
 					created: '2022-01-01',
 				},
 			],

@@ -4,7 +4,7 @@ import { ValidationError } from 'yup';
 
 import { CONTENT_CALL, TABLE_CONTENT, TABLE_PROVIDERS } from 'lib/constants';
 import getDB from 'lib/db';
-import { callSchema, NewCallInput } from 'lib/entities/call';
+import { callSchema } from 'lib/entities/schemas';
 import { slugify } from 'lib/strings';
 
 import type { Knex } from 'knex';
