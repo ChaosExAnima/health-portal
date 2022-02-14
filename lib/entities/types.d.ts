@@ -119,6 +119,7 @@ interface Note extends Content, WithLinks {
 
 // Input utils
 type MaybeNewEntity = { id?: Id | NewId };
+type CreatedEntity = { created: Date };
 type ProviderEntity = { provider?: Except< ProviderInput, 'id' > | Id };
 type WithMaybeNewId< Input extends Entity > = MaybeNewEntity &
 	Except< Input, 'id' >;
@@ -135,11 +136,12 @@ type ToSchema< Input > = ObjectSchema<
 // Entity inputs
 type ProviderInput = Simplify< WithInput< Provider > & { slug?: string } >;
 type AppealInput = Simplify< WithInput< Appeal > & WithLinks & ProviderEntity >;
-type CallInput = Simplify< WithInput< Call > & WithLinks & ProviderEntity >;
+type CallInput = Simplify< WithInput< Call > & WithLinks & ProviderEntity & CreatedEntity >;
 type ClaimInput = Simplify<
 	WithInput< Except< Claim, 'appeals' > > &
 		WithLinks &
-		Required< ProviderEntity > & { created: Date }
+		Required< ProviderEntity > &
+		CreatedEntity
 >;
 type FileInput = WithMaybeNewId< FileEntity > | { file: File };
 type NoteInput = Simplify< WithInput< Except< Note, 'files' > > & WithLinks >;
