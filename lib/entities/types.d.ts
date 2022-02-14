@@ -127,7 +127,7 @@ type WithInput< Input extends Entity > = MaybeNewEntity &
 		Input,
 		'id' | 'created' | 'slug' | 'import' | 'notes' | 'provider' | 'claims'
 	>;
-type WithNumberIds< Input > = DeepReplace< Input, Id | NewId, number >;
+type WithNumberIds< Input > = DeepReplace< Input, Id | NewId | undefined, number | undefined >;
 type ToSchema< Input > = ObjectSchema<
 	Simplify< WithNumberIds< Required< Input > > >
 >;
@@ -141,5 +141,5 @@ type ClaimInput = Simplify<
 		WithLinks &
 		Required< ProviderEntity > & { created: Date }
 >;
-type FileInput = Except< FileEntity, 'id' > | { file?: File };
+type FileInput = WithMaybeNewId< FileEntity > | { file: File };
 type NoteInput = Simplify< WithInput< Except< Note, 'files' > > & WithLinks >;

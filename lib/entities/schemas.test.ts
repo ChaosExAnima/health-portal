@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 import {
 	appealSchema,
 	callSchema,
@@ -192,4 +193,32 @@ describe( 'provider schema', () => {
 				phone: '1234567890',
 			} )
 		).resolves.toEqual( { id: 0, name: 'test', phone: '123-456-7890' } ) );
+} );
+
+describe( 'file schema', () => {
+	const sourceFile = {
+		id: 0,
+		url: 'http://example.com',
+		source: 'test',
+	};
+	it( 'can accept a source and url with no file', () =>
+		expect( fileSchema.validate( sourceFile ) ).resolves.toEqual( {
+			...sourceFile,
+			file: null,
+		} ) );
+	it( 'accepts a file with no other params', () =>
+		expect( fileSchema.validate( { file: true } ) ).resolves.toEqual( {
+			file: true,
+		} ) );
+	it( 'requires a url and a source', () => {
+		expect( () =>
+			fileSchema.validate( omit( sourceFile, 'url', 'source' ) )
+		).rejects.toThrow();
+		expect( () =>
+			fileSchema.validate( omit( sourceFile, 'url' ) )
+		).rejects.toThrow();
+		expect( () =>
+			fileSchema.validate( omit( sourceFile, 'source' ) )
+		).rejects.toThrow();
+	} );
 } );

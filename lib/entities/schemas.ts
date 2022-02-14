@@ -17,7 +17,7 @@ export const stringSchema = yup.string().trim();
 
 // Fields
 export const idSchema = yup.number().integer().min( 0 ).default( 0 );
-export const savedIdSchema = yup.number().integer().positive().required();
+export const savedIdSchema = idSchema.positive().required();
 export const createdSchema = yup.date().default( () => new Date() );
 export const linksSchema = yup.array().of( savedIdSchema ).ensure();
 
@@ -83,8 +83,8 @@ export const claimSchema: ToSchema< ClaimInput > = yup
 		id: idSchema,
 		created: createdSchema.required(),
 		number: stringSchema.required(),
-		status: yup.mixed().oneOf( CLAIM_STATUSES ),
-		type: yup.mixed().oneOf( CLAIM_TYPES ),
+		status: yup.mixed().oneOf( [ ...CLAIM_STATUSES ] ),
+		type: yup.mixed().oneOf( [ ...CLAIM_TYPES ] ),
 		billed: yup.number(),
 		cost: yup.number(),
 		provider: schemaNewOrId( providerSchema, 'provider' ).required(),
@@ -93,18 +93,21 @@ export const claimSchema: ToSchema< ClaimInput > = yup
 	.required();
 
 export const fileSchema: ToSchema< FileInput > = yup
-	.mixed()
-	.oneOf( [
-		yup
-			.object( {
-				url: stringSchema.required(),
-				source: stringSchema.required(),
-			} )
-			.required(),
-		yup.object( {
-			file: yup.object( { name: stringSchema.required() } ).required(),
+	.object( {
+		id: idSchema.when( 'file', {
+			is: ( file: unknown ) => !! file,
+			then: ( schema ) => schema.strip(),
 		} ),
-	] )
+		file: yup.mixed().default( null ),
+		url: stringSchema.url().when( 'file', {
+			is: null,
+			then: ( schema ) => schema.required(),
+		} ),
+		source: stringSchema.when( 'file', {
+			is: null,
+			then: ( schema ) => schema.required(),
+		} ),
+	} )
 	.required();
 
 // Utils
