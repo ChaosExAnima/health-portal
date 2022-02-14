@@ -16,9 +16,10 @@ import {
 const stringSchema = yup.string().trim();
 
 // Fields
-const idSchema = yup.number().positive().default( 0 );
+const idSchema = yup.number().integer().min( 0 ).default( 0 );
+const savedIdSchema = idSchema.positive().required();
 const createdSchema = yup.date().default( () => new Date() );
-const linksSchema = yup.array().of( idSchema.required() ).ensure();
+const linksSchema = yup.array().of( savedIdSchema ).ensure();
 
 // Entities
 export const providerSchema: ToSchema< ProviderInput > = yup
@@ -29,7 +30,13 @@ export const providerSchema: ToSchema< ProviderInput > = yup
 		address: stringSchema,
 		email: stringSchema.email(),
 		website: stringSchema.url(),
-		phone: stringSchema.matches( /^(\+?\d-)?\d{3}-\d{3}\d{4}$/ ),
+		phone: stringSchema
+			.transform( ( value: string ) =>
+				value.length === 10
+					? value.replace( /^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3' )
+					: value
+			)
+			.matches( /^(\+?\d )?\d{3}-\d{3}-\d{4}$/ ),
 	} )
 	.required();
 
@@ -58,7 +65,7 @@ export const callSchema: ToSchema< CallInput > = yup
 	.object( {
 		id: idSchema,
 		created: createdSchema,
-		provider: schemaNewOrId( providerSchema ),
+		provider: schemaNewOrId( providerSchema, 'provider' ),
 		reps: yup
 			.array()
 			.of( stringSchema.required().transform( capitalize ) )
@@ -80,7 +87,7 @@ export const claimSchema: ToSchema< ClaimInput > = yup
 		type: yup.mixed().oneOf( CLAIM_TYPES ),
 		billed: yup.number(),
 		cost: yup.number(),
-		provider: schemaNewOrId( providerSchema ).required(),
+		provider: schemaNewOrId( providerSchema, 'provider' ).required(),
 		links: linksSchema,
 	} )
 	.required();
@@ -103,9 +110,15 @@ export const fileSchema: ToSchema< FileInput > = yup
 // Utils
 function schemaNewOrId( schema: yup.AnyObjectSchema, type = 'entity' ) {
 	return yup
-		.mixed()
-		.oneOf(
-			[ schema, idSchema ],
-			`Either provide a new ${ capitalize( type ) } or an id`
+		.mixed<
+			| yup.InferType< typeof savedIdSchema >
+			| yup.InferType< typeof schema >
+		>()
+		.test(
+			'new or saved',
+			'${path} is not a valid ID or a new ' + type,
+			async ( value ) =>
+				( await savedIdSchema.isValid( value ) ) ||
+				( await schema.isValid( value ) )
 		);
 }
