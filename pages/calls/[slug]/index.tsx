@@ -1,5 +1,8 @@
-import { Box, Container } from '@mui/material';
+import dayjs from 'dayjs';
 
+import Page from 'components/page';
+import DetailsBox, { Detail } from 'components/details-box';
+import ProviderLink from 'components/provider-link';
 import rowToCall from 'lib/entities/call';
 import {
 	queryCalls,
@@ -9,21 +12,55 @@ import {
 	queryRelatedProviders,
 } from 'lib/db/helpers';
 import { Call } from 'lib/entities/types';
+import { serialize } from 'lib/static-helpers';
 
 import type { GetStaticPathsResult } from 'next';
 import type { SetRequired } from 'type-fest';
-import type { GetSinglePageProps, SinglePageProps } from 'global-types';
-import dayjs from 'dayjs';
+import type {
+	GetSinglePageContext,
+	GetSinglePageResult,
+	SinglePageProps,
+} from 'global-types';
 
 type CallWithAdditions = SetRequired< Call, 'notes' | 'reps' >;
 
-const CallPage: React.FC< SinglePageProps< CallWithAdditions > > = () => {
+export default function CallPage( {
+	title,
+	record,
+}: SinglePageProps< CallWithAdditions > ) {
+	const { slug, provider } = record;
 	return (
-		<Container maxWidth="md">
-			<Box my={ 4 }>Hello</Box>
-		</Container>
+		<Page
+			title={ title }
+			breadcrumbs={ [ { href: '/calls', name: 'Calls' }, title ] }
+			header={ {
+				buttonsBelow: true,
+				actions: [
+					{
+						action: 'Edit',
+						href: `/calls/${ slug }/edit`,
+						icon: 'edit',
+					},
+				],
+			} }
+		>
+			<DetailsBox>
+				<Detail name="Provider">
+					{ provider && <ProviderLink provider={ provider } /> }
+					{ ! provider && <em>None found</em> }
+				</Detail>
+				{ record.reps && !! record.reps.length && (
+					<Detail name="Reps">{ record.reps.join( ', ' ) }</Detail>
+				) }
+				<Detail name="Reason">{ record.reason }</Detail>
+				<Detail name="Result">{ record.result }</Detail>
+				{ record.reference && (
+					<Detail name="Reference">{ record.reference }</Detail>
+				) }
+			</DetailsBox>
+		</Page>
 	);
-};
+}
 
 export async function getStaticPaths(): Promise< GetStaticPathsResult > {
 	const claims = await queryCalls().select( 'identifier' );
@@ -35,9 +72,9 @@ export async function getStaticPaths(): Promise< GetStaticPathsResult > {
 	};
 }
 
-export const getStaticProps: GetSinglePageProps< CallWithAdditions > = async ( {
+export async function getStaticProps( {
 	params,
-} ) => {
+}: GetSinglePageContext ): GetSinglePageResult< CallWithAdditions > {
 	const call = await queryCalls()
 		.andWhere( 'identifier', params?.slug )
 		.first();
@@ -58,16 +95,14 @@ export const getStaticProps: GetSinglePageProps< CallWithAdditions > = async ( {
 	const meta = await queryMeta( call.id );
 	const relations = await queryRelatedOfType( call.id, 'note' );
 	const provider = await queryProvider( call.providerId );
-	const record = rowToCall( call, { meta, relations, provider } );
+	const rawRecord = rowToCall( call, { meta, relations, provider } );
 
 	return {
 		props: {
 			id: call.id,
 			slug: call.identifier,
 			title,
-			record,
+			record: serialize( rawRecord ),
 		},
 	};
-};
-
-export default CallPage;
+}

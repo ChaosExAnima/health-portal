@@ -1,6 +1,6 @@
 import { isString } from 'lodash';
+import Router from 'next/router';
 
-import type { NextRouter } from 'next/router';
 import type { Nullable } from 'global-types';
 import type {
 	ErrorHandler,
@@ -8,12 +8,12 @@ import type {
 	NewResponse,
 	NewTypes,
 } from './types';
+import { typeToUrl } from './utils';
 
 export async function handleNewType< Input >(
 	form: Input,
 	type: NewTypes,
-	handleError: ErrorHandler,
-	{ push }: NextRouter
+	handleError: ErrorHandler
 ): Promise< void > {
 	const response = await fetch( `/api/new/${ type }`, {
 		method: 'POST',
@@ -30,7 +30,7 @@ export async function handleNewType< Input >(
 		handleError( body.errors );
 	} else {
 		const slug = body.slug;
-		push( `/${ type }/${ slug }` );
+		Router.push( typeToUrl( type, slug ) );
 	}
 }
 

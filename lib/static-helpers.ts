@@ -1,17 +1,20 @@
-import { toSafeInteger } from 'lodash';
+import { isDate, isObjectLike, toSafeInteger } from 'lodash';
+
 import type {
 	GetStaticPaths,
 	GetStaticPathsContext,
 	GetStaticPathsResult,
 	GetStaticProps,
 	GetStaticPropsContext,
-	GetStaticPropsResult,
 } from 'next';
 import type { Knex } from 'knex';
-
-import { DBCommonFields } from './db/types';
-import { SinglePageProps } from 'global-types';
-import { Entity } from './entities/types';
+import type {
+	GetSinglePageResult,
+	Serialized,
+	SinglePageProps,
+} from 'global-types';
+import type { DBCommonFields } from 'lib/db/types';
+import type { Entity } from 'lib/entities/types';
 
 export function isSSR(): boolean {
 	return typeof window === 'undefined';
@@ -53,9 +56,9 @@ export async function staticPathsEdit(
 	return rootStaticPaths;
 }
 
-export const staticPathsNoData = (
+export function staticPathsNoData(
 	data?: unknown
-): GetStaticPathsResult | null => {
+): GetStaticPathsResult | null {
 	if ( ! data ) {
 		return {
 			paths: [],
@@ -63,15 +66,32 @@ export const staticPathsNoData = (
 		};
 	}
 	return null;
-};
+}
 
-export async function staticPropsEdit< T extends SinglePageProps< Entity > >(
+export async function staticPropsEdit<
+	E extends Entity,
+	T extends SinglePageProps< E >
+>(
 	root: GetStaticProps< T >,
 	context: GetStaticPropsContext
-): Promise< GetStaticPropsResult< T > > {
+): GetSinglePageResult< E > {
 	const rootProps = await root( context );
 	if ( 'props' in rootProps ) {
 		rootProps.props.title = `Editing ${ rootProps.props.title }`;
 	}
 	return rootProps;
+}
+
+export function serialize< T >( object: T ): Serialized< T > {
+	if ( Array.isArray( object ) ) {
+		return object.map( serialize );
+	} else if ( isDate( object ) ) {
+		return object.toDateString();
+	} else if ( isObjectLike( object ) ) {
+		for ( const key in object ) {
+			object[ key ] = serialize( object[ key ] );
+		}
+		return object;
+	}
+	return object;
 }

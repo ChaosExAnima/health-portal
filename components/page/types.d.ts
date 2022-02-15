@@ -8,6 +8,6 @@ interface PageProps {
 	maxWidth?: ContainerProps["maxWidth"];
 	title: HeaderProps["title"];
 	children: ReactChild | ReactChild[];
-	header?: HeaderProps;
+	header?: Except< HeaderProps, 'title' >;
 	breadcrumbs?: Breadcrumb[];
 }

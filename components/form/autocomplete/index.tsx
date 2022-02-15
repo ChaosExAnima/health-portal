@@ -3,22 +3,25 @@ import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 import { useController } from 'react-hook-form';
 
 import { useDebouncedSWR } from 'lib/hooks';
-import { filterOptions, getOptionLabel, isOptionObject } from './utils';
+import { filterOptions, getOptionLabel, isNewOptionObject, isOptionObject } from './utils';
 
 import type {
 	FormAutocompleteFieldProps,
 	AutocompleteResponse,
 	Input,
+	AutocompleteOption,
+	AutocompleteOptions,
 } from '../types';
 
 export default function AutocompleteField< Schema extends Input >( {
 	control,
-	free,
+	free = false,
 	label,
-	multiple,
+	multiple = false,
 	name,
 	target,
-	required,
+	targetKey = 'name',
+	required = false,
 }: FormAutocompleteFieldProps< Schema > ) {
 	const {
 		field: { value, onChange: onChangeForm, ref },
@@ -35,40 +38,41 @@ export default function AutocompleteField< Schema extends Input >( {
 	} = useDebouncedSWR< AutocompleteResponse >( searchPath );
 	const loading = ! response && !! searchTerm;
 
-	const onChange = ( _event: never, option: unknown ) => {
+	const onChange = ( _event: never, option: AutocompleteOptions ) => {
 		if ( isOptionObject( option ) ) {
-			onChangeForm( { ...option, value: getOptionLabel( option ) } );
+			if ( isNewOptionObject( option ) ) {
+				option.label = option.value;
+			}
+			onChangeForm( { id: option.id, [ targetKey ]: option.label } );
 		}
 	};
 
 	return (
-		<Autocomplete
+		<Autocomplete<
+			AutocompleteOption,
+			typeof multiple,
+			undefined,
+			typeof free
+		>
 			autoSelect
 			clearOnEscape
 			freeSolo={ free }
 			getOptionLabel={ getOptionLabel }
-			isOptionEqualToValue={ ( option, selectedValue: string ) =>
-				!! selectedValue &&
-				isOptionObject( option ) &&
-				option.label === selectedValue
-			}
 			filterOptions={ filterOptions }
 			loading={ loading }
 			multiple={ multiple }
 			options={ response?.success ? response.options : [] }
 			onChange={ onChange }
 			noOptionsText="Not found"
-			renderOption={ ( option: unknown ) =>
-				isOptionObject( option )
-					? option.label
-					: getOptionLabel( option )
-			}
+			renderOption={ ( props, option ) => (
+				<li { ...props }>{ option.label }</li>
+			) }
 			renderInput={ ( params ) => (
 				<TextField
 					{ ...params }
 					name={ name }
 					label={ label }
-					error={ error || errorResponse }
+					error={ !! error || !! errorResponse }
 					helperText={ error?.message ?? ' ' }
 					inputRef={ ref }
 					onChange={ ( event ) =>

@@ -50,7 +50,7 @@ export default function ClaimPage( {
 					{ formatClaimStatus( record.status ) }
 				</Detail>
 				<Detail name="Date of service">
-					{ formatDate( 'YYYY-MM-DD' )( record.date ) }
+					{ formatDate( 'YYYY-MM-DD' )( record.created ) }
 				</Detail>
 				<Detail name="Provider">
 					{ record.provider && (

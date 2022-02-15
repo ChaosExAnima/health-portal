@@ -1,6 +1,7 @@
-import { GetStaticProps } from 'next';
-import { Entity } from 'lib/entities/types';
 import { SxProps } from '@mui/material';
+import { JsonValue, Schema } from 'type-fest';
+import { GetStaticProps, GetStaticPropsContext, GetStaticPropsResult } from 'next';
+import { Entity } from 'lib/entities/types';
 
 // Utils
 type Nullable< T > = T | null;
@@ -15,12 +16,7 @@ type DeepReplace< T, From, To > = T extends ( ...args: any[] ) => any
 				? To
 				: Replace< T[ K ], From, To >;
 	  };
-type RemoveNever< T > = Pick<
-	T,
-	{
-		[ P in keyof T ]: T[ P ] extends Function ? P : never;
-	}[ keyof T ]
->;
+type Serialized< T > = Schema< T, JsonValue >;
 
 // Contexts
 type PaginatedPageContext = {
@@ -49,5 +45,8 @@ type GetSinglePageProps< T extends Entity > = GetStaticProps<
 	SinglePageProps< T >,
 	SinglePageContext
 >;
+
+type GetSinglePageContext = GetStaticPropsContext< SinglePageContext >;
+type GetSinglePageResult< T extends Entity > = Promise< GetStaticPropsResult< Serialized< T > > >;
 
 type onChangeFunc = ( value: string ) => void;

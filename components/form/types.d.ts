@@ -19,6 +19,7 @@ export interface FormProps<Schema extends AnyObjectSchema> {
 	handleSubmit: UseFormHandleSubmit;
 	type: NewTypes;
 	new?: boolean;
+	transform?: ( unknown ) => unknown;
 	children: ReactElement[];
 }
 
@@ -33,21 +34,20 @@ export interface FormTextFieldProps<Schema> extends FormBaseFieldProps<Schema>, 
 // Autocomplete
 export interface FormAutocompleteFieldProps<Schema> extends FormBaseFieldProps<Schema> {
 	target?: string;
+	targetKey?: string;
 	multiple?: boolean;
 	free?: boolean;
 }
 
-export interface AutocompleteOptionDB {
+export interface AutocompleteOption {
 	id: number;
 	label: string;
 }
-export interface AutocompleteOptionNew {
+export interface AutocompleteOptionNew extends AutocompleteOption {
 	id: 0;
-	label: string;
-	input: string;
+	value: string;
 }
-export type AutocompleteOption = AutocompleteOptionDB | AutocompleteOptionNew;
-
+export type AutocompleteOptions = AutocompleteOption | AutocompleteOptionNew;
 export interface AutocompleteResponseError {
 	success: false;
 	errors: string[];

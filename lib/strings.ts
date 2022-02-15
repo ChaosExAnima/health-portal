@@ -30,8 +30,9 @@ export function formatCurrency( value: unknown ): string {
 	return formatter.format( amount );
 }
 
-export function formatDate( format: string ): ( arg0: string ) => string {
-	return ( input: string ): string => dayjs( input ).format( format );
+export function formatDate( format: string ) {
+	return ( input: Parameters< typeof dayjs >[ 0 ] ): string =>
+		dayjs( input ).format( format );
 }
 
 export function priceToNumber( price?: string ): number | null {
@@ -70,8 +71,4 @@ export function formatClaimStatus( status: ClaimStatus ): string {
 		[ constants.CLAIM_STATUS_UNKNOWN ]: 'Unknown',
 	} as const;
 	return statuses[ status ] || 'Unknown';
-}
-
-export function typeToURL( type: string, slug: string ): string {
-	return `/${ type }/${ slug }`;
 }
