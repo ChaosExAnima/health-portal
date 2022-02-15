@@ -3,7 +3,12 @@ import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 import { useController } from 'react-hook-form';
 
 import { useDebouncedSWR } from 'lib/hooks';
-import { filterOptions, getOptionLabel, isNewOptionObject, isOptionObject } from './utils';
+import {
+	filterOptions,
+	getOptionLabel,
+	isNewOptionObject,
+	isOptionObject,
+} from './utils';
 
 import type {
 	FormAutocompleteFieldProps,
@@ -72,6 +77,7 @@ export default function AutocompleteField< Schema extends Input >( {
 					{ ...params }
 					name={ name }
 					label={ label }
+					placeholder="Type to show options"
 					error={ !! error || !! errorResponse }
 					helperText={ error?.message ?? ' ' }
 					inputRef={ ref }
@@ -82,16 +88,8 @@ export default function AutocompleteField< Schema extends Input >( {
 					disabled={ isSubmitting }
 					InputProps={ {
 						...params.InputProps,
-						endAdornment: (
-							<>
-								{ loading ? (
-									<CircularProgress
-										color="inherit"
-										size={ 20 }
-									/>
-								) : null }
-								{ params.InputProps.endAdornment }
-							</>
+						endAdornment: loading && (
+							<CircularProgress color="inherit" size={ 20 } />
 						),
 					} }
 				/>

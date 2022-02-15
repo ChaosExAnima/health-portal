@@ -16,7 +16,11 @@ import {
 } from 'lib/db/helpers';
 import rowToCall from 'lib/entities/call';
 import { useProvidersForSelect } from 'lib/hooks';
-import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
+import {
+	getPageNumber,
+	getTotalPageNumber,
+	serialize,
+} from 'lib/static-helpers';
 import { formatDate } from 'lib/strings';
 
 import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
@@ -126,7 +130,7 @@ export async function getServerSideProps(
 			title: 'Calls',
 			currentPage,
 			totalPages,
-			records,
+			records: serialize( records ),
 			query,
 		},
 	};

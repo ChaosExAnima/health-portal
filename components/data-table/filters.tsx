@@ -8,17 +8,17 @@ import { useForm, Controller, Control, FieldErrors } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import type { DataTableFilter } from './types';
+import type { DataTableFilter as DataTableFilterType } from './types';
 
 type DataTableFiltersProps = {
-	filters: DataTableFilter[];
+	filters: DataTableFilterType[];
 	hasDates: boolean;
 	schema?: yup.AnyObjectSchema;
 };
 
 type DataTableFiltersFieldProps = {
 	control: Control;
-	filter: DataTableFilter;
+	filter: DataTableFilterType;
 	error?: FieldErrors;
 };
 
