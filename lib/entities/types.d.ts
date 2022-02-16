@@ -55,7 +55,10 @@ type EntityWithAdditions< E extends Entity, A extends EntityAdditions > = E & {
 	notes: E extends WithNotes & SetRequired< A, 'relations' > ? Note[] : never;
 };
 type WithMetaAdditions< A extends EntityAdditions > = SetRequired< A, 'meta' >;
-type WithRelationAdditions< A extends EntityAdditions > = SetRequired< A, 'relations' >;
+type WithRelationAdditions< A extends EntityAdditions > = SetRequired<
+	A,
+	'relations'
+>;
 
 // Entity types
 abstract interface Entity {
@@ -127,7 +130,11 @@ type WithInput< Input extends Entity > = MaybeNewEntity &
 		Input,
 		'id' | 'created' | 'slug' | 'import' | 'notes' | 'provider' | 'claims'
 	>;
-type WithNumberIds< Input > = DeepReplace< Input, Id | NewId | undefined, number | undefined >;
+type WithNumberIds< Input > = DeepReplace<
+	Input,
+	Id | NewId | undefined,
+	number | undefined
+>;
 type ToSchema< Input > = ObjectSchema<
 	Simplify< WithNumberIds< Required< Input > > >
 >;

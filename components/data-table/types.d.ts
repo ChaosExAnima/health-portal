@@ -24,14 +24,16 @@ type DataTableFilterBase< Key extends string > = {
 
 type DataTableFilterSelectValues = Map< string, string >;
 
-type DataTableFilterSelect< Key extends string > = DataTableFilterBase< Key > & {
+type DataTableFilterSelect<
+	Key extends string
+> = DataTableFilterBase< Key > & {
 	type: 'select';
 	values: DataTableFilterSelectValues;
 	default?: string;
 	noAll?: true;
 };
 type DataTableFilterDate< Key extends string > = DataTableFilterBase< Key > & {
-	type: 'date',
+	type: 'date';
 	default?: string;
 };
 
@@ -40,7 +42,9 @@ type DataTableRowData = {
 	[ key: string ]: any;
 };
 
-type DataTableFilter< Key = string > = DataTableFilterSelect< Key > | DataTableFilterDate< Key >;
+type DataTableFilter< Key = string > =
+	| DataTableFilterSelect< Key >
+	| DataTableFilterDate< Key >;
 
 type DataTableRowLink = {
 	slug: string;
