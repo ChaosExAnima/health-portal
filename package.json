@@ -7,6 +7,8 @@
     "predev": "yarn db:up",
     "build": "next build",
     "start": "next start",
+    "prestart": "yarn build",
+    "analyze": "ANALYZE=1 yarn start",
     "db:up": "docker-compose up -d",
     "db:down": "docker-compose down",
     "db:migrate": "yarn db:knex migrate:latest",
@@ -69,7 +71,8 @@
     "ts-jest": "^27",
     "ts-node": "^10",
     "type-fest": "^2.8",
-    "typescript": "^4"
+    "typescript": "^4",
+    "webpack-bundle-analyzer": "^4.5.0"
   },
   "resolutions": {
     "fs-capacitor": "^6.2.0"

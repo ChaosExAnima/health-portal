@@ -1,5 +1,5 @@
 module.exports = {
-	webpack( config, { defaultLoaders } ) {
+	webpack( config, { defaultLoaders, isServer } ) {
 		config.module.rules.push( {
 			test: /\.graphql$/,
 			exclude: /node_modules/,
@@ -11,6 +11,20 @@ module.exports = {
 			exclude: /node_modules/,
 			use: [ 'graphql-let/schema/loader' ],
 		} );
+
+		if ( process.env.ANALYZE ) {
+			const {
+				BundleAnalyzerPlugin,
+			} = require( 'webpack-bundle-analyzer' );
+			config.plugins.push(
+				new BundleAnalyzerPlugin( {
+					analyzerMode: 'static',
+					reportFilename: isServer
+						? '../analyze/server.html'
+						: './analyze/client.html',
+				} )
+			);
+		}
 
 		return config;
 	},
