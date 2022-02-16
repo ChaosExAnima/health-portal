@@ -81,7 +81,7 @@ const Claims: React.FC< ClaimsProps > = ( {
 	const columns: DataTableColumn< StringKeys< Claim > >[] = [
 		{
 			align: 'right',
-			key: 'date',
+			key: 'created',
 			name: 'Service Date',
 			width: 150,
 			format: formatDate( 'YYYY-MM-DD' ),
