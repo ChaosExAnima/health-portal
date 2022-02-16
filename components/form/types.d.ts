@@ -1,6 +1,7 @@
-import { ReactElement, MutableRefObject } from 'react';
+import { MutableRefObject, ReactNode } from 'react';
 import { Control, UnpackNestedValue, UseFormRegister, Path, UseFormReturn, UseFormHandleSubmit } from 'react-hook-form';
 import { Promisable } from 'type-fest';
+import { AnyObjectSchema } from 'yup';
 import { StandardTextFieldProps as MuiTextFieldProps, ChipProps as MuiChipProps } from '@mui/material';
 import {
 	DatePickerProps as MuiDatePickerProps,
@@ -10,17 +11,15 @@ import {
 
 import { NewTypes } from 'lib/api/types';
 
-export { AnyObjectSchema as Schema } from 'yup';
-
-
 export type Input = Record< string, any >;
 
 export interface FormProps<Schema extends AnyObjectSchema> {
 	handleSubmit: UseFormHandleSubmit;
 	type: NewTypes;
 	new?: boolean;
+	name?: string;
 	transform?: ( unknown ) => unknown;
-	children: ReactElement[];
+	children: ReactNode;
 }
 
 export interface FormBaseFieldProps<Schema extends Input> {

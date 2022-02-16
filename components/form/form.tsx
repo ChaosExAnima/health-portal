@@ -2,23 +2,27 @@ import { Box, Button } from '@mui/material';
 import DateAdaptor from '@mui/lab/AdapterDayjs';
 import { LocalizationProvider } from '@mui/lab';
 import React, { useState } from 'react';
-// eslint-disable-next-line import/named
-import { AnyObjectSchema } from 'yup';
 
 import ErrorNotice from 'components/error-notice';
 import { formatErrors, handleNewType } from 'lib/api/new';
 import { ErrorHandler } from 'lib/api/types';
 
+import type { AnyObjectSchema } from 'yup';
 import type { FormProps } from './types';
 
 export default function Form< Schema extends AnyObjectSchema >( {
 	type,
+	name = type,
 	new: newSubmission,
 	children,
 	handleSubmit,
 	transform,
 }: FormProps< Schema > ) {
 	const [ errors, setErrors ] = useState< string[] >( [] );
+
+	if ( newSubmission ) {
+		name = `new-${ type }`;
+	}
 
 	const handleErrors: ErrorHandler = ( errs ) =>
 		setErrors( formatErrors( errs ) );
@@ -32,7 +36,13 @@ export default function Form< Schema extends AnyObjectSchema >( {
 		}
 	} );
 	return (
-		<Box component="form" onSubmit={ onSubmit } noValidate>
+		<Box
+			noValidate
+			name={ name }
+			component="form"
+			autoComplete="off"
+			onSubmit={ onSubmit }
+		>
 			<ErrorNotice errors={ errors } />
 			<LocalizationProvider dateAdapter={ DateAdaptor }>
 				{ children }
