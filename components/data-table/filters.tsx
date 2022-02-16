@@ -96,7 +96,7 @@ export default function DataTableFilter( {
 			router.push( url );
 		} );
 		return () => subscription.unsubscribe();
-	}, [ watch ] );
+	}, [ router, trigger, watch ] );
 
 	if ( filters.length === 0 ) {
 		return null;

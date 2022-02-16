@@ -1,6 +1,10 @@
 import { SxProps } from '@mui/material';
 import { JsonValue, Schema } from 'type-fest';
-import { GetStaticProps, GetStaticPropsContext, GetStaticPropsResult } from 'next';
+import {
+	GetStaticProps,
+	GetStaticPropsContext,
+	GetStaticPropsResult,
+} from 'next';
 import { Entity } from 'lib/entities/types';
 
 // Utils
@@ -47,6 +51,8 @@ type GetSinglePageProps< T extends Entity > = GetStaticProps<
 >;
 
 type GetSinglePageContext = GetStaticPropsContext< SinglePageContext >;
-type GetSinglePageResult< T extends Entity > = Promise< GetStaticPropsResult< Serialized< T > > >;
+type GetSinglePageResult< T extends Entity > = Promise<
+	GetStaticPropsResult< Serialized< T > >
+>;
 
 type onChangeFunc = ( value: string ) => void;
