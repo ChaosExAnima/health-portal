@@ -52,7 +52,7 @@ export default function DataTableRow< Data extends DataTableRowData >(
 			slug: ( column.linkPrefix || '' ) + rowData.slug,
 			basePath,
 		} ) );
-	}, [ rowData, columns ] );
+	}, [ columns, rowData, basePath ] );
 
 	return (
 		<TableRow>

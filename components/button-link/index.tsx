@@ -8,7 +8,7 @@ const ButtonLink: React.FC< ButtonLinkProps > = ( {
 	children,
 	...props
 } ) => (
-	<Link href={ href }>
+	<Link href={ href } passHref>
 		<Button { ...props }>{ children }</Button>
 	</Link>
 );

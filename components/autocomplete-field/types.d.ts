@@ -28,4 +28,6 @@ type AutocompleteResponseSuccess = {
 	success: true;
 	options: AutocompleteOption[];
 };
-type AutocompleteResponse = AutocompleteResponseError | AutocompleteResponseSuccess;
+type AutocompleteResponse =
+	| AutocompleteResponseError
+	| AutocompleteResponseSuccess;

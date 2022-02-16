@@ -21,7 +21,7 @@ const NavItem: React.FC< NavItemLinkProps > = ( {
 		active = true;
 	}
 	return (
-		<Link href={ href }>
+		<Link href={ href } passHref>
 			<Tooltip title={ name }>
 				<IconButton
 					aria-label={ name }

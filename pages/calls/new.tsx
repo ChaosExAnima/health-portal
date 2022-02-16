@@ -44,7 +44,6 @@ function NewCallPage() {
 		setErrors( formatErrors( errs ) );
 
 	register( 'reps' );
-	console.log( formErrors );
 
 	return (
 		<>
