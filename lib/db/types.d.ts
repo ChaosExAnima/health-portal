@@ -8,6 +8,7 @@ import {
 	TABLE_PROVIDERS,
 	TABLE_RELATIONS,
 } from 'lib/constants';
+import { Entity, Slug } from 'lib/entities/types';
 
 type DBCommonFields = {
 	id: number;
@@ -56,6 +57,10 @@ type ImportDB = DBCommonFields & {
 	updated: Nullable< number >;
 	fileId: Nullable< ContentDB[ 'id' ] >;
 };
+
+type SaveEntityFunction< InputEntity extends Entity > = (
+	input: Entity
+) => Promise< Slug >;
 
 declare module 'knex/types/tables' {
 	interface Tables {

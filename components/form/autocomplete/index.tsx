@@ -29,11 +29,13 @@ export default function AutocompleteField< Schema extends Input >( {
 	required = false,
 }: FormAutocompleteFieldProps< Schema > ) {
 	const {
-		field: { value, onChange: onChangeForm, ref },
+		field: { value = '', onChange: onChangeForm, ref },
 		fieldState: { error },
 		formState: { isSubmitting },
 	} = useController( { control, name, rules: { required } } );
-	const [ searchTerm, setSearchTerm ] = useState< string >( value || '' );
+	const [ searchTerm, setSearchTerm ] = useState< string >(
+		getOptionLabel( value )
+	);
 	const searchPath = searchTerm
 		? encodeURI(
 				`/api/search/${ target || name }/${ searchTerm }`.replace(
@@ -73,6 +75,7 @@ export default function AutocompleteField< Schema extends Input >( {
 			loading={ loading }
 			multiple={ multiple }
 			options={ response?.success ? response.options : [] }
+			value={ value }
 			onChange={ onChange }
 			onInputChange={ ( _event, newTerm ) => setSearchTerm( newTerm ) }
 			noOptionsText="Not found"

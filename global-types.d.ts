@@ -1,5 +1,5 @@
 import { SxProps } from '@mui/material';
-import { JsonValue, Schema } from 'type-fest';
+import { JsonValue, Primitive, Schema } from 'type-fest';
 import {
 	GetStaticProps,
 	GetStaticPropsContext,
@@ -7,12 +7,15 @@ import {
 } from 'next';
 import { Entity } from 'lib/entities/types';
 
+// Primitives
+type PlainObject = Record< string, Primitive >;
+type StringMap = Record< string, string >;
+type StyleMap = Record< string, SxProps< Theme > >;
+
 // Utils
 type Nullable< T > = T | null;
 type StringKeys< T > = Extract< keyof T, string >;
 type MaybeArray< T > = T | T[];
-type StringMap = Record< string, string >;
-type StyleMap = Record< string, SxProps< Theme > >;
 type DeepReplace< T, From, To > = T extends ( ...args: any[] ) => any
 	? T
 	: {

@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import Page from 'components/page';
 import { Detail, DetailsBox } from 'components/details-box';
 import ProviderLink from 'components/provider-link';
-import rowToCall from 'lib/entities/call';
+import { rowToCall } from 'lib/entities/call';
 import {
 	queryCalls,
 	queryMeta,

@@ -14,7 +14,7 @@ import {
 	queryCalls,
 	queryRelatedProviders,
 } from 'lib/db/helpers';
-import rowToCall from 'lib/entities/call';
+import { rowToCall } from 'lib/entities/call';
 import { useProvidersForSelect } from 'lib/hooks';
 import {
 	getPageNumber,

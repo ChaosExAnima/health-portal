@@ -5,24 +5,27 @@ import type { Nullable } from 'global-types';
 import type {
 	ErrorHandler,
 	ErrorHandlerArg,
-	NewResponse,
+	EntityUpdateResponse,
 	NewTypes,
 } from './types';
 import { typeToUrl } from './utils';
 
-export async function handleNewType< Input >(
-	form: Input,
+import type { Entity, Slug } from 'lib/entities/types';
+
+export async function handleUpdateType< Input extends Entity >(
+	form: unknown,
 	type: NewTypes,
-	handleError: ErrorHandler
+	handleError: ErrorHandler,
+	slug?: Slug
 ): Promise< void > {
-	const response = await fetch( `/api/new/${ type }`, {
+	const response = await fetch( `/api/${ type }/${ slug }`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify( form ),
 	} );
-	const body = ( await response.json() ) as Nullable< NewResponse >;
+	const body = ( await response.json() ) as Nullable< EntityUpdateResponse >;
 	if ( ! body ) {
 		// Error parsing response from server.
 		handleError( 'Could not parse response from server' );

@@ -19,14 +19,14 @@ export default function FormTermField< Schema extends Input >( {
 	...fieldProps
 }: FormTermFieldProps< Schema > ) {
 	const {
-		field: { onChange: onChangeForm, ref },
+		field: { onChange: onChangeForm, ref, value = [] },
 		fieldState: { error },
 	} = useController( {
 		control,
 		name,
 		rules: { required },
 	} );
-	const [ terms, setTerms ] = useState< string[] >( [] );
+	const [ terms, setTerms ] = useState< string[] >( value );
 	const [ text, setText ] = useState( '' );
 	const [ hasFocus, setFocus ] = useState( false );
 	const inputRef = useRef< HTMLInputElement | null >( null );
