@@ -29,7 +29,7 @@ export type ActionItem = Omit<
 };
 
 export interface HeaderProps {
-	title: string;
+	title?: string;
 	actions?: ActionItem[];
 	buttonsBelow?: true;
 	edit?: true;

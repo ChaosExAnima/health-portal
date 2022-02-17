@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 import Page from 'components/page';
-import DetailsBox, { Detail } from 'components/details-box';
+import { Detail, DetailsBox } from 'components/details-box';
 import ProviderLink from 'components/provider-link';
 import rowToCall from 'lib/entities/call';
 import {
@@ -45,18 +45,13 @@ export default function CallPage( {
 			} }
 		>
 			<DetailsBox>
-				<Detail name="Provider">
+				<Detail label="Provider" placeholder="None found">
 					{ provider && <ProviderLink provider={ provider } /> }
-					{ ! provider && <em>None found</em> }
 				</Detail>
-				{ record.reps && !! record.reps.length && (
-					<Detail name="Reps">{ record.reps.join( ', ' ) }</Detail>
-				) }
-				<Detail name="Reason">{ record.reason }</Detail>
-				<Detail name="Result">{ record.result }</Detail>
-				{ record.reference && (
-					<Detail name="Reference">{ record.reference }</Detail>
-				) }
+				<Detail label="Reps">{ record.reps.join( ', ' ) }</Detail>
+				<Detail label="Reason">{ record.reason }</Detail>
+				<Detail label="Result">{ record.result }</Detail>
+				<Detail label="Reference">{ record.reference }</Detail>
 			</DetailsBox>
 		</Page>
 	);

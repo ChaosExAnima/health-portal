@@ -1,68 +1,31 @@
-import React, { useContext } from 'react';
-import { Grid, TextField, Typography } from '@mui/material';
+import React, { PropsWithChildren } from 'react';
+import { Stack, Typography } from '@mui/material';
 
-import { DetailsContext } from './index';
-import { onChangeFunc } from 'global-types';
+import { DetailProps } from './types';
 
-type DetailCommonProps = {
-	name: string;
-	empty?: string;
-	type?: 'tel' | 'email' | 'url';
-};
-
-type DetailProps = DetailCommonProps &
-	(
-		| { onChange?: never; id?: never }
-		| { onChange: onChangeFunc; id?: never }
-		| { onChange?: never; id: string }
-	 );
-
-const DetailText: React.FC< Omit< DetailProps, 'name' > > = ( {
+export default function Detail( {
+	label,
+	placeholder = 'None',
 	children,
-	empty = 'Unknown',
-	type = 'text',
-	id,
-	onChange: onChangeProp,
-} ) => {
-	const { edit, onChange: onChangeRoot } = useContext( DetailsContext );
-	if ( ! edit ) {
-		return (
+}: PropsWithChildren< DetailProps > ) {
+	return (
+		<Stack direction="row">
 			<Typography
 				variant="body1"
-				color={ children ? 'textPrimary' : 'textSecondary' }
+				component="dt"
+				minWidth="6em"
+				color="grey.500"
 			>
-				{ children || empty }
+				{ label }
 			</Typography>
-		);
-	}
-
-	const onChange = ( value: string ) => {
-		if ( onChangeProp ) {
-			return onChangeProp( value );
-		} else if ( onChangeRoot && id ) {
-			return onChangeRoot( id, value );
-		}
-		throw new Error( 'Provide onChange method.' );
-	};
-	return (
-		<TextField
-			placeholder={ empty }
-			value={ children || '' }
-			type={ type || 'text' }
-			onChange={ ( event ) => onChange( event.target.value ) }
-		/>
+			<Typography
+				variant="body1"
+				color={ children ? 'text.primary' : 'grey.700' }
+				component="dd"
+				fontStyle={ children ? 'normal' : 'oblique' }
+			>
+				{ children || placeholder }
+			</Typography>
+		</Stack>
 	);
-};
-
-const Detail: React.FC< DetailProps > = ( { name, ...props } ) => (
-	<Grid container item>
-		<Grid item md={ 2 }>
-			<Typography variant="body1">{ name }</Typography>
-		</Grid>
-		<Grid item md={ 10 }>
-			<DetailText { ...props } />
-		</Grid>
-	</Grid>
-);
-
-export default Detail;
+}
