@@ -42,6 +42,7 @@ type PaginatedPageProps< T extends Entity > = PageProps & {
 type SinglePageProps< T extends Entity > = PageProps & {
 	id: number;
 	slug: string;
+	originalTitle?: string;
 	record: T;
 };
 

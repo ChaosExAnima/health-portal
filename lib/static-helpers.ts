@@ -77,6 +77,7 @@ export async function staticPropsEdit<
 ): GetSinglePageResult< E > {
 	const rootProps = await root( context );
 	if ( 'props' in rootProps ) {
+		rootProps.props.originalTitle = rootProps.props.title;
 		rootProps.props.title = `Editing ${ rootProps.props.title }`;
 	}
 	return rootProps;

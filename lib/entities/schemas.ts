@@ -9,6 +9,7 @@ import {
 	FileInput,
 	NoteInput,
 	ProviderInput,
+	Slug,
 	ToSchema,
 } from './types';
 
@@ -18,6 +19,7 @@ export const stringSchema = yup.string().trim();
 // Fields
 export const idSchema = yup.number().integer().min( 0 ).default( 0 );
 export const savedIdSchema = idSchema.positive().required();
+export const slugSchema = yup.string< Slug >().trim();
 export const createdSchema = yup.date().default( () => new Date() );
 export const linksSchema = yup.array().of( savedIdSchema ).ensure();
 
@@ -25,7 +27,7 @@ export const linksSchema = yup.array().of( savedIdSchema ).ensure();
 export const providerSchema: ToSchema< ProviderInput > = yup
 	.object( {
 		id: idSchema,
-		slug: stringSchema,
+		slug: slugSchema,
 		name: stringSchema.required(),
 		address: stringSchema,
 		email: stringSchema.email(),
