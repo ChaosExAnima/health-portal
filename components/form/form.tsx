@@ -5,9 +5,9 @@ import React, { useState } from 'react';
 
 import ErrorNotice from 'components/error-notice';
 import { formatErrors, handleNewType } from 'lib/api/new';
-import { ErrorHandler } from 'lib/api/types';
 
 import type { AnyObjectSchema } from 'yup';
+import type { ErrorHandler } from 'lib/api/types';
 import type { FormProps } from './types';
 
 export default function Form< Schema extends AnyObjectSchema >( {

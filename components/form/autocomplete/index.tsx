@@ -35,7 +35,12 @@ export default function AutocompleteField< Schema extends Input >( {
 	} = useController( { control, name, rules: { required } } );
 	const [ searchTerm, setSearchTerm ] = useState< string >( value || '' );
 	const searchPath = searchTerm
-		? `/api/search/${ target || name }/${ searchTerm }`
+		? encodeURI(
+				`/api/search/${ target || name }/${ searchTerm }`.replace(
+					' ',
+					'+'
+				)
+		  )
 		: null;
 	const {
 		data: response,
@@ -60,6 +65,7 @@ export default function AutocompleteField< Schema extends Input >( {
 			typeof free
 		>
 			autoSelect
+			autoComplete
 			clearOnEscape
 			freeSolo={ free }
 			getOptionLabel={ getOptionLabel }
@@ -68,6 +74,7 @@ export default function AutocompleteField< Schema extends Input >( {
 			multiple={ multiple }
 			options={ response?.success ? response.options : [] }
 			onChange={ onChange }
+			onInputChange={ ( _event, newTerm ) => setSearchTerm( newTerm ) }
 			noOptionsText="Not found"
 			renderOption={ ( props, option ) => (
 				<li { ...props }>{ option.label }</li>
@@ -81,9 +88,6 @@ export default function AutocompleteField< Schema extends Input >( {
 					error={ !! error || !! errorResponse }
 					helperText={ error?.message ?? ' ' }
 					inputRef={ ref }
-					onChange={ ( event ) =>
-						setSearchTerm( event.target.value )
-					}
 					value={ searchTerm }
 					disabled={ isSubmitting }
 					InputProps={ {
