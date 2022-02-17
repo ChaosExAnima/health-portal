@@ -10,7 +10,7 @@ import {
 import type { GetStaticPaths, GetStaticProps } from 'next';
 import type { SinglePageProps } from 'global-types';
 import type { Provider } from 'lib/entities/types';
-import type { HeaderProps } from 'components/header';
+import type { ActionItem } from 'components/header';
 
 const ProviderEditPage: React.FC< SinglePageProps< Provider > > = ( {
 	record,
@@ -20,28 +20,26 @@ const ProviderEditPage: React.FC< SinglePageProps< Provider > > = ( {
 		{ href: `/providers/${ record.slug }`, name: record.name },
 		'Edit',
 	];
-	const header: HeaderProps = {
-		buttonsBelow: true,
-		actions: [
-			{
-				action: 'Save',
-				icon: 'save',
-				onClick: () => {},
-				disabled: false,
-			},
-			{
-				action: 'Cancel',
-				href: `/providers/${ record.slug }`,
-				icon: 'cancel',
-				color: 'secondary',
-			},
-		],
-	};
+	const actions: ActionItem[] = [
+		{
+			action: 'Save',
+			icon: 'save',
+			onClick: () => {},
+			disabled: false,
+		},
+		{
+			action: 'Cancel',
+			href: `/providers/${ record.slug }`,
+			icon: 'cancel',
+			color: 'secondary',
+		},
+	];
 	return (
 		<Page
 			breadcrumbs={ breadcrumbs }
 			title={ record.name }
-			header={ header }
+			buttonsBelow
+			actions={ actions }
 		>
 			Hello
 		</Page>

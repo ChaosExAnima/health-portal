@@ -33,16 +33,14 @@ export default function CallPage( {
 		<Page
 			title={ title }
 			breadcrumbs={ [ { href: '/calls', name: 'Calls' }, title ] }
-			header={ {
-				buttonsBelow: true,
-				actions: [
-					{
-						action: 'Edit',
-						href: `/calls/${ slug }/edit`,
-						icon: 'edit',
-					},
-				],
-			} }
+			buttonsBelow
+			actions={ [
+				{
+					action: 'Edit',
+					href: `/calls/${ slug }/edit`,
+					icon: 'edit',
+				},
+			] }
 		>
 			<DetailsBox>
 				<Detail label="Provider" placeholder="None found">

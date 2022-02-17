@@ -7,9 +7,9 @@ import { PageProps } from './types';
 export default function Page( {
 	maxWidth = 'md',
 	breadcrumbs,
-	header,
 	title,
 	children,
+	...headerProps
 }: PageProps ) {
 	return (
 		<Container
@@ -22,7 +22,7 @@ export default function Page( {
 			component="main"
 		>
 			{ breadcrumbs && <Breadcrumbs breadcrumbs={ breadcrumbs } /> }
-			<Header { ...header } title={ title } />
+			<Header { ...headerProps } title={ title } />
 			<Box flexGrow="1">{ children }</Box>
 			<Footer />
 		</Container>

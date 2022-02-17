@@ -4,10 +4,8 @@ import { BreadcrumbsProps, ContainerProps } from '@mui/material';
 import { HeaderProps } from 'components/header';
 import { Breadcrumb } from 'components/breadcrumbs';
 
-interface PageProps {
+interface PageProps extends HeaderProps {
 	maxWidth?: ContainerProps[ 'maxWidth' ];
-	title: HeaderProps[ 'title' ];
 	children: ReactChild | ReactChild[];
-	header?: Omit< HeaderProps, 'title' >;
 	breadcrumbs?: Breadcrumb[];
 }
