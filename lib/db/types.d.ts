@@ -21,7 +21,7 @@ type DBMetaField = {
 type ContentDB = DBCommonFields & {
 	identifier: string;
 	type: CONTENTS_TYPE;
-	info: string;
+	info: Nullable< string >;
 	status: string;
 	providerId: Nullable< ProviderDB[ 'id' ] >;
 	importId: Nullable< ImportDB[ 'id' ] >;

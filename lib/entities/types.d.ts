@@ -9,6 +9,7 @@ import {
 } from 'type-fest';
 import { ObjectSchema } from 'yup';
 
+import type { Knex } from 'knex';
 import { DeepReplace, Nullable, RemoveNever } from 'global-types';
 import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
 import {
@@ -121,11 +122,11 @@ interface Note extends Content, WithLinks {
 }
 
 // Input utils
+type InputEntity = MaybeNewEntity & Partial< Pick< Entity, 'created' > >;
 type MaybeNewEntity = { id?: Id | NewId };
 type CreatedEntity = { created: Date };
 type ProviderEntity = { provider?: Except< ProviderInput, 'id' > | Id };
-type WithMaybeNewId< Input extends Omit< Entity, 'id' > > = MaybeNewEntity &
-	Except< Input, 'id' >;
+type WithMaybeNewId< Input > = MaybeNewEntity & Except< Input, 'id' >;
 type WithInput< Input extends Entity > = MaybeNewEntity &
 	Except<
 		Input,
@@ -156,6 +157,10 @@ type FileInput = WithMaybeNewId< FileEntity > | { file: File };
 type NoteInput = Simplify< WithInput< Except< Note, 'files' > > & WithLinks >;
 
 // Functions
-type SaveEntityFunction< Input extends Entity > = (
+type SaveEntityFunction< Input > = (
 	entity: WithMaybeNewId< Input >
 ) => Promise< Slug >;
+type EntityToRowFunction< Input > = (
+	entity: WithMaybeNewId< Input >,
+	trx?: Knex.Transaction
+) => Promise< ContentDB >;

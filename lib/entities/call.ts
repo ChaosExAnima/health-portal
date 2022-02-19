@@ -1,6 +1,7 @@
 import { isObjectWithKeys } from 'lib/casting';
-import { CONTENT_CALL, CONTENT_NOTE, TABLE_CONTENT } from 'lib/constants';
+import { CONTENT_CALL, CONTENT_NOTE } from 'lib/constants';
 import getDB from 'lib/db';
+import { upsertContent } from 'lib/db/update';
 import { slugify } from 'lib/strings';
 import rowToNote from './note';
 import { ensureProvider, rowToProvider } from './provider';
@@ -16,7 +17,7 @@ import type {
 	Slug,
 	WithMetaAdditions,
 } from './types';
-import { isEntity } from './utils';
+import { isEntity, saveContentEntity } from './utils';
 
 type CallWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Call,
@@ -63,30 +64,6 @@ export async function callToRow(
 	};
 }
 
-export async function saveCall( input: CallInput ): Promise< Slug > {
-	const knex = getDB();
-	let slug: Slug | null = null;
-	await knex.transaction( async ( trx ) => {
-		const row = await callToRow( input, trx );
-		let id: number;
-		if ( row.id === 0 ) {
-			[ id ] = await trx( TABLE_CONTENT ).insert( row );
-		} else {
-			await trx( TABLE_CONTENT ).update( row );
-			id = row.id;
-		}
-
-		if ( ! id ) {
-			throw new Error( 'Could not save call' );
-		}
-		slug = row.identifier as Slug;
-	} );
-	if ( ! slug ) {
-		throw new Error( 'Slug never found' );
-	}
-	return slug;
-}
-
 export function rowToCall< A extends EntityAdditions >(
 	row: ContentDB,
 	additions: A = {} as A
@@ -96,7 +73,7 @@ export function rowToCall< A extends EntityAdditions >(
 		id: id as Id,
 		slug: slug as Slug,
 		created: row.created,
-		reason: info,
+		reason: info ?? '',
 		result: status,
 	};
 	const { provider, providers, relations, meta } = additions;
@@ -119,4 +96,8 @@ export function rowToCall< A extends EntityAdditions >(
 			.map( ( { value } ) => value as string );
 	}
 	return call as CallWithAdditions< A >;
+}
+
+export function saveCall( input: CallInput ) {
+	return saveContentEntity( input, callToRow );
 }

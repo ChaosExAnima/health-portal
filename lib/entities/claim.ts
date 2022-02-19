@@ -37,7 +37,7 @@ export default function rowToClaim< T extends EntityAdditions >(
 			constants.CLAIM_STATUS_UNKNOWN
 		),
 		type: inReadonlyArray(
-			info,
+			String( info ),
 			constants.CLAIM_TYPES,
 			constants.CLAIM_TYPE_OTHER
 		),
