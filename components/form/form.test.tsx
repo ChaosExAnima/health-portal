@@ -7,14 +7,14 @@ import {
 	screen,
 } from '@testing-library/react';
 
-import { formatErrors, handleUpdateType } from 'lib/api/new';
+import { formatErrors, handleUpdateType } from 'lib/api/entities';
 import Form from './form';
 
 import type { AnyObjectSchema } from 'yup';
 import type { BaseSyntheticEvent } from 'react';
 import type { FormProps } from './types';
 
-jest.mock( 'lib/api/new', () => ( {
+jest.mock( 'lib/api/entities', () => ( {
 	formatErrors: jest.fn( ( arg0: any ) =>
 		Array.isArray( arg0 ) ? arg0 : [ arg0 ]
 	),

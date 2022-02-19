@@ -4,7 +4,7 @@ import { LocalizationProvider } from '@mui/lab';
 import React, { useState } from 'react';
 
 import ErrorNotice from 'components/error-notice';
-import { formatErrors, handleUpdateType } from 'lib/api/new';
+import { formatErrors, handleUpdateType } from 'lib/api/entities';
 import { isPlainObject } from 'lib/casting';
 
 import type { AnyObjectSchema } from 'yup';

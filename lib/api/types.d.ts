@@ -3,7 +3,7 @@ import { CONTENTS_TYPE } from 'lib/constants';
 import { MaybeArray, StringMap } from 'global-types';
 import { Entity, Slug } from 'lib/entities/types';
 
-type NewTypes = CONTENTS_TYPE | 'provider';
+type EntityTypes = CONTENTS_TYPE | 'provider';
 type WithStatus< R extends Response > = R & { status: NonNegativeInteger };
 
 // Abstract interfaces

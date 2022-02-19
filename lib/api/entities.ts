@@ -6,7 +6,7 @@ import type {
 	ErrorHandler,
 	ErrorHandlerArg,
 	EntityUpdateResponse,
-	NewTypes,
+	EntityTypes,
 } from './types';
 import { typeToUrl } from './utils';
 
@@ -14,7 +14,7 @@ import type { Slug } from 'lib/entities/types';
 
 export async function handleUpdateType(
 	form: unknown,
-	type: NewTypes,
+	type: EntityTypes,
 	handleError: ErrorHandler,
 	slug?: Slug
 ): Promise< void > {
