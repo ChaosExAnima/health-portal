@@ -3,8 +3,10 @@ import { CONTENTS_TYPE } from 'lib/constants';
 import { MaybeArray, StringMap } from 'global-types';
 import { Entity, Slug } from 'lib/entities/types';
 
+type Methods = 'GET' | 'POST';
 type EntityTypes = CONTENTS_TYPE | 'provider';
-type WithStatus< R extends Response > = R & { status: NonNegativeInteger };
+type WithStatus< R = Response > = R & { status: NonNegativeInteger };
+type WithStatusCallback< R = Response > = ( response: WithStatus< R > ) => void;
 
 // Abstract interfaces
 abstract interface Response {

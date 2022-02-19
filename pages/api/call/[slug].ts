@@ -31,5 +31,5 @@ export default async function handler(
 		const input = { ...req.body, id: record.id };
 		return respond( await saveEntity( input, callSchema, saveCall ) );
 	}
-	respond( errorToResponse( 'Not implemented' ) );
+	respond( errorToResponse( 'Not implemented', 500 ) );
 }
