@@ -1,6 +1,5 @@
 import {
 	errorToResponse,
-	insertEntity,
 	isInvalidMethod,
 	respondWithStatus,
 } from 'lib/api/helpers';
@@ -20,6 +19,7 @@ export default async function handler(
 
 	// Save new.
 	if ( req.method === 'POST' ) {
+		const { insertEntity } = await import( 'lib/api/entities' );
 		const { appealSchema } = await import( 'lib/entities/schemas' );
 		const { saveAppeal } = await import( 'lib/entities/appeal' );
 		const input = req.body;

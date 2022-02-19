@@ -1,8 +1,4 @@
-import {
-	errorToResponse,
-	respondWithStatus,
-	saveEntity,
-} from 'lib/api/helpers';
+import { errorToResponse, respondWithStatus } from 'lib/api/helpers';
 import { fromArray } from 'lib/casting';
 import { getContentBySlug } from 'lib/db/helpers';
 
@@ -26,6 +22,7 @@ export default async function handler(
 		return respond( errorToResponse( 'Not found' ) );
 	}
 	if ( req.method === 'POST' ) {
+		const { saveEntity } = await import( 'lib/api/entities' );
 		const { appealSchema } = await import( 'lib/entities/schemas' );
 		const { saveAppeal } = await import( 'lib/entities/appeal' );
 		const input = { ...req.body, id: record.id };

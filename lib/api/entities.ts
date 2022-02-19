@@ -1,17 +1,19 @@
-import { isString } from 'lodash';
+import { isPlainObject, isString } from 'lodash';
 import Router from 'next/router';
 
 import { typeToUrl } from './utils';
+import { errorToResponse } from './helpers';
 
+import type { AnyObjectSchema } from 'yup';
 import type { Nullable } from 'global-types';
+import type { InputEntity, SaveEntityFunction, Slug } from 'lib/entities/types';
 import type {
 	ErrorHandler,
 	ErrorHandlerArg,
 	EntityUpdateResponse,
 	EntityTypes,
+	WithStatus,
 } from './types';
-
-import type { Slug } from 'lib/entities/types';
 
 export async function handleUpdateType(
 	form: unknown,
@@ -49,4 +51,33 @@ export function formatErrors( errors: ErrorHandlerArg ): string[] {
 		return [ errors.text ];
 	}
 	return errors.map( formatErrors ).flat();
+}
+
+export async function saveEntity< Input extends InputEntity >(
+	input: Input,
+	schema: AnyObjectSchema,
+	save: SaveEntityFunction< Input >
+): Promise< WithStatus< EntityUpdateResponse > > {
+	try {
+		const entity = ( await schema.validate( input ) ) as Input;
+		const slug = await save( entity );
+		return {
+			success: true,
+			status: 200,
+			slug,
+		};
+	} catch ( err ) {
+		return errorToResponse( err );
+	}
+}
+
+export async function insertEntity< Input extends InputEntity >(
+	input: Input,
+	schema: AnyObjectSchema,
+	save: SaveEntityFunction< Input >
+): Promise< WithStatus< EntityUpdateResponse > > {
+	if ( isPlainObject( input ) && 'id' in input ) {
+		return errorToResponse( 'Cannot insert entity with ID', 400 );
+	}
+	return saveEntity( input, schema.omit( [ 'id' ] ), save );
 }

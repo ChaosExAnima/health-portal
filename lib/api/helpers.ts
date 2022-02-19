@@ -1,11 +1,7 @@
-import { AnyObjectSchema, ValidationError } from 'yup';
+import { ValidationError } from 'yup';
 import { toArray } from 'lodash';
 
-import { isPlainObject } from 'lib/casting';
-
-import type { InputEntity, SaveEntityFunction } from 'lib/entities/types';
 import type {
-	EntityUpdateResponse,
 	ErrorInformation,
 	ErrorResponse,
 	Response,
@@ -58,33 +54,4 @@ export function isInvalidMethod(
 	}
 	respond( errorToResponse( 'Invalid method', 400 ) );
 	return true;
-}
-
-export async function saveEntity< Input extends InputEntity >(
-	input: Input,
-	schema: AnyObjectSchema,
-	save: SaveEntityFunction< Input >
-): Promise< WithStatus< EntityUpdateResponse > > {
-	try {
-		const entity = ( await schema.validate( input ) ) as Input;
-		const slug = await save( entity );
-		return {
-			success: true,
-			status: 200,
-			slug,
-		};
-	} catch ( err ) {
-		return errorToResponse( err );
-	}
-}
-
-export async function insertEntity< Input extends InputEntity >(
-	input: Input,
-	schema: AnyObjectSchema,
-	save: SaveEntityFunction< Input >
-): Promise< WithStatus< EntityUpdateResponse > > {
-	if ( isPlainObject( input ) && 'id' in input ) {
-		return errorToResponse( 'Cannot insert entity with ID', 400 );
-	}
-	return saveEntity( input, schema.omit( [ 'id' ] ), save );
 }
