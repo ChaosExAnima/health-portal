@@ -7,7 +7,7 @@ import DataTable, {
 } from 'components/data-table';
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
-import rowToAppeal from 'lib/entities/appeal';
+import { rowToAppeal } from 'lib/entities/appeal';
 import { queryAppeals } from 'lib/db/helpers';
 import { useProvidersForSelect } from 'lib/hooks';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';

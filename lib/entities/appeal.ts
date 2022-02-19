@@ -1,18 +1,22 @@
-import rowToClaim from './claim';
-import rowToNote from './note';
-import { inReadonlyArray } from './utils';
+import { isObjectWithKeys } from 'lib/casting';
 import * as constants from 'lib/constants';
 import { slugify } from 'lib/strings';
+import rowToClaim from './claim';
+import { ensureProvider } from './provider';
+import rowToNote from './note';
+import { inReadonlyArray, isEntity, saveContentEntity } from './utils';
 
+import type { Knex } from 'knex';
+import type { ContentDB } from 'lib/db/types';
 import type {
 	Appeal,
+	AppealInput,
 	Claim,
 	EntityAdditions,
 	EntityWithAdditions,
 	Id,
 	WithRelationAdditions,
 } from './types';
-import type { ContentDB } from 'lib/db/types';
 
 type AppealWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Appeal,
@@ -27,7 +31,46 @@ export const related = [
 ] as const;
 export type relatedType = typeof related[ number ];
 
-export default function rowToAppeal< A extends EntityAdditions >(
+export function isAppeal( input: unknown ): input is Appeal {
+	return (
+		isEntity( input ) &&
+		isObjectWithKeys( input, [ 'name', 'status' ] ) &&
+		!! inReadonlyArray( String( input.status ), constants.APPEAL_STATUSES )
+	);
+}
+
+export async function appealToRow(
+	input: Appeal | AppealInput,
+	trx: Knex.Transaction
+): Promise< ContentDB > {
+	const row = {
+		id: input.id ?? 0,
+		type: constants.CONTENT_APPEAL,
+		status: input.status,
+		info: null,
+		importId: null,
+	} as const;
+	let providerId = null;
+	if ( input.provider ) {
+		providerId = ( await ensureProvider( input.provider, trx ) ).id;
+	}
+	if ( isAppeal( input ) ) {
+		return {
+			...row,
+			created: input.created,
+			identifier: input.slug,
+			providerId,
+		};
+	}
+	return {
+		...row,
+		created: new Date(),
+		identifier: slugify( input.name ),
+		providerId,
+	};
+}
+
+export function rowToAppeal< A extends EntityAdditions >(
 	row: ContentDB,
 	additions: A = {} as A
 ): AppealWithAdditions< A > {
@@ -57,4 +100,8 @@ export default function rowToAppeal< A extends EntityAdditions >(
 	}
 
 	return appeal as AppealWithAdditions< A >;
+}
+
+export function saveAppeal( input: AppealInput ) {
+	return saveContentEntity( input, appealToRow );
 }

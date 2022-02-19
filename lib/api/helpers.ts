@@ -3,7 +3,7 @@ import { toArray } from 'lodash';
 
 import { isPlainObject } from 'lib/casting';
 
-import type { Entity, SaveEntityFunction } from 'lib/entities/types';
+import type { InputEntity, SaveEntityFunction } from 'lib/entities/types';
 import type {
 	EntityUpdateResponse,
 	ErrorInformation,
@@ -60,8 +60,8 @@ export function isInvalidMethod(
 	return true;
 }
 
-export async function saveEntity< Input extends Entity >(
-	input: unknown,
+export async function saveEntity< Input extends InputEntity >(
+	input: Input,
 	schema: AnyObjectSchema,
 	save: SaveEntityFunction< Input >
 ): Promise< WithStatus< EntityUpdateResponse > > {
@@ -78,8 +78,8 @@ export async function saveEntity< Input extends Entity >(
 	}
 }
 
-export async function insertEntity< Input extends Entity >(
-	input: unknown,
+export async function insertEntity< Input extends InputEntity >(
+	input: Input,
 	schema: AnyObjectSchema,
 	save: SaveEntityFunction< Input >
 ): Promise< WithStatus< EntityUpdateResponse > > {
