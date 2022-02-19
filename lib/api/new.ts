@@ -10,9 +10,9 @@ import type {
 } from './types';
 import { typeToUrl } from './utils';
 
-import type { Entity, Slug } from 'lib/entities/types';
+import type { Slug } from 'lib/entities/types';
 
-export async function handleUpdateType< Input extends Entity >(
+export async function handleUpdateType(
 	form: unknown,
 	type: NewTypes,
 	handleError: ErrorHandler,

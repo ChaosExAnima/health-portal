@@ -7,27 +7,30 @@ import {
 	screen,
 } from '@testing-library/react';
 
-import { formatErrors, handleNewType } from 'lib/api/new';
+import { formatErrors, handleUpdateType } from 'lib/api/new';
 import Form from './form';
 
 import type { AnyObjectSchema } from 'yup';
+import type { BaseSyntheticEvent } from 'react';
 import type { FormProps } from './types';
 
 jest.mock( 'lib/api/new', () => ( {
-	formatErrors: jest.fn( ( arg0: any ) => arg0 ),
-	handleNewType: jest.fn( () => null ),
+	formatErrors: jest.fn( ( arg0: any ) =>
+		Array.isArray( arg0 ) ? arg0 : [ arg0 ]
+	),
+	handleUpdateType: jest.fn( () => null ),
 } ) );
 
 describe( '<Form>', () => {
-	const mockHandleSubmit = jest.fn( ( form: any ) => ( event: Event ) => {
-		event.preventDefault();
-		form( 'test' );
-	} );
+	const mockHandleSubmit = jest.fn(
+		( form: any ) => async ( event: BaseSyntheticEvent ) => {
+			event.preventDefault();
+			form( { test: true } );
+		}
+	);
 	afterEach( () => {
 		cleanup();
-		( formatErrors as jest.Mock ).mockClear();
-		( handleNewType as jest.Mock ).mockClear();
-		mockHandleSubmit.mockClear();
+		jest.clearAllMocks();
 	} );
 
 	function Component( {
@@ -75,33 +78,65 @@ describe( '<Form>', () => {
 		render( <Component new /> );
 		submit();
 		expect( mockHandleSubmit ).toBeCalled();
-		expect( handleNewType ).toBeCalledWith(
-			'test',
+		expect( formatErrors ).not.toBeCalled();
+		expect( handleUpdateType ).toBeCalledWith(
+			{ test: true },
 			'appeal',
-			expect.any( Function )
+			expect.any( Function ),
+			undefined
 		);
 	} );
-	it( 'submit handler does not call insert when not new', () => {
+	it( 'submit handler updates with slug when not new', () => {
+		mockHandleSubmit.mockImplementationOnce(
+			( form: any ) => async ( event: BaseSyntheticEvent ) => {
+				event.preventDefault();
+				form( { test: true, slug: 'test' } );
+			}
+		);
 		render( <Component /> );
 		submit();
 		expect( mockHandleSubmit ).toBeCalled();
-		expect( handleNewType ).not.toBeCalled();
+		expect( formatErrors ).not.toBeCalled();
+		expect( handleUpdateType ).toBeCalledWith(
+			{ slug: 'test', test: true },
+			'appeal',
+			expect.any( Function ),
+			'test'
+		);
+	} );
+	it( 'submit handler displays an error when slug not provided', () => {
+		render( <Component /> );
+		submit();
+		expect( mockHandleSubmit ).toBeCalled();
+		expect( formatErrors ).toBeCalledWith( 'No slug provided' );
+		expect( handleUpdateType ).not.toBeCalled();
 	} );
 	it( 'calls transformation callback on submit', () => {
-		const transform = jest.fn( () => 'test2' );
+		const transform = jest.fn( () => ( { test: 2 } ) );
 		render( <Component transform={ transform } new /> );
 
 		submit();
 		expect( transform ).toHaveBeenCalledTimes( 1 );
-		expect( handleNewType ).toBeCalledWith(
-			'test2',
+		expect( formatErrors ).not.toBeCalled();
+		expect( handleUpdateType ).toBeCalledWith(
+			{ test: 2 },
 			'appeal',
-			expect.any( Function )
+			expect.any( Function ),
+			undefined
 		);
+	} );
+	it( 'displays an error when form is not an object', () => {
+		const transform = jest.fn( () => 'invalid' );
+		render( <Component transform={ transform } /> );
+		submit();
+		expect( mockHandleSubmit ).toBeCalled();
+		expect( transform ).toBeCalled();
+		expect( formatErrors ).toBeCalledWith( 'Invalid submission' );
+		expect( handleUpdateType ).not.toBeCalled();
 	} );
 	it( 'formats and displays errors', () => {
 		let handleErrors: any;
-		( handleNewType as jest.Mock ).mockImplementationOnce(
+		( handleUpdateType as jest.Mock ).mockImplementationOnce(
 			( _form, _type, handler ) => ( handleErrors = handler )
 		);
 		render( <Component new /> );

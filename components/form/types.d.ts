@@ -6,9 +6,10 @@ import {
 	Path,
 	UseFormReturn,
 	UseFormHandleSubmit,
+	FieldValues,
 } from 'react-hook-form';
 import { Promisable } from 'type-fest';
-import { AnyObjectSchema } from 'yup';
+import { AnyObjectSchema, InferType } from 'yup';
 import {
 	StandardTextFieldProps as MuiTextFieldProps,
 	ChipProps as MuiChipProps,
@@ -24,11 +25,11 @@ import { NewTypes } from 'lib/api/types';
 export type Input = Record< string, any >;
 
 export interface FormProps< Schema extends AnyObjectSchema > {
-	handleSubmit: UseFormHandleSubmit;
+	handleSubmit: UseFormHandleSubmit< FieldValues >;
 	type: NewTypes;
 	new?: boolean;
 	name?: string;
-	transform?: ( unknown ) => unknown;
+	transform?: ( form: any ) => any;
 	children: ReactNode;
 }
 
