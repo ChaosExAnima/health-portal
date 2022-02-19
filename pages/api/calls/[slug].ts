@@ -3,14 +3,12 @@ import {
 	respondWithStatus,
 	saveEntity,
 } from 'lib/api/helpers';
-import { EntityUpdateResponse, RecordResponse } from 'lib/api/types';
 import { fromArray } from 'lib/casting';
 import { getContentBySlug } from 'lib/db/helpers';
-import { saveCall } from 'lib/entities/call';
-import { callSchema } from 'lib/entities/schemas';
-import { Call } from 'lib/entities/types';
 
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { EntityUpdateResponse, RecordResponse } from 'lib/api/types';
+import type { Call } from 'lib/entities/types';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -28,8 +26,10 @@ export default async function handler(
 		return respond( errorToResponse( 'Not found' ) );
 	}
 	if ( req.method === 'POST' ) {
+		const { callSchema } = await import( 'lib/entities/schemas' );
+		const { saveCall } = await import( 'lib/entities/call' );
 		const input = { ...req.body, id: record.id };
 		return respond( await saveEntity( input, callSchema, saveCall ) );
 	}
-	respond( errorToResponse( 'Not implemented', 500 ) );
+	respond( errorToResponse( 'Not implemented' ) );
 }
