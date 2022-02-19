@@ -1,16 +1,19 @@
-import { Box, Container } from '@mui/material';
+import Page from 'components/page';
+
 import type { PageProps } from 'global-types';
 
 type ClaimNewPageProps = PageProps;
 
-const ClaimNewPage: React.FC< ClaimNewPageProps > = () => {
-	// TODO: Find way to inherit claim page.
+function ClaimNewPage( { title }: ClaimNewPageProps ) {
 	return (
-		<Container maxWidth="md">
-			<Box my={ 4 }>Hello</Box>
-		</Container>
+		<Page
+			title={ title }
+			breadcrumbs={ [ { href: '/claims', name: 'Claims' }, title ] }
+		>
+			Test
+		</Page>
 	);
-};
+}
 
 export async function getStaticProps(): Promise< {
 	props: ClaimNewPageProps;

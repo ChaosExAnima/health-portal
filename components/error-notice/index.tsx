@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Alert, Typography } from '@mui/material';
 
 type ErrorNoticeProps = {
 	errors: string[];
@@ -10,7 +10,7 @@ export default function ErrorNotice( { errors, force }: ErrorNoticeProps ) {
 		return null;
 	}
 	return (
-		<Box bgcolor="error.main">
+		<Alert severity="error">
 			{ errors.length > 1 && (
 				<Typography component="h1" variant="h3">
 					There are { errors.length } errors:
@@ -21,6 +21,6 @@ export default function ErrorNotice( { errors, force }: ErrorNoticeProps ) {
 					{ error }
 				</Typography>
 			) ) }
-		</Box>
+		</Alert>
 	);
 }

@@ -1,4 +1,5 @@
-import { isPlainObject, toNumber } from 'lodash';
+import { MaybeArray, PlainObject } from 'global-types';
+import { isPlainObject as isPlainObjectLodash, toNumber } from 'lodash';
 import { Primitive } from 'type-fest';
 
 export function toFloat( input: unknown ): number {
@@ -21,6 +22,14 @@ export function isObjectWithKeys< Type extends Record< string, Primitive > >(
 	);
 }
 
-export function toArray< T >( input: T | T[] ): T[] {
+export function toArray< T >( input: MaybeArray< T > ): T[] {
 	return Array.isArray( input ) ? input : [ input ];
+}
+
+export function fromArray< T >( input: MaybeArray< T > ): T | undefined {
+	return Array.isArray( input ) ? input[ 0 ] : input;
+}
+
+export function isPlainObject( input: any ): input is PlainObject {
+	return isPlainObjectLodash( input );
 }

@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import * as constants from 'lib/constants';
 import { inReadonlyArray } from 'lib/entities/utils';
 
-import type { AutocompleteResponse } from 'components/autocomplete-field/types';
+import type { AutocompleteResponse } from 'components/form/types';
 
 export default async function handler(
 	req: NextApiRequest,

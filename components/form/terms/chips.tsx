@@ -1,13 +1,14 @@
 import { Chip } from '@mui/material';
 import { without } from 'lodash';
-import { TermFieldChipsProps } from './types';
 
-export default function TermFieldChips( {
+import { FormTermFieldChipsProps } from '../types';
+
+export default function FormTermFieldChips( {
 	terms,
 	setTerms,
 	inputRef,
 	...ChipProps
-}: TermFieldChipsProps ) {
+}: FormTermFieldChipsProps ) {
 	const onDelete = ( term: string ) => () => {
 		const newTerms = without( terms, term );
 		setTerms( newTerms );

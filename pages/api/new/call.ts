@@ -9,13 +9,14 @@ import { slugify } from 'lib/strings';
 
 import type { Knex } from 'knex';
 import type { ErrorInformation, NewResponse } from 'lib/api/types';
+import type { CallInput } from 'lib/entities/types';
 
 export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse< NewResponse >
 ) {
 	try {
-		const input = await callSchema.validate( req.body );
+		const input = ( await callSchema.validate( req.body ) ) as CallInput;
 
 		const knex = getDB();
 		knex.transaction( async ( trx ) => {
@@ -44,46 +45,46 @@ export default async function handler(
 }
 
 async function saveCall(
-	input: NewCallInput,
+	input: CallInput,
 	trx: Knex.Transaction
 ): Promise< string > {
+	const { provider, created, reason, result } = input;
 	let providerId = null;
 	let providerName = null;
-	if ( input.provider.id ) {
-		providerId = input.provider.id;
-		const provider = await trx( TABLE_PROVIDERS )
+	if ( typeof provider === 'number' ) {
+		providerId = provider;
+		const providerRow = await trx( TABLE_PROVIDERS )
 			.where( 'id', providerId )
 			.first();
-		if ( ! provider ) {
+		if ( ! providerRow ) {
 			throw new ValidationError(
 				'Could not find provider',
 				providerId,
 				'provider'
 			);
 		}
-		providerName = provider.name;
-	} else if ( input.provider.id === 0 ) {
+		providerName = providerRow.name;
+	} else if ( provider && 'name' in provider ) {
 		[ providerId ] = await trx( TABLE_PROVIDERS ).insert( {
-			slug: slugify( input.provider.name ),
-			name: input.provider.name,
+			slug: slugify( provider.name ),
+			name: provider.name,
 		} );
-		providerName = input.provider.name;
+		providerName = provider.name;
 	}
 
 	if ( ! providerId || ! providerName ) {
 		throw new Error( 'Could not get provider' );
 	}
 
-	const created = input.date;
 	const slug = slugify(
-		dayjs( input.date ).format( `YYYY-MM-DD [${ providerName }]` )
+		dayjs( created ).format( `YYYY-MM-DD [${ providerName }]` )
 	);
 	const [ id ] = await trx( TABLE_CONTENT ).insert( {
 		type: CONTENT_CALL,
 		created,
 		identifier: slug,
-		info: input.reason,
-		status: input.result,
+		info: reason,
+		status: result,
 		providerId,
 	} );
 

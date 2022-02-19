@@ -1,5 +1,9 @@
-import { FilterOptionsState } from '@mui/material/useAutocomplete';
-import type { AutocompleteOption, AutocompleteOptionNew } from './types';
+import type { FilterOptionsState } from '@mui/material/useAutocomplete';
+import type {
+	AutocompleteOption,
+	AutocompleteOptionNew,
+	AutocompleteOptions,
+} from '../types';
 
 /**
  * Checks whether this is an AutocompleteOption.
@@ -27,7 +31,7 @@ export function isOptionObject(
 export function isNewOptionObject(
 	option: unknown
 ): option is AutocompleteOptionNew {
-	return isOptionObject( option ) && option.id === 0 && 'input' in option;
+	return isOptionObject( option ) && option.id === 0 && 'value' in option;
 }
 
 /**
@@ -40,7 +44,7 @@ export function getOptionLabel( option: unknown ): string {
 	if ( typeof option === 'string' ) {
 		return option;
 	} else if ( isNewOptionObject( option ) ) {
-		return option.input;
+		return option.value;
 	} else if ( isOptionObject( option ) ) {
 		return option.label;
 	}
@@ -57,18 +61,18 @@ export function getOptionLabel( option: unknown ): string {
 export function filterOptions(
 	options: AutocompleteOption[],
 	state: FilterOptionsState< AutocompleteOption >
-): AutocompleteOption[] {
+): AutocompleteOptions[] {
 	const { inputValue } = state;
 	if ( ! inputValue ) {
 		return [];
 	}
-	const filtered = options;
+	const filtered: AutocompleteOptions[] = options;
 	if ( inputValue ) {
 		// Adds a label for the option.
 		filtered.push( {
 			id: 0,
-			input: inputValue,
 			label: `Add "${ inputValue }"`,
+			value: inputValue,
 		} );
 	}
 	return filtered;

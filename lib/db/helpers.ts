@@ -6,8 +6,8 @@ import * as constants from 'lib/constants';
 import getDB from 'lib/db';
 
 import type { ParsedUrlQuery } from 'node:querystring';
-import type { Nullable, StringKeys } from 'global-types';
-import type { Entity } from 'lib/entities/types';
+import type { MaybeArray, Nullable, StringKeys } from 'global-types';
+import type { Content, Entity } from 'lib/entities/types';
 import type {
 	ContentDB,
 	DBCommonFields,
@@ -33,6 +33,16 @@ export function queryContentType(
 ): Knex.QueryBuilder< ContentDB, ContentDB[] > {
 	const knex = getDB();
 	return knex( constants.TABLE_CONTENT ).whereIn( 'type', toArray( types ) );
+}
+
+export function getContentBySlug(
+	type: constants.CONTENTS_TYPE,
+	identifier: string
+): Knex.QueryBuilder< ContentDB, ContentDB | undefined > {
+	const knex = getDB();
+	return knex( constants.TABLE_CONTENT )
+		.where( { identifier, type } )
+		.first();
 }
 
 type queryFunction = () => Knex.QueryBuilder< ContentDB, ContentDB[] >;

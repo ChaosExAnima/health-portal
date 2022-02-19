@@ -3,7 +3,7 @@ import { Container } from '@mui/material';
 
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
-import DetailsBox, { Detail } from 'components/details-box';
+import { Detail, DetailsBox } from 'components/details-box';
 import { queryAllProviders, queryContentType } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 
@@ -39,10 +39,10 @@ const ProviderPage: React.FC< SinglePageProps< ProviderWithAdditions > > = ( {
 				] }
 			/>
 			<DetailsBox>
-				<Detail name="Phone Number">{ record.phone }</Detail>
-				<Detail name="Email">{ record.email }</Detail>
-				<Detail name="Address">{ record.address }</Detail>
-				<Detail name="Website">{ record.website }</Detail>
+				<Detail label="Phone Number">{ record.phone }</Detail>
+				<Detail label="Email">{ record.email }</Detail>
+				<Detail label="Address">{ record.address }</Detail>
+				<Detail label="Website">{ record.website }</Detail>
 			</DetailsBox>
 		</Container>
 	);

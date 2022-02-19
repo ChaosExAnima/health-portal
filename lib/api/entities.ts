@@ -1,28 +1,31 @@
 import { isString } from 'lodash';
+import Router from 'next/router';
 
-import type { NextRouter } from 'next/router';
 import type { Nullable } from 'global-types';
 import type {
 	ErrorHandler,
 	ErrorHandlerArg,
-	NewResponse,
-	NewTypes,
+	EntityUpdateResponse,
+	EntityTypes,
 } from './types';
+import { typeToUrl } from './utils';
 
-export async function handleNewType< Input >(
-	form: Input,
-	type: NewTypes,
+import type { Slug } from 'lib/entities/types';
+
+export async function handleUpdateType(
+	form: unknown,
+	type: EntityTypes,
 	handleError: ErrorHandler,
-	{ push }: NextRouter
+	slug?: Slug
 ): Promise< void > {
-	const response = await fetch( `/api/new/${ type }`, {
+	const response = await fetch( `/api/${ type }/${ slug }`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify( form ),
 	} );
-	const body = ( await response.json() ) as Nullable< NewResponse >;
+	const body = ( await response.json() ) as Nullable< EntityUpdateResponse >;
 	if ( ! body ) {
 		// Error parsing response from server.
 		handleError( 'Could not parse response from server' );
@@ -30,7 +33,7 @@ export async function handleNewType< Input >(
 		handleError( body.errors );
 	} else {
 		const slug = body.slug;
-		push( `/${ type }/${ slug }` );
+		Router.push( typeToUrl( type, slug ) );
 	}
 }
 

@@ -28,13 +28,14 @@ export type ActionItem = Omit<
 	color?: 'primary' | 'secondary';
 };
 
-type HeaderProps = {
-	title: string;
+export interface HeaderProps {
+	title?: string;
+	subtitle?: string;
 	actions?: ActionItem[];
 	buttonsBelow?: true;
 	edit?: true;
 	onChange?: ( value: string ) => void;
-};
+}
 
 const ActionIcon: React.FC< { icon: ActionItemIcon } > = ( { icon } ) => {
 	if ( icon === 'add' ) {
@@ -49,9 +50,12 @@ const ActionIcon: React.FC< { icon: ActionItemIcon } > = ( { icon } ) => {
 	return icon;
 };
 
-const HeaderTitle: React.FC<
-	Pick< HeaderProps, 'title' | 'edit' | 'onChange' >
-> = ( { title, edit, onChange } ) => {
+const HeaderTitle: React.FC< HeaderProps > = ( {
+	title,
+	subtitle,
+	edit,
+	onChange,
+} ) => {
 	if ( edit ) {
 		return (
 			<TextField
@@ -66,9 +70,16 @@ const HeaderTitle: React.FC<
 		);
 	}
 	return (
-		<Typography variant="h4" component="h1">
-			{ title }
-		</Typography>
+		<>
+			{ subtitle && (
+				<Typography variant="caption" component="h2" color="grey.400">
+					{ subtitle }
+				</Typography>
+			) }
+			<Typography variant="h4" component="h1">
+				{ title }
+			</Typography>
+		</>
 	);
 };
 
@@ -100,21 +111,21 @@ const HeaderButton: React.FC< ActionItem > = ( {
 
 const HeaderButtonsBelow: React.FC< HeaderProps > = ( {
 	actions = [],
-	title,
-	edit,
-	onChange,
+	...titleProps
 } ) => (
 	<>
-		<HeaderTitle title={ title } edit={ edit } onChange={ onChange } />
-		<Box mt={ 3 }>
-			<Grid container spacing={ 2 }>
-				{ actions.map( ( action ) => (
-					<Grid item key={ action.action }>
-						<HeaderButton { ...action } />
-					</Grid>
-				) ) }
-			</Grid>
-		</Box>
+		<HeaderTitle { ...titleProps } />
+		{ actions.length && (
+			<Box mt={ 3 }>
+				<Grid container spacing={ 2 }>
+					{ actions.map( ( action ) => (
+						<Grid item key={ action.action }>
+							<HeaderButton { ...action } />
+						</Grid>
+					) ) }
+				</Grid>
+			</Box>
+		) }
 	</>
 );
 
@@ -128,12 +139,13 @@ const HeaderFab: React.FC< ActionItem > = React.forwardRef(
 	)
 );
 
-const HeaderButtonsSide: React.FC<
-	Pick< HeaderProps, 'actions' | 'title' >
-> = ( { actions = [], title } ) => (
+const HeaderButtonsSide: React.FC< HeaderProps > = ( {
+	actions = [],
+	...titleProps
+} ) => (
 	<Grid container spacing={ 4 }>
 		<Grid item>
-			<HeaderTitle title={ title } />
+			<HeaderTitle { ...titleProps } />
 		</Grid>
 		{ actions.map( ( { href, ...props } ) => (
 			<Grid item key={ props.action }>

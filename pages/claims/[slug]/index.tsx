@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container } from '@mui/material';
 
-import DetailsBox, { Detail } from 'components/details-box';
+import { Detail, DetailsBox } from 'components/details-box';
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import ProviderLink from 'components/provider-link';
@@ -46,28 +46,27 @@ export default function ClaimPage( {
 				] }
 			/>
 			<DetailsBox>
-				<Detail name="Status">
+				<Detail label="Status">
 					{ formatClaimStatus( record.status ) }
 				</Detail>
-				<Detail name="Date of service">
-					{ formatDate( 'YYYY-MM-DD' )( record.date ) }
+				<Detail label="Date of service">
+					{ formatDate( 'YYYY-MM-DD' )( record.created ) }
 				</Detail>
-				<Detail name="Provider">
+				<Detail label="Provider">
 					{ record.provider && (
 						<ProviderLink
 							provider={ record.provider }
 							color="inherit"
 						/>
 					) }
-					{ ! record.provider && 'Missing' }
 				</Detail>
-				<Detail name="Amount billed">
+				<Detail label="Amount billed">
 					{ formatCurrency( record.billed ) }
 				</Detail>
-				<Detail name="You owe">
+				<Detail label="You owe">
 					{ formatCurrency( record.cost ) }
 				</Detail>
-				<Detail name="You are owed">{ formatCurrency( 0 ) }</Detail>
+				<Detail label="You are owed">{ formatCurrency( 0 ) }</Detail>
 			</DetailsBox>
 		</Container>
 	);

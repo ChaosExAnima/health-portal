@@ -1,13 +1,21 @@
-import { GetStaticProps } from 'next';
-import { Entity } from 'lib/entities/types';
 import { SxProps } from '@mui/material';
+import { JsonValue, Primitive, Schema } from 'type-fest';
+import {
+	GetStaticProps,
+	GetStaticPropsContext,
+	GetStaticPropsResult,
+} from 'next';
+import { Entity } from 'lib/entities/types';
+
+// Primitives
+type PlainObject = Record< string, Primitive >;
+type StringMap = Record< string, string >;
+type StyleMap = Record< string, SxProps< Theme > >;
 
 // Utils
 type Nullable< T > = T | null;
 type StringKeys< T > = Extract< keyof T, string >;
 type MaybeArray< T > = T | T[];
-type StringMap = Record< string, string >;
-type StyleMap = Record< string, SxProps< Theme > >;
 type DeepReplace< T, From, To > = T extends ( ...args: any[] ) => any
 	? T
 	: {
@@ -15,12 +23,7 @@ type DeepReplace< T, From, To > = T extends ( ...args: any[] ) => any
 				? To
 				: Replace< T[ K ], From, To >;
 	  };
-type RemoveNever< T > = Pick<
-	T,
-	{
-		[ P in keyof T ]: T[ P ] extends Function ? P : never;
-	}[ keyof T ]
->;
+type Serialized< T > = Schema< T, JsonValue >;
 
 // Contexts
 type PaginatedPageContext = {
@@ -42,12 +45,18 @@ type PaginatedPageProps< T extends Entity > = PageProps & {
 type SinglePageProps< T extends Entity > = PageProps & {
 	id: number;
 	slug: string;
+	originalTitle?: string;
 	record: T;
 };
 
 type GetSinglePageProps< T extends Entity > = GetStaticProps<
 	SinglePageProps< T >,
 	SinglePageContext
+>;
+
+type GetSinglePageContext = GetStaticPropsContext< SinglePageContext >;
+type GetSinglePageResult< T extends Entity > = Promise<
+	GetStaticPropsResult< Serialized< T > >
 >;
 
 type onChangeFunc = ( value: string ) => void;
