@@ -4,8 +4,6 @@ import {
 	isInvalidMethod,
 	respondWithStatus,
 } from 'lib/api/helpers';
-import { saveCall } from 'lib/entities/call';
-import { callSchema } from 'lib/entities/schemas';
 
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { EntitySuccessResponse } from 'lib/api/types';
@@ -22,8 +20,10 @@ export default async function handler(
 
 	// Save new.
 	if ( req.method === 'POST' ) {
+		const { saveCall } = await import( 'lib/entities/call' );
+		const { callSchema } = await import( 'lib/entities/schemas' );
 		const input = req.body;
 		return respond( await insertEntity( input, callSchema, saveCall ) );
 	}
-	return respond( errorToResponse( 'Not implemented', 500 ) );
+	return respond( errorToResponse( 'Not implemented' ) );
 }

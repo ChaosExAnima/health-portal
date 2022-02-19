@@ -124,7 +124,7 @@ interface Note extends Content, WithLinks {
 type MaybeNewEntity = { id?: Id | NewId };
 type CreatedEntity = { created: Date };
 type ProviderEntity = { provider?: Except< ProviderInput, 'id' > | Id };
-type WithMaybeNewId< Input extends Entity > = MaybeNewEntity &
+type WithMaybeNewId< Input extends Omit< Entity, 'id' > > = MaybeNewEntity &
 	Except< Input, 'id' >;
 type WithInput< Input extends Entity > = MaybeNewEntity &
 	Except<
@@ -154,3 +154,8 @@ type ClaimInput = Simplify<
 >;
 type FileInput = WithMaybeNewId< FileEntity > | { file: File };
 type NoteInput = Simplify< WithInput< Except< Note, 'files' > > & WithLinks >;
+
+// Functions
+type SaveEntityFunction< Input extends Entity > = (
+	entity: WithMaybeNewId< Input >
+) => Promise< Slug >;

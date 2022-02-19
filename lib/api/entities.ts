@@ -1,6 +1,8 @@
 import { isString } from 'lodash';
 import Router from 'next/router';
 
+import { typeToUrl } from './utils';
+
 import type { Nullable } from 'global-types';
 import type {
 	ErrorHandler,
@@ -8,7 +10,6 @@ import type {
 	EntityUpdateResponse,
 	EntityTypes,
 } from './types';
-import { typeToUrl } from './utils';
 
 import type { Slug } from 'lib/entities/types';
 
@@ -18,7 +19,7 @@ export async function handleUpdateType(
 	handleError: ErrorHandler,
 	slug?: Slug
 ): Promise< void > {
-	const response = await fetch( `/api/${ type }/${ slug }`, {
+	const response = await fetch( '/api' + typeToUrl( type, slug ), {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

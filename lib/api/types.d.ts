@@ -5,6 +5,7 @@ import { Entity, Slug } from 'lib/entities/types';
 
 type Methods = 'GET' | 'POST';
 type EntityTypes = CONTENTS_TYPE | 'provider';
+type EntityEndpointTypes = `${ EntityTypes }s`;
 type WithStatus< R = Response > = R & { status: NonNegativeInteger };
 type WithStatusCallback< R = Response > = ( response: WithStatus< R > ) => void;
 

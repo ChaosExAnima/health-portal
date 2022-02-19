@@ -58,10 +58,6 @@ type ImportDB = DBCommonFields & {
 	fileId: Nullable< ContentDB[ 'id' ] >;
 };
 
-type SaveEntityFunction< InputEntity extends Entity > = (
-	input: Entity
-) => Promise< Slug >;
-
 declare module 'knex/types/tables' {
 	interface Tables {
 		[ TABLE_CONTENT ]: ContentDB;

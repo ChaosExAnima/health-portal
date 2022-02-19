@@ -3,8 +3,7 @@ import { toArray } from 'lodash';
 
 import { isPlainObject } from 'lib/casting';
 
-import type { SaveEntityFunction } from 'lib/db/types';
-import type { Entity } from 'lib/entities/types';
+import type { Entity, SaveEntityFunction } from 'lib/entities/types';
 import type {
 	EntityUpdateResponse,
 	ErrorInformation,
