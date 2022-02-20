@@ -102,7 +102,7 @@ interface Call extends Content, WithNotes, WithProvider {
 
 interface Claim extends Content, WithNotes, WithProvider, WithImport {
 	number: string;
-	type?: typeof CLAIM_TYPES[ number ];
+	type: typeof CLAIM_TYPES[ number ];
 	status: typeof CLAIM_STATUSES[ number ];
 	billed?: Nullable< number >;
 	cost?: Nullable< number >;

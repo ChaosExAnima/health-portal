@@ -5,7 +5,7 @@ import { isObjectWithKeys, isPlainObject } from 'lib/casting';
 import { CONTENT_CLAIM, CONTENT_NOTE, TABLE_PROVIDERS } from 'lib/constants';
 import { queryProvider } from 'lib/db/helpers';
 import { slugify } from 'lib/strings';
-import rowToClaim from './claim';
+import { rowToClaim } from './claim';
 import rowToImport from './import';
 import rowToNote from './note';
 import { isEntity, relatedOfType } from './utils';

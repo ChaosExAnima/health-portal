@@ -1,7 +1,7 @@
 import { isObjectWithKeys } from 'lib/casting';
 import * as constants from 'lib/constants';
 import { slugify } from 'lib/strings';
-import rowToClaim from './claim';
+import { rowToClaim } from './claim';
 import { ensureProvider } from './provider';
 import rowToNote from './note';
 import { inReadonlyArray, isEntity, saveContentEntity } from './utils';
