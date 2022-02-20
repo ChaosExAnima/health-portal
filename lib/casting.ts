@@ -10,7 +10,7 @@ export function toFloat( input: unknown ): number {
 	return 0;
 }
 
-export function isObjectWithKeys< Type extends Record< string, Primitive > >(
+export function isObjectWithKeys< Type = Record< string, Primitive > >(
 	input: unknown,
 	keys: Extract< keyof Type, string >[]
 ): input is Type {
