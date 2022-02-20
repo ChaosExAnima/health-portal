@@ -10,38 +10,42 @@ import {
 } from 'lib/constants';
 import { Entity, Slug } from 'lib/entities/types';
 
-type DBCommonFields = {
+interface DBCommonFields {
 	id: number;
 	created: Date;
+}
+type DBInsert< Insert extends DBCommonFields > = Omit< Insert, 'id' > & {
+	id: null;
 };
-type DBMetaField = {
-	meta: Record< string, unknown >;
+type DBMaybeInsert< Insert extends DBCommonFields > = Omit< Insert, 'id' > & {
+	id: number | null;
 };
+interface DBMetaField {
+	meta: Record< string, any >;
+}
 
-type ContentDB = DBCommonFields & {
+interface ContentDB extends DBCommonFields {
 	identifier: string;
 	type: CONTENTS_TYPE;
 	info: Nullable< string >;
 	status: string;
 	providerId: Nullable< ProviderDB[ 'id' ] >;
 	importId: Nullable< ImportDB[ 'id' ] >;
-};
+}
 
-type MetaDB = DBCommonFields &
-	DBMetaField & {
-		contentId: ContentDB[ 'id' ];
-		key: string;
-		value: Nullable< string >;
-	};
+interface MetaDB extends DBCommonFields, DBMetaField {
+	contentId: ContentDB[ 'id' ];
+	key: string;
+	value: Nullable< string >;
+}
 
-type RelationDB = DBCommonFields &
-	DBMetaField & {
-		from: ContentDB[ 'id' ];
-		to: ContentDB[ 'id' ];
-	};
-type LoadedRelationDB = RelationDB & ContentDB;
+interface RelationDB extends DBCommonFields, DBMetaField {
+	from: ContentDB[ 'id' ];
+	to: ContentDB[ 'id' ];
+}
+interface LoadedRelationDB extends RelationDB, ContentDB {}
 
-type ProviderDB = DBCommonFields & {
+interface ProviderDB extends DBCommonFields {
 	slug: string;
 	name: string;
 	phone: Nullable< string >;
@@ -49,14 +53,14 @@ type ProviderDB = DBCommonFields & {
 	website: Nullable< string >;
 	email: Nullable< string >;
 	importId: Nullable< ImportDB[ 'id' ] >;
-};
+}
 
-type ImportDB = DBCommonFields & {
+interface ImportDB extends DBCommonFields {
 	hash: string;
 	inserted: Nullable< number >;
 	updated: Nullable< number >;
 	fileId: Nullable< ContentDB[ 'id' ] >;
-};
+}
 
 declare module 'knex/types/tables' {
 	interface Tables {

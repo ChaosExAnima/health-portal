@@ -1,14 +1,14 @@
 import { Knex } from 'knex';
 import { TABLE_CONTENT } from 'lib/constants';
 
-import type { ContentDB } from './types';
+import type { ContentDB, DBMaybeInsert } from './types';
 
 export async function upsertContent(
-	row: ContentDB,
+	row: DBMaybeInsert< ContentDB >,
 	trx: Knex.Transaction
 ): Promise< ContentDB > {
 	let id: number;
-	if ( row.id === 0 ) {
+	if ( row.id === null ) {
 		[ id ] = await trx( TABLE_CONTENT ).insert( row );
 	} else {
 		await trx( TABLE_CONTENT ).update( row );

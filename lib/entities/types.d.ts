@@ -14,6 +14,7 @@ import { DeepReplace, Nullable, RemoveNever } from 'global-types';
 import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
 import {
 	ContentDB,
+	DBMaybeInsert,
 	ImportDB,
 	LoadedRelationDB,
 	MetaDB,
@@ -163,4 +164,4 @@ type SaveEntityFunction< Input > = (
 type EntityToRowFunction< Input > = (
 	entity: WithMaybeNewId< Input >,
 	trx?: Knex.Transaction
-) => Promise< ContentDB >;
+) => Promise< DBMaybeInsert< ContentDB > >;

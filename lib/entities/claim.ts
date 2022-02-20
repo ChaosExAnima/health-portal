@@ -12,7 +12,7 @@ import { isObjectWithKeys } from 'lib/casting';
 import rowToNote from './note';
 
 import type { Knex } from 'knex';
-import type { ContentDB } from 'lib/db/types';
+import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import type {
 	Claim,
 	ClaimInput,
@@ -88,13 +88,13 @@ export function rowToClaim< T extends EntityAdditions >(
 export async function claimToRow(
 	input: Claim | ClaimInput,
 	trx: Knex.Transaction
-): Promise< ContentDB > {
+): Promise< DBMaybeInsert< ContentDB > > {
 	let providerId = null;
 	if ( input.provider ) {
 		providerId = ( await ensureProvider( input.provider, trx ) ).id;
 	}
 	return {
-		id: input.id ?? 0,
+		id: input.id ?? null,
 		created: input.created,
 		type: constants.CONTENT_APPEAL,
 		identifier: input.number,
