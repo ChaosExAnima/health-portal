@@ -1,7 +1,7 @@
 import { isObjectWithKeys } from 'lib/casting';
 import { CONTENT_CALL, CONTENT_NOTE } from 'lib/constants';
 import { slugify } from 'lib/strings';
-import rowToNote from './note';
+import { rowToNote } from './note';
 import { ensureProvider, rowToProvider } from './provider';
 
 import type { Knex } from 'knex';

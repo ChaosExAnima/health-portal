@@ -4,6 +4,7 @@ import {
 	Except,
 	NonNegativeInteger,
 	Opaque,
+	Promisable,
 	SetRequired,
 	Simplify,
 } from 'type-fest';
@@ -116,7 +117,7 @@ interface FileEntity extends Content, WithNotes {
 }
 
 interface Note extends Content, WithLinks {
-	description?: string;
+	description: string;
 	files?: FileEntity[];
 	due?: Nullable< Date >;
 	resolved?: boolean;
@@ -164,4 +165,4 @@ type SaveEntityFunction< Input > = (
 type EntityToRowFunction< Input > = (
 	entity: WithMaybeNewId< Input >,
 	trx?: Knex.Transaction
-) => Promise< DBMaybeInsert< ContentDB > >;
+) => Promisable< DBMaybeInsert< ContentDB > >;

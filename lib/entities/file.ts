@@ -31,9 +31,9 @@ export function rowToFile( row: ContentDB ): FileEntity {
 	};
 }
 
-export async function fileToRow(
+export function fileToRow(
 	input: WithMaybeNewId< FileEntity >
-): Promise< DBMaybeInsert< ContentDB > > {
+): DBMaybeInsert< ContentDB > {
 	return {
 		id: input.id,
 		created: input.created,

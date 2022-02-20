@@ -3,7 +3,7 @@ import * as constants from 'lib/constants';
 import { slugify } from 'lib/strings';
 import { rowToClaim } from './claim';
 import { ensureProvider } from './provider';
-import rowToNote from './note';
+import { rowToNote } from './note';
 import { inReadonlyArray, isEntity, saveContentEntity } from './utils';
 
 import type { Knex } from 'knex';

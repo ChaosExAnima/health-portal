@@ -7,7 +7,7 @@ import { queryProvider } from 'lib/db/helpers';
 import { slugify } from 'lib/strings';
 import { rowToClaim } from './claim';
 import rowToImport from './import';
-import rowToNote from './note';
+import { rowToNote } from './note';
 import { isEntity, relatedOfType } from './utils';
 
 import type { Knex } from 'knex';

@@ -9,7 +9,7 @@ import {
 import * as constants from 'lib/constants';
 import { slugify } from 'lib/strings';
 import { isObjectWithKeys } from 'lib/casting';
-import rowToNote from './note';
+import { rowToNote } from './note';
 
 import type { Knex } from 'knex';
 import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
