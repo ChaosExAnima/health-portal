@@ -5,7 +5,7 @@ import { typeToUrl } from './utils';
 import { errorToResponse } from './helpers';
 
 import type { AnyObjectSchema } from 'yup';
-import type { Nullable } from 'global-types';
+import type { Nullable, PlainObject } from 'global-types';
 import type { InputEntity, SaveEntityFunction, Slug } from 'lib/entities/types';
 import type {
 	ErrorHandler,
@@ -13,6 +13,7 @@ import type {
 	EntityUpdateResponse,
 	EntityTypes,
 	WithStatus,
+	QueryPagination,
 } from './types';
 
 export async function handleUpdateType(
@@ -80,4 +81,17 @@ export async function insertEntity< Input extends InputEntity >(
 		return errorToResponse( 'Cannot insert entity with ID', 400 );
 	}
 	return saveEntity( input, schema.omit( [ 'id' ] ), save );
+}
+
+export async function queryEntities(
+	query: PlainObject
+): Promise< QueryPagination > {
+	const { object, number } = await import( 'yup' );
+	return await object( {
+		offset: number().min( 0 ).default( 0 ),
+		limit: number()
+			.min( 1, 'Limit needs to be more than zero' )
+			.max( 100, 'Limit cannot exceed 100' )
+			.default( 100 ),
+	} ).validate( query );
 }

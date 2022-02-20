@@ -12,8 +12,22 @@ import { isEntity, relatedOfType } from './utils';
 
 import type { Knex } from 'knex';
 import type { SetRequired } from 'type-fest';
-import type { ContentDB, ImportDB, ProviderDB } from 'lib/db/types';
-import type { Claim, Import, Note, Provider, Id, Slug } from './types';
+import type {
+	ContentDB,
+	DBMaybeInsert,
+	ImportDB,
+	ProviderDB,
+} from 'lib/db/types';
+import type {
+	Claim,
+	Import,
+	Note,
+	Provider,
+	Id,
+	Slug,
+	ProviderInput,
+	WithImport,
+} from './types';
 
 type ProviderAdditions = {
 	relations?: ContentDB[];
@@ -99,4 +113,34 @@ export function rowToProvider< A extends ProviderAdditions >(
 		provider.notes = noteRows.map( ( note ) => rowToNote( note ) );
 	}
 	return provider as ProviderWithAdditions< A >;
+}
+
+export function providerToRow(
+	entity: ( ProviderInput & WithImport ) | Provider
+): DBMaybeInsert< ProviderDB > {
+	const { slug, import: importField, ...fields } = entity;
+	return {
+		...fields,
+		created: new Date(),
+		slug: slug ?? slugify( entity.name ),
+		importId: importField?.id ?? null,
+	};
+}
+
+export async function saveProvider( input: ProviderInput ) {
+	const [ { default: getDB }, { upsertProvider } ] = await Promise.all( [
+		import( 'lib/db' ),
+		import( 'lib/db/update' ),
+	] );
+	const knex = getDB();
+	let slug: Slug | undefined;
+	await knex.transaction( async ( trx ) => {
+		const row = await providerToRow( input );
+		const updatedRow = await upsertProvider( row, trx );
+		slug = updatedRow.slug as Slug;
+	} );
+	if ( ! slug ) {
+		throw new Error( 'Could not save call' );
+	}
+	return slug;
 }

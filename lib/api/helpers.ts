@@ -1,6 +1,8 @@
 import { ValidationError } from 'yup';
 import { toArray } from 'lodash';
 
+import { StatusError } from './errors';
+
 import type {
 	ErrorInformation,
 	ErrorResponse,
@@ -11,10 +13,10 @@ import type {
 import type { MaybeArray } from 'global-types';
 import type { NextApiResponse } from 'next';
 
-export function respondWithStatus(
-	res: NextApiResponse< Response >
-): WithStatusCallback {
-	return ( { status, ...response }: WithStatus< Response > ) => {
+export function respondWithStatus< R extends Response >(
+	res: NextApiResponse
+): WithStatusCallback< R > {
+	return ( { status, ...response } ) => {
 		res.status( status ).json( response );
 	};
 }
@@ -29,11 +31,11 @@ export function errorToResponse(
 	} else if ( err instanceof ValidationError ) {
 		status = 400;
 		errors = err.errors;
+	} else if ( err instanceof StatusError ) {
+		status = err.status;
+		errors = err.message;
 	} else if ( err instanceof Error ) {
-		errors = {
-			code: err.name,
-			text: err.message,
-		};
+		errors = err.message;
 	}
 	return {
 		success: false,
@@ -43,7 +45,7 @@ export function errorToResponse(
 }
 
 export function isInvalidMethod(
-	respond: WithStatusCallback,
+	respond: WithStatusCallback< any >,
 	method?: string,
 	allowedMethods = [ 'GET', 'POST' ]
 ): method is never {
@@ -54,4 +56,13 @@ export function isInvalidMethod(
 	}
 	respond( errorToResponse( 'Invalid method', 400 ) );
 	return true;
+}
+
+export function checkMethod(
+	method?: string,
+	allowedMethods = [ 'GET', 'POST' ]
+) {
+	if ( ! method || ! allowedMethods.includes( method.toUpperCase() ) ) {
+		throw new StatusError( 'Invalid method', 400 );
+	}
 }
