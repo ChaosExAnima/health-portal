@@ -68,3 +68,6 @@ export const CLAIM_STATUSES = [
 	CLAIM_STATUS_UNKNOWN,
 ] as const;
 export type CLAIM_STATUS_TYPE = typeof CLAIM_STATUSES[ number ];
+
+export const API_ENTITIES = [ ...CONTENTS, 'provider' ] as const;
+export type API_ENTITY_TYPE = typeof API_ENTITIES[ number ];

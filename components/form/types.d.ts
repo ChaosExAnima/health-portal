@@ -20,13 +20,13 @@ import {
 	DateTimePickerProps as MuiDateTimePickerProps,
 } from '@mui/lab';
 
-import { EntityTypes } from 'lib/api/types';
+import type { API_ENTITY_TYPE } from 'lib/constants';
 
 export type Input = Record< string, any >;
 
 export interface FormProps< Schema extends AnyObjectSchema > {
 	handleSubmit: UseFormHandleSubmit< FieldValues >;
-	type: EntityTypes;
+	type: API_ENTITY_TYPE;
 	new?: boolean;
 	name?: string;
 	transform?: ( form: any ) => any;
