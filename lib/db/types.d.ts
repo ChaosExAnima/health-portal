@@ -14,11 +14,9 @@ interface DBCommonFields {
 	id: number;
 	created: Date;
 }
-type DBInsert< Insert extends DBCommonFields > = Omit< Insert, 'id' > & {
-	id: null;
-};
+type DBInsert< Insert extends DBCommonFields > = Omit< Insert, 'id' >;
 type DBMaybeInsert< Insert extends DBCommonFields > = Omit< Insert, 'id' > & {
-	id: number | null;
+	id?: number;
 };
 interface DBMetaField {
 	meta: Record< string, any >;

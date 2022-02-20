@@ -35,7 +35,7 @@ export async function fileToRow(
 	input: WithMaybeNewId< FileEntity >
 ): Promise< DBMaybeInsert< ContentDB > > {
 	return {
-		id: input.id ?? null,
+		id: input.id,
 		created: input.created,
 		identifier: input.slug,
 		type: CONTENT_FILE,

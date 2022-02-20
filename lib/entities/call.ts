@@ -1,13 +1,11 @@
 import { isObjectWithKeys } from 'lib/casting';
 import { CONTENT_CALL, CONTENT_NOTE } from 'lib/constants';
-import getDB from 'lib/db';
-import { upsertContent } from 'lib/db/update';
 import { slugify } from 'lib/strings';
 import rowToNote from './note';
 import { ensureProvider, rowToProvider } from './provider';
 
 import type { Knex } from 'knex';
-import type { ContentDB } from 'lib/db/types';
+import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import type {
 	Call,
 	CallInput,
@@ -42,7 +40,7 @@ export function isCall( input: unknown ): input is Call {
 export async function callToRow(
 	input: Call | CallInput,
 	trx: Knex.Transaction
-): Promise< ContentDB > {
+): Promise< DBMaybeInsert< ContentDB > > {
 	let { id, created, reason, result } = input;
 	const provider = await ensureProvider( input.provider, trx );
 	let identifier = isEntity( input ) ? input.slug : undefined;
@@ -53,7 +51,7 @@ export async function callToRow(
 		);
 	}
 	return {
-		id: id ?? 0,
+		id: id,
 		type: CONTENT_CALL,
 		created: created ?? new Date(),
 		identifier,

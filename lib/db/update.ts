@@ -8,7 +8,7 @@ export async function upsertContent(
 	trx: Knex.Transaction
 ): Promise< ContentDB > {
 	let id: number;
-	if ( row.id === null ) {
+	if ( ! row.id ) {
 		[ id ] = await trx( TABLE_CONTENT ).insert( row );
 	} else {
 		await trx( TABLE_CONTENT ).update( row );
@@ -19,5 +19,5 @@ export async function upsertContent(
 		throw new Error( 'Could not save entity' );
 	}
 	row.id = id;
-	return row;
+	return row as ContentDB;
 }

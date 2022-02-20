@@ -7,7 +7,7 @@ import rowToNote from './note';
 import { inReadonlyArray, isEntity, saveContentEntity } from './utils';
 
 import type { Knex } from 'knex';
-import type { ContentDB } from 'lib/db/types';
+import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import type {
 	Appeal,
 	AppealInput,
@@ -42,9 +42,9 @@ export function isAppeal( input: unknown ): input is Appeal {
 export async function appealToRow(
 	input: Appeal | AppealInput,
 	trx: Knex.Transaction
-): Promise< ContentDB > {
+): Promise< DBMaybeInsert< ContentDB > > {
 	const row = {
-		id: input.id ?? 0,
+		id: input.id,
 		type: constants.CONTENT_APPEAL,
 		status: input.status,
 		info: null,

@@ -94,7 +94,7 @@ export async function claimToRow(
 		providerId = ( await ensureProvider( input.provider, trx ) ).id;
 	}
 	return {
-		id: input.id ?? null,
+		id: input.id,
 		created: input.created,
 		type: constants.CONTENT_APPEAL,
 		identifier: input.number,
