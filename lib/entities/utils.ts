@@ -1,4 +1,4 @@
-import { isInteger } from 'lodash';
+import { isSafeInteger } from 'lodash';
 import { isObjectWithKeys } from 'lib/casting';
 import { CONTENTS_TYPE } from 'lib/constants';
 import getDB from 'lib/db';
@@ -11,11 +11,10 @@ import type {
 	Id,
 	InputEntity,
 	Slug,
-	WithMaybeNewId,
 } from './types';
 
 export function isValidId( id: number ): id is Id {
-	return isInteger( id ) && id > 0;
+	return isSafeInteger( id ) && id > 0;
 }
 
 export function isSlug( slug: string ): slug is Slug {
