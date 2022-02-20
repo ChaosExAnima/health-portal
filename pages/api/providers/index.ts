@@ -1,3 +1,4 @@
+import { queryEntities } from 'lib/api/entities';
 import {
 	checkMethod,
 	errorToResponse,
@@ -11,7 +12,6 @@ import type {
 	WithStatus,
 } from 'lib/api/types';
 import type { Provider } from 'lib/entities/types';
-import { queryEntities } from 'lib/api/entities';
 
 type ProvidersResponse = RecordsResponse< Provider > | EntityUpdateResponse;
 

@@ -1,11 +1,15 @@
-import { errorToResponse, respondWithStatus } from 'lib/api/helpers';
-import { EntityUpdateResponse, RecordResponse } from 'lib/api/types';
+import { NotFoundError } from 'lib/api/errors';
+import {
+	checkMethod,
+	errorToResponse,
+	respondWithStatus,
+} from 'lib/api/helpers';
 import { fromArray } from 'lib/casting';
 import { getContentBySlug } from 'lib/db/helpers';
-import { noteSchema } from 'lib/entities/schemas';
-import { Note } from 'lib/entities/types';
 
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { EntityUpdateResponse, RecordResponse } from 'lib/api/types';
+import type { Note } from 'lib/entities/types';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -13,27 +17,45 @@ export default async function handler(
 ) {
 	const {
 		query: { slug },
+		body,
+		method,
 	} = req;
-	const record = await getContentBySlug(
-		'call',
-		fromArray( slug ) as string
-	);
 	const respond = respondWithStatus( res );
-	if ( ! record ) {
-		return respond( errorToResponse( 'Not found' ) );
+	try {
+		checkMethod( method );
+		const record = await getContentBySlug(
+			'call',
+			fromArray( slug ) as string
+		);
+		if ( ! record ) {
+			throw new NotFoundError();
+		}
+		if ( method === 'POST' ) {
+			respond( await saveNote( body, record.id ) );
+		} else if ( method === 'GET' ) {
+			const { rowToNote } = await import( 'lib/entities/note' );
+			const response = {
+				success: true,
+				status: 200,
+				record: rowToNote( record ),
+			};
+			respond( response );
+		}
+	} catch ( err ) {
+		respond( errorToResponse( err ) );
 	}
-	if ( req.method === 'POST' ) {
-		const [
-			{ saveEntity },
-			{ noteSchema },
-			{ saveNote },
-		] = await Promise.all( [
-			import( 'lib/api/entities' ),
-			import( 'lib/entities/schemas' ),
-			import( 'lib/entities/note' ),
-		] );
-		const input = { ...req.body, id: record.id };
-		return respond( await saveEntity( input, noteSchema, saveNote ) );
-	}
-	respond( errorToResponse( 'Not implemented', 500 ) );
+}
+
+async function saveNote( body: any, id: number ) {
+	const [
+		{ saveEntity },
+		{ noteSchema },
+		{ saveNote },
+	] = await Promise.all( [
+		import( 'lib/api/entities' ),
+		import( 'lib/entities/schemas' ),
+		import( 'lib/entities/note' ),
+	] );
+	const input = { ...body, id };
+	return saveEntity( input, noteSchema, saveNote );
 }

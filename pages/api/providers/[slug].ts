@@ -4,13 +4,12 @@ import {
 	errorToResponse,
 	respondWithStatus,
 } from 'lib/api/helpers';
-import { EntityUpdateResponse, RecordResponse } from 'lib/api/types';
 import { fromArray } from 'lib/casting';
 import { queryProviderBySlug } from 'lib/db/helpers';
-import { rowToProvider } from 'lib/entities/provider';
-import { Provider } from 'lib/entities/types';
 
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { EntityUpdateResponse, RecordResponse } from 'lib/api/types';
+import type { Provider } from 'lib/entities/types';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -31,6 +30,7 @@ export default async function handler(
 		if ( method === 'POST' ) {
 			respond( await saveProvider( body, record.id ) );
 		} else if ( method === 'GET' ) {
+			const { rowToProvider } = await import( 'lib/entities/provider' );
 			const response = {
 				success: true,
 				status: 200,

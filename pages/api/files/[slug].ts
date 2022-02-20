@@ -1,39 +1,61 @@
-import { errorToResponse, respondWithStatus } from 'lib/api/helpers';
-import { EntityUpdateResponse, RecordResponse } from 'lib/api/types';
+import { NotFoundError } from 'lib/api/errors';
+import {
+	checkMethod,
+	errorToResponse,
+	respondWithStatus,
+} from 'lib/api/helpers';
 import { fromArray } from 'lib/casting';
 import { getContentBySlug } from 'lib/db/helpers';
-import { fileSchema } from 'lib/entities/schemas';
-import { FileEntity } from 'lib/entities/types';
 
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { EntityUpdateResponse, RecordResponse } from 'lib/api/types';
+import type { Note } from 'lib/entities/types';
 
 export default async function handler(
 	req: NextApiRequest,
-	res: NextApiResponse< RecordResponse< FileEntity > | EntityUpdateResponse >
+	res: NextApiResponse< RecordResponse< Note > | EntityUpdateResponse >
 ) {
 	const {
 		query: { slug },
+		body,
+		method,
 	} = req;
-	const record = await getContentBySlug(
-		'call',
-		fromArray( slug ) as string
-	);
 	const respond = respondWithStatus( res );
-	if ( ! record ) {
-		return respond( errorToResponse( 'Not found' ) );
+	try {
+		checkMethod( method );
+		const record = await getContentBySlug(
+			'call',
+			fromArray( slug ) as string
+		);
+		if ( ! record ) {
+			throw new NotFoundError();
+		}
+		if ( method === 'POST' ) {
+			respond( await saveFile( body, record.id ) );
+		} else if ( method === 'GET' ) {
+			const { rowToFile } = await import( 'lib/entities/file' );
+			const response = {
+				success: true,
+				status: 200,
+				record: rowToFile( record ),
+			};
+			respond( response );
+		}
+	} catch ( err ) {
+		respond( errorToResponse( err ) );
 	}
-	if ( req.method === 'POST' ) {
-		const [
-			{ saveEntity },
-			{ fileSchema },
-			{ saveFile },
-		] = await Promise.all( [
-			import( 'lib/api/entities' ),
-			import( 'lib/entities/schemas' ),
-			import( 'lib/entities/file' ),
-		] );
-		const input = { ...req.body, id: record.id };
-		return respond( await saveEntity( input, fileSchema, saveFile ) );
-	}
-	respond( errorToResponse( 'Not implemented', 500 ) );
+}
+
+async function saveFile( body: any, id: number ) {
+	const [
+		{ saveEntity },
+		{ fileSchema },
+		{ saveFile },
+	] = await Promise.all( [
+		import( 'lib/api/entities' ),
+		import( 'lib/entities/schemas' ),
+		import( 'lib/entities/file' ),
+	] );
+	const input = { ...body, id };
+	return saveEntity( input, fileSchema, saveFile );
 }

@@ -1,35 +1,66 @@
+import { queryEntities } from 'lib/api/entities';
 import {
+	checkMethod,
 	errorToResponse,
-	isInvalidMethod,
 	respondWithStatus,
 } from 'lib/api/helpers';
 
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { EntitySuccessResponse } from 'lib/api/types';
+import type {
+	EntityUpdateResponse,
+	RecordsResponse,
+	WithStatus,
+} from 'lib/api/types';
+import type { Note } from 'lib/entities/types';
+
+type NotesResponse = RecordsResponse< Note > | EntityUpdateResponse;
 
 export default async function handler(
 	req: NextApiRequest,
-	res: NextApiResponse< EntitySuccessResponse >
+	res: NextApiResponse< NotesResponse >
 ) {
-	// Check methods.
-	const respond = respondWithStatus( res );
-	if ( isInvalidMethod( respond, req.method ) ) {
-		return;
+	const respond = respondWithStatus< NotesResponse >( res );
+	const { method, query, body } = req;
+	try {
+		checkMethod( method );
+		if ( method === 'GET' ) {
+			respond( await getNotes( query ) );
+		} else if ( method === 'POST' ) {
+			respond( await insertNote( body ) );
+		}
+	} catch ( err ) {
+		respond( errorToResponse( err ) );
 	}
+}
 
-	// Save new.
-	if ( req.method === 'POST' ) {
-		const [
-			{ insertEntity },
-			{ noteSchema },
-			{ saveNote },
-		] = await Promise.all( [
-			import( 'lib/api/entities' ),
-			import( 'lib/entities/schemas' ),
-			import( 'lib/entities/note' ),
-		] );
-		const input = req.body;
-		return respond( await insertEntity( input, noteSchema, saveNote ) );
-	}
-	return respond( errorToResponse( 'Not implemented', 500 ) );
+async function getNotes(
+	query: any
+): Promise< WithStatus< RecordsResponse< Note > > > {
+	const [ { queryNotes }, { rowToNote } ] = await Promise.all( [
+		import( 'lib/db/helpers' ),
+		import( 'lib/entities/note' ),
+	] );
+	const { offset, limit } = await queryEntities( query );
+	const notes = await queryNotes().limit( limit ).offset( offset );
+	const records = notes.map( ( row ) => rowToNote( row ) );
+	return {
+		success: true,
+		status: 200,
+		records,
+	};
+}
+
+async function insertNote(
+	body: any
+): Promise< WithStatus< EntityUpdateResponse > > {
+	const [
+		{ insertEntity },
+		{ saveNote },
+		{ noteSchema },
+	] = await Promise.all( [
+		import( 'lib/api/entities' ),
+		import( 'lib/entities/note' ),
+		import( 'lib/entities/schemas' ),
+	] );
+	return await insertEntity( body, noteSchema, saveNote );
 }
