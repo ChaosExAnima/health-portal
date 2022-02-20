@@ -4,15 +4,9 @@ import {
 	errorToResponse,
 	respondWithStatus,
 } from 'lib/api/helpers';
-import {
-	EntityUpdateResponse,
-	RecordResponse,
-	RecordResponseResult,
-	WithStatus,
-} from 'lib/api/types';
+import { EntityUpdateResponse, RecordResponse } from 'lib/api/types';
 import { fromArray } from 'lib/casting';
 import { queryProviderBySlug } from 'lib/db/helpers';
-import { ProviderDB } from 'lib/db/types';
 import { rowToProvider } from 'lib/entities/provider';
 import { Provider } from 'lib/entities/types';
 
