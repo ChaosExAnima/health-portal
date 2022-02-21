@@ -2,7 +2,7 @@
 import { createMocks as mockFetch, RequestMethod } from 'node-mocks-http';
 import { inspect } from 'util';
 
-import { queryEntities, insertEntity } from 'lib/api/entities';
+import { queryEntities, insertEntity, saveEntity } from 'lib/api/entities';
 import { pluralizeType } from 'lib/api/utils';
 import { API_ENTITIES, API_ENTITY_TYPE } from 'lib/constants';
 import * as dbHelpers from 'lib/db/helpers';
@@ -22,7 +22,8 @@ import ProviderApiSingle from 'pages/api/providers/[slug]';
 
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import type { Schema } from 'type-fest';
-import {
+import type { PlainObject } from 'global-types';
+import type {
 	EntityUpdateResponse,
 	ErrorResponse,
 	RecordsResponse,
@@ -31,69 +32,7 @@ import {
 } from 'lib/api/types';
 import type { Slug } from 'lib/entities/types';
 
-jest.mock( 'lib/db/helpers', () => {
-	const records = jest.fn( () => [] );
-	const record = jest.fn( () => ( { id: 0, slug: 'test' } ) );
-	const queryBuilder = {
-		limit: jest.fn().mockReturnThis(),
-		offset: jest.fn( () => records() ),
-	};
-	const queries = Object.fromEntries(
-		[
-			'appeal',
-			'call',
-			'claim',
-			'file',
-			'note',
-			'allProvider',
-		].map( ( name ) => [
-			`query${ name[ 0 ].toUpperCase() + name.slice( 1 ) }s`,
-			jest.fn().mockReturnValue( queryBuilder ),
-		] )
-	);
-	return {
-		__records: records,
-		__record: record,
-		__builder: queryBuilder,
-		...jest.requireActual( 'lib/db/helpers' ),
-		getContentBySlug: jest.fn( () => record() ),
-		queryProviderBySlug: jest.fn( () => record() ),
-		...queries,
-	};
-} );
-
-jest.mock( 'lib/entities/appeal', () => ( {
-	rowToAppeal: jest.fn( ( arg ) => arg ),
-} ) );
-jest.mock( 'lib/entities/call', () => ( {
-	rowToCall: jest.fn( ( arg ) => arg ),
-} ) );
-jest.mock( 'lib/entities/claim', () => ( {
-	rowToClaim: jest.fn( ( arg ) => arg ),
-} ) );
-jest.mock( 'lib/entities/file', () => ( {
-	rowToFile: jest.fn( ( arg ) => arg ),
-} ) );
-jest.mock( 'lib/entities/note', () => ( {
-	rowToNote: jest.fn( ( arg ) => arg ),
-} ) );
-jest.mock( 'lib/entities/provider', () => ( {
-	rowToProvider: jest.fn( ( arg ) => arg ),
-} ) );
-
-jest.mock( 'lib/api/entities', () => ( {
-	...jest.requireActual( 'lib/api/entities' ),
-	queryEntities: jest.fn( ( query ) => query ),
-	insertEntity: jest.fn( () => ( {
-		success: true,
-		slug: 'test',
-	} ) ),
-	saveEntity: jest.fn( () => ( {
-		success: true,
-		slug: 'true',
-	} ) ),
-} ) );
-
+// Maps
 const nameToIndex = new Map< API_ENTITY_TYPE, NextApiHandler >( [
 	[ 'appeal', AppealApiIndex ],
 	[ 'call', CallApiIndex ],
@@ -119,34 +58,7 @@ const nameToMock = new Map< API_ENTITY_TYPE, jest.MockedFunction< any > >( [
 	[ 'provider', dbHelpers.queryAllProviders ],
 ] );
 
-function expectIndexes< I = any, E = any >(
-	input: I,
-	expect: E,
-	method = 'GET'
-): [ RequestMethod, API_ENTITY_TYPE, I, E, NextApiHandler ][] {
-	return API_ENTITIES.map( ( entity ) => [
-		method as RequestMethod,
-		entity,
-		input,
-		expect,
-		nameToIndex.get( entity ) as NextApiHandler< E >,
-	] );
-}
-
-function expectSingles< I = any, E = any >(
-	input: I,
-	expect: E,
-	method = 'GET'
-): [ RequestMethod, API_ENTITY_TYPE, I, E, NextApiHandler ][] {
-	return API_ENTITIES.map( ( entity ) => [
-		method as RequestMethod,
-		entity,
-		input,
-		expect,
-		nameToSingle.get( entity ) as NextApiHandler< E >,
-	] );
-}
-
+// Tests
 describe( '/api/[entity]', () => {
 	afterEach( () => {
 		jest.clearAllMocks();
@@ -269,6 +181,14 @@ describe( '/api/[entity]/[slug]', () => {
 			success: true,
 			record: { id: 0, slug: 'test' },
 		} ),
+		expectSingles< PlainObject, EntityUpdateResponse >(
+			{ id: -1, test: true },
+			{
+				success: true,
+				slug: 'test' as Slug,
+			},
+			'POST'
+		),
 	];
 
 	for ( const index of tests ) {
@@ -309,10 +229,11 @@ describe( '/api/[entity]/[slug]', () => {
 				}
 				await handler( req, res );
 
-				const json: Result = res._getJSONData();
-				expect( json ).toEqual( response );
-				if ( 'record' in json ) {
-					expect( res._getStatusCode() ).toEqual( 200 );
+				const resBody: Result = res._getJSONData();
+				const resStatus = res._getStatusCode();
+				expect( resBody ).toEqual( response );
+				if ( 'record' in resBody ) {
+					expect( resStatus ).toEqual( 200 );
 					if ( type === 'provider' ) {
 						expect(
 							dbHelpers.queryProviderBySlug
@@ -322,16 +243,117 @@ describe( '/api/[entity]/[slug]', () => {
 							dbHelpers.getContentBySlug
 						).toHaveBeenCalledWith( type, 'test' );
 					}
-				} else if ( 'errors' in json ) {
+				} else if ( 'slug' in resBody ) {
+					expect( resStatus ).toEqual( 200 );
+					expect( saveEntity ).toBeCalled();
+					expect(
+						( saveEntity as jest.MockedFunction<
+							typeof saveEntity
+						> ).mock.calls[ 0 ][ 0 ]
+					).toEqual( { id: 0, test: true } );
+				} else if ( 'errors' in resBody ) {
 					if ( body && 'notFound' in body ) {
-						expect( res._getStatusCode() ).toEqual( 404 );
+						expect( resStatus ).toEqual( 404 );
 					} else {
-						expect( [ 400, 500 ] ).toContain(
-							res._getStatusCode()
-						);
+						expect( [ 400, 500 ] ).toContain( resStatus );
 					}
 				}
 			} );
 		}
 	}
 } );
+
+jest.mock( 'lib/db/helpers', () => {
+	const records = jest.fn( () => [] );
+	const record = jest.fn( () => ( { id: 0, slug: 'test' } ) );
+	const queryBuilder = {
+		limit: jest.fn().mockReturnThis(),
+		offset: jest.fn( () => records() ),
+	};
+	const queries = Object.fromEntries(
+		[
+			'appeal',
+			'call',
+			'claim',
+			'file',
+			'note',
+			'allProvider',
+		].map( ( name ) => [
+			`query${ name[ 0 ].toUpperCase() + name.slice( 1 ) }s`,
+			jest.fn().mockReturnValue( queryBuilder ),
+		] )
+	);
+	return {
+		__records: records,
+		__record: record,
+		__builder: queryBuilder,
+		...jest.requireActual( 'lib/db/helpers' ),
+		getContentBySlug: jest.fn( () => record() ),
+		queryProviderBySlug: jest.fn( () => record() ),
+		...queries,
+	};
+} );
+
+// Mocks
+jest.mock( 'lib/entities/appeal', () => ( {
+	rowToAppeal: jest.fn( ( arg ) => arg ),
+} ) );
+jest.mock( 'lib/entities/call', () => ( {
+	rowToCall: jest.fn( ( arg ) => arg ),
+} ) );
+jest.mock( 'lib/entities/claim', () => ( {
+	rowToClaim: jest.fn( ( arg ) => arg ),
+} ) );
+jest.mock( 'lib/entities/file', () => ( {
+	rowToFile: jest.fn( ( arg ) => arg ),
+} ) );
+jest.mock( 'lib/entities/note', () => ( {
+	rowToNote: jest.fn( ( arg ) => arg ),
+} ) );
+jest.mock( 'lib/entities/provider', () => ( {
+	rowToProvider: jest.fn( ( arg ) => arg ),
+} ) );
+
+jest.mock( 'lib/api/entities', () => ( {
+	...jest.requireActual( 'lib/api/entities' ),
+	queryEntities: jest.fn( ( query ) => query ),
+	insertEntity: jest.fn( () => ( {
+		success: true,
+		slug: 'test',
+		status: 200,
+	} ) ),
+	saveEntity: jest.fn( () => ( {
+		success: true,
+		slug: 'test',
+		status: 200,
+	} ) ),
+} ) );
+
+// Helpers
+function expectIndexes< I = any, E = any >(
+	input: I,
+	expect: E,
+	method = 'GET'
+): [ RequestMethod, API_ENTITY_TYPE, I, E, NextApiHandler ][] {
+	return API_ENTITIES.map( ( entity ) => [
+		method as RequestMethod,
+		entity,
+		input,
+		expect,
+		nameToIndex.get( entity ) as NextApiHandler< E >,
+	] );
+}
+
+function expectSingles< I = any, E = any >(
+	input: I,
+	expect: E,
+	method = 'GET'
+): [ RequestMethod, API_ENTITY_TYPE, I, E, NextApiHandler ][] {
+	return API_ENTITIES.map( ( entity ) => [
+		method as RequestMethod,
+		entity,
+		input,
+		expect,
+		nameToSingle.get( entity ) as NextApiHandler< E >,
+	] );
+}
