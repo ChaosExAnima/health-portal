@@ -1,4 +1,3 @@
-import { queryEntities } from 'lib/api/entities';
 import {
 	checkMethod,
 	errorToResponse,
@@ -36,7 +35,12 @@ export default async function handler(
 async function getAppeals(
 	query: any
 ): Promise< WithStatus< RecordsResponse< Appeal > > > {
-	const [ { queryAppeals }, { rowToAppeal } ] = await Promise.all( [
+	const [
+		{ queryEntities },
+		{ queryAppeals },
+		{ rowToAppeal },
+	] = await Promise.all( [
+		import( 'lib/api/entities' ),
 		import( 'lib/db/helpers' ),
 		import( 'lib/entities/appeal' ),
 	] );

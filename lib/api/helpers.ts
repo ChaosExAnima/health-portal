@@ -1,8 +1,10 @@
 import { ValidationError } from 'yup';
-import { toArray } from 'lodash';
 
+import { toArray } from 'lib/casting';
 import { StatusError } from './errors';
 
+import type { NextApiResponse } from 'next';
+import type { MaybeArray } from 'global-types';
 import type {
 	ErrorInformation,
 	ErrorResponse,
@@ -10,8 +12,6 @@ import type {
 	WithStatus,
 	WithStatusCallback,
 } from './types';
-import type { MaybeArray } from 'global-types';
-import type { NextApiResponse } from 'next';
 
 export function respondWithStatus< R extends Response >(
 	res: NextApiResponse

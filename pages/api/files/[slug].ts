@@ -24,7 +24,7 @@ export default async function handler(
 	try {
 		checkMethod( method );
 		const record = await getContentBySlug(
-			'call',
+			'file',
 			fromArray( slug ) as string
 		);
 		if ( ! record ) {
