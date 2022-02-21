@@ -1,8 +1,5 @@
-import { isPlainObject, isString } from 'lodash';
-import Router from 'next/router';
-
+import { isPlainObject, toArray } from 'lib/casting';
 import { typeToUrl } from './utils';
-import { errorToResponse } from './helpers';
 
 import type { AnyObjectSchema } from 'yup';
 import type { Nullable, PlainObject } from 'global-types';
@@ -38,21 +35,19 @@ export async function handleUpdateType(
 		handleError( body.errors );
 	} else {
 		const slug = body.slug;
-		Router.push( typeToUrl( type, slug ) );
+		const { default: router } = await import( 'next/router' );
+		router.push( typeToUrl( type, slug ) );
 	}
 }
 
-export function formatErrors( errors: ErrorHandlerArg ): string[] {
-	if ( ! Array.isArray( errors ) ) {
-		if ( ! errors ) {
-			return [];
-		}
-		if ( isString( errors ) ) {
-			return [ errors ];
-		}
-		return [ errors.text ];
+export function formatErrors( errors?: ErrorHandlerArg ): string[] {
+	if ( ! errors ) {
+		return [];
 	}
-	return errors.map( formatErrors ).flat();
+	errors = toArray( errors );
+	return errors.map( ( error ) =>
+		typeof error === 'object' ? error.text : error
+	);
 }
 
 export async function saveEntity< Input extends InputEntity >(
@@ -74,7 +69,7 @@ export async function insertEntity< Input extends InputEntity >(
 	schema: AnyObjectSchema,
 	save: SaveEntityFunction< Input >
 ): Promise< WithStatus< EntityUpdateResponse > > {
-	if ( isPlainObject( input ) && 'id' in input ) {
+	if ( isPlainObject( input ) && 'id' in input && !! input.id ) {
 		throw new StatusError( 'Cannot insert with ID', 400 );
 	}
 	return saveEntity( input, schema.omit( [ 'id' ] ), save );
