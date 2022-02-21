@@ -85,5 +85,5 @@ export async function queryEntities(
 			.min( 1, 'Limit needs to be more than zero' )
 			.max( 100, 'Limit cannot exceed 100' )
 			.default( 100 ),
-	} ).validate( query );
+	} ).validate( query, { stripUnknown: true } );
 }

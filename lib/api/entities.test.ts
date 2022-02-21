@@ -1,8 +1,15 @@
 import router from 'next/router';
-import { formatErrors, handleUpdateType, insertEntity } from './entities';
+import {
+	formatErrors,
+	handleUpdateType,
+	insertEntity,
+	queryEntities,
+} from './entities';
 
 import type { Id, NewId, Slug } from 'lib/entities/types';
-import type { AnyObjectSchema } from 'yup';
+import { AnyObjectSchema, ValidationError } from 'yup';
+import { inspect } from 'util';
+import { PlainObject } from 'global-types';
 
 const json = jest.fn().mockReturnValue( { success: true, slug: 'test' } );
 global.fetch = jest.fn().mockResolvedValue( { json } );
@@ -107,5 +114,35 @@ describe( 'API Entities', () => {
 			expect( schema.validate ).toHaveBeenCalledWith( input );
 			expect( saveFunc ).toHaveBeenCalledWith( input );
 		} );
+	} );
+
+	describe( 'queryEntities()', () => {
+		const result = { offset: 0, limit: 100 };
+		const tests: [ PlainObject, any ][] = [
+			[ {}, result ],
+			[ { offset: 0, limit: 100 }, result ],
+			[
+				{ offset: 10, limit: 10 },
+				{ offset: 10, limit: 10 },
+			],
+			[ { test: true }, result ],
+			[ { offset: -1 }, null ],
+			[ { limit: 1000 }, null ],
+			[ { limit: 0 }, null ],
+		];
+		for ( const [ input, expected ] of tests ) {
+			const resultText =
+				expected === null
+					? 'throws'
+					: `returns ${ inspect( expected ) }`;
+			test( `with ${ inspect( input ) } ${ resultText }`, async () => {
+				try {
+					const actual = await queryEntities( input );
+					expect( actual ).toEqual( expected );
+				} catch ( err ) {
+					expect( err ).toEqual( expect.any( ValidationError ) );
+				}
+			} );
+		}
 	} );
 } );
