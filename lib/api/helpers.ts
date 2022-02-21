@@ -1,4 +1,5 @@
 import { ValidationError } from 'yup';
+import debug from 'debug';
 
 import { toArray } from 'lib/casting';
 import { StatusError } from './errors';
@@ -12,11 +13,18 @@ import type {
 	WithStatus,
 	WithStatusCallback,
 } from './types';
+import { isSafeInteger } from 'lodash';
+
+const log = debug( 'lib/api' );
 
 export function respondWithStatus< R extends Response >(
 	res: NextApiResponse
 ): WithStatusCallback< R > {
 	return ( { status, ...response } ) => {
+		if ( ! isSafeInteger( status ) || status < 200 ) {
+			log( 'Set an invalid status:', status );
+			throw new StatusError( 'Tried to send invalid status' );
+		}
 		res.status( status ).json( response );
 	};
 }
@@ -42,20 +50,6 @@ export function errorToResponse(
 		errors: toArray( errors ),
 		status,
 	};
-}
-
-export function isInvalidMethod(
-	respond: WithStatusCallback< any >,
-	method?: string,
-	allowedMethods = [ 'GET', 'POST' ]
-): method is never {
-	const allowed =
-		!! method && allowedMethods.includes( method.toUpperCase() );
-	if ( allowed ) {
-		return false;
-	}
-	respond( errorToResponse( 'Invalid method', 400 ) );
-	return true;
 }
 
 export function checkMethod(
