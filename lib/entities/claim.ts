@@ -1,16 +1,26 @@
-import { rowToProvider } from './provider';
+import { ensureProvider, rowToProvider } from './provider';
 import {
+	getNumericMeta,
+	inReadonlyArray,
+	isEntity,
+	relatedOfType,
+	saveContentEntity,
+} from './utils';
+import * as constants from 'lib/constants';
+import { slugify } from 'lib/strings';
+import { isObjectWithKeys } from 'lib/casting';
+import { rowToNote } from './note';
+
+import type { Knex } from 'knex';
+import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
+import type {
 	Claim,
+	ClaimInput,
 	EntityAdditions,
 	EntityWithAdditions,
 	Id,
 	WithMetaAdditions,
 } from './types';
-import { getNumericMeta, inReadonlyArray, relatedOfType } from './utils';
-import * as constants from 'lib/constants';
-import { ContentDB } from 'lib/db/types';
-import { slugify } from 'lib/strings';
-import rowToNote from './note';
 
 type ClaimWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Claim,
@@ -20,7 +30,19 @@ type ClaimWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	cost: A extends WithMetaAdditions< A > ? number : never;
 };
 
-export default function rowToClaim< T extends EntityAdditions >(
+export function isClaim( input: unknown ): input is Claim {
+	return (
+		isEntity( input ) &&
+		isObjectWithKeys( input, [ 'number', 'type', 'status' ] ) &&
+		!! inReadonlyArray(
+			String( input.status ),
+			constants.CLAIM_STATUSES
+		) &&
+		!! inReadonlyArray( String( input.type ), constants.CLAIM_TYPES )
+	);
+}
+
+export function rowToClaim< T extends EntityAdditions >(
 	row: ContentDB,
 	additions: T = {} as T
 ): ClaimWithAdditions< T > {
@@ -37,7 +59,7 @@ export default function rowToClaim< T extends EntityAdditions >(
 			constants.CLAIM_STATUS_UNKNOWN
 		),
 		type: inReadonlyArray(
-			info,
+			String( info ),
 			constants.CLAIM_TYPES,
 			constants.CLAIM_TYPE_OTHER
 		),
@@ -61,4 +83,28 @@ export default function rowToClaim< T extends EntityAdditions >(
 	}
 
 	return claim as ClaimWithAdditions< T >;
+}
+
+export async function claimToRow(
+	input: Claim | ClaimInput,
+	trx: Knex.Transaction
+): Promise< DBMaybeInsert< ContentDB > > {
+	let providerId = null;
+	if ( input.provider ) {
+		providerId = ( await ensureProvider( input.provider, trx ) ).id;
+	}
+	return {
+		id: input.id,
+		created: input.created,
+		type: constants.CONTENT_APPEAL,
+		identifier: input.number,
+		status: input.status,
+		info: String( input.type ),
+		providerId,
+		importId: null,
+	};
+}
+
+export function saveClaim( input: ClaimInput ) {
+	return saveContentEntity( input, claimToRow );
 }

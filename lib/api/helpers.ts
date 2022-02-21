@@ -1,37 +1,49 @@
-import { AnyObjectSchema, ValidationError } from 'yup';
-import { toArray } from 'lodash';
+import { ValidationError } from 'yup';
+import debug from 'debug';
 
-import type { SaveEntityFunction } from 'lib/db/types';
-import type { Entity } from 'lib/entities/types';
+import { toArray } from 'lib/casting';
+import { StatusError } from './errors';
+
+import type { NextApiResponse } from 'next';
+import type { MaybeArray } from 'global-types';
 import type {
-	EntityUpdateResponse,
 	ErrorInformation,
 	ErrorResponse,
 	Response,
 	WithStatus,
+	WithStatusCallback,
 } from './types';
-import type { MaybeArray } from 'global-types';
-import type { NextApiResponse } from 'next';
+import { isSafeInteger } from 'lodash';
 
-export function respondWithStatus( res: NextApiResponse< Response > ) {
-	return ( { status, ...response }: WithStatus< Response > ) => {
+const log = debug( 'lib/api' );
+
+export function respondWithStatus< R extends Response >(
+	res: NextApiResponse
+): WithStatusCallback< R > {
+	return ( { status, ...response } ) => {
+		if ( ! isSafeInteger( status ) || status < 200 ) {
+			log( 'Set an invalid status:', status );
+			throw new StatusError( 'Tried to send invalid status' );
+		}
 		res.status( status ).json( response );
 	};
 }
 
-export function errorToResponse( err: unknown ): WithStatus< ErrorResponse > {
+export function errorToResponse(
+	err: unknown,
+	status = 500
+): WithStatus< ErrorResponse > {
 	let errors: MaybeArray< string > | ErrorInformation = 'Unknown error';
-	let status: number = 500;
 	if ( typeof err === 'string' ) {
 		errors = err;
 	} else if ( err instanceof ValidationError ) {
 		status = 400;
 		errors = err.errors;
+	} else if ( err instanceof StatusError ) {
+		status = err.status;
+		errors = err.message;
 	} else if ( err instanceof Error ) {
-		errors = {
-			code: err.name,
-			text: err.message,
-		};
+		errors = err.message;
 	}
 	return {
 		success: false,
@@ -40,20 +52,11 @@ export function errorToResponse( err: unknown ): WithStatus< ErrorResponse > {
 	};
 }
 
-export async function saveEntity< Input extends Entity >(
-	input: unknown,
-	schema: AnyObjectSchema,
-	save: SaveEntityFunction< Input >
-): Promise< WithStatus< EntityUpdateResponse > > {
-	try {
-		const entity = ( await schema.validate( input ) ) as Input;
-		const slug = await save( entity );
-		return {
-			success: true,
-			status: 200,
-			slug,
-		};
-	} catch ( err ) {
-		return errorToResponse( err );
+export function checkMethod(
+	method?: string,
+	allowedMethods = [ 'GET', 'POST' ]
+) {
+	if ( ! method || ! allowedMethods.includes( method.toUpperCase() ) ) {
+		throw new StatusError( 'Invalid method', 400 );
 	}
 }

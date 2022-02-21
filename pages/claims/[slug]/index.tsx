@@ -5,7 +5,7 @@ import { Detail, DetailsBox } from 'components/details-box';
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import ProviderLink from 'components/provider-link';
-import rowToClaim from 'lib/entities/claim';
+import { rowToClaim } from 'lib/entities/claim';
 import {
 	queryClaims,
 	queryMeta,

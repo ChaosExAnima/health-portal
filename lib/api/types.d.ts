@@ -1,10 +1,14 @@
-import { NonNegativeInteger } from 'type-fest';
-import { CONTENTS_TYPE } from 'lib/constants';
-import { MaybeArray, StringMap } from 'global-types';
+import { API_ENTITY_TYPE } from 'lib/constants';
+import { MaybeArray } from 'global-types';
 import { Entity, Slug } from 'lib/entities/types';
 
-type EntityTypes = CONTENTS_TYPE | 'provider';
-type WithStatus< R extends Response > = R & { status: NonNegativeInteger };
+type Methods = 'GET' | 'POST';
+type EntityTypes = API_ENTITY_TYPE;
+type EntityEndpointTypes = `${ EntityTypes }s`;
+type WithStatus< R extends Response > = R & { status: number };
+type WithStatusCallback< R extends Response > = (
+	response: WithStatus< R >
+) => void;
 
 // Abstract interfaces
 abstract interface Response {
@@ -17,6 +21,12 @@ abstract interface SuccessResponse extends Response {
 abstract interface ErrorResponse extends Response {
 	success: false;
 	errors: Array< string | ErrorInformation >;
+}
+
+// Queries
+interface QueryPagination {
+	offset: number;
+	limit: number;
 }
 
 // Specific responses
@@ -33,13 +43,19 @@ interface RecordsSuccessResponse< E extends Entity > extends SuccessResponse {
 type RecordsResponse< E extends Entity > =
 	| ErrorResponse
 	| RecordsSuccessResponse< E >;
+type RecordsResponseResult< E extends Entity > = Promise<
+	WithStatus< RecordResponse< E > >
+>;
 
 interface RecordSuccessResponse< E extends Entity > extends SuccessResponse {
-	records: E;
+	record: E;
 }
 type RecordResponse< E extends Entity > =
 	| ErrorResponse
 	| RecordSuccessResponse< E >;
+type RecordResponseResult< E extends Entity > = Promise<
+	WithStatus< RecordResponse< E > >
+>;
 
 // Other types
 type ErrorInformation = {

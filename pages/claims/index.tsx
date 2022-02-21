@@ -16,7 +16,7 @@ import {
 	formatDate,
 } from 'lib/strings';
 import { CLAIM_STATUSES } from 'lib/constants';
-import rowToClaim from 'lib/entities/claim';
+import { rowToClaim } from 'lib/entities/claim';
 import {
 	getIdColumn,
 	getIds,

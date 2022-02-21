@@ -2,7 +2,7 @@ import { Container } from '@mui/material';
 
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
-import rowToAppeal from 'lib/entities/appeal';
+import { rowToAppeal } from 'lib/entities/appeal';
 import { queryAppeals, queryRelatedOfType } from 'lib/db/helpers';
 
 import type { GetStaticPathsResult } from 'next';

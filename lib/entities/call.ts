@@ -1,26 +1,21 @@
-import dayjs from 'dayjs';
-import { ValidationError } from 'yup';
-
-import {
-	CONTENT_CALL,
-	CONTENT_NOTE,
-	TABLE_CONTENT,
-	TABLE_PROVIDERS,
-} from 'lib/constants';
-import getDB from 'lib/db';
+import { isObjectWithKeys } from 'lib/casting';
+import { CONTENT_CALL, CONTENT_NOTE } from 'lib/constants';
 import { slugify } from 'lib/strings';
-import rowToNote from './note';
-import { rowToProvider } from './provider';
+import { rowToNote } from './note';
+import { ensureProvider, rowToProvider } from './provider';
 
-import type { ContentDB } from 'lib/db/types';
+import type { Knex } from 'knex';
+import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import type {
 	Call,
+	CallInput,
 	EntityAdditions,
 	EntityWithAdditions,
 	Id,
 	Slug,
 	WithMetaAdditions,
 } from './types';
+import { isEntity, saveContentEntity } from './utils';
 
 type CallWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Call,
@@ -29,58 +24,42 @@ type CallWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	reps: A extends WithMetaAdditions< A > ? string[] : never;
 };
 
-export async function saveCall( input: Call ): Promise< Slug > {
-	const knex = getDB();
-	let slug: Slug | null = null;
-	await knex.transaction( async ( trx ) => {
-		const { provider, created, reason, result } = input;
-		let providerId = null;
-		let providerName = null;
-		if ( typeof provider === 'number' ) {
-			providerId = provider;
-			const providerRow = await trx( TABLE_PROVIDERS )
-				.where( 'id', providerId )
-				.first();
-			if ( ! providerRow ) {
-				throw new ValidationError(
-					'Could not find provider',
-					providerId,
-					'provider'
-				);
-			}
-			providerName = providerRow.name;
-		} else if ( provider && 'name' in provider ) {
-			[ providerId ] = await trx( TABLE_PROVIDERS ).insert( {
-				slug: slugify( provider.name ),
-				name: provider.name,
-			} );
-			providerName = provider.name;
-		}
+export function isCall( input: unknown ): input is Call {
+	return (
+		isEntity( input ) &&
+		isObjectWithKeys( input, [
+			'name',
+			'address',
+			'phone',
+			'email',
+			'website',
+		] )
+	);
+}
 
-		if ( ! providerId || ! providerName ) {
-			throw new Error( 'Could not get provider' );
-		}
-
-		slug = slugify(
-			dayjs( created ).format( `YYYY-MM-DD [${ providerName }]` )
+export async function callToRow(
+	input: Call | CallInput,
+	trx: Knex.Transaction
+): Promise< DBMaybeInsert< ContentDB > > {
+	let { id, created, reason, result } = input;
+	const provider = await ensureProvider( input.provider, trx );
+	let identifier = isEntity( input ) ? input.slug : undefined;
+	if ( ! identifier ) {
+		const { default: dayjs } = await import( 'dayjs' );
+		identifier = slugify(
+			dayjs( created ).format( 'YYYY-MM-DD' ) + ` [${ provider.name }]`
 		);
-		const [ id ] = await trx( TABLE_CONTENT ).insert( {
-			type: CONTENT_CALL,
-			created,
-			identifier: slug,
-			info: reason,
-			status: result,
-			providerId,
-		} );
-
-		if ( ! id ) {
-			throw new Error( 'Could not save call' );
-		}
-	} );
-	if ( ! slug ) {
-		throw new Error( 'Slug never found' );
 	}
-	return slug;
+	return {
+		id: id,
+		type: CONTENT_CALL,
+		created: created ?? new Date(),
+		identifier,
+		info: String( reason ),
+		status: String( result ),
+		providerId: provider.id,
+		importId: null,
+	};
 }
 
 export function rowToCall< A extends EntityAdditions >(
@@ -92,7 +71,7 @@ export function rowToCall< A extends EntityAdditions >(
 		id: id as Id,
 		slug: slug as Slug,
 		created: row.created,
-		reason: info,
+		reason: info ?? '',
 		result: status,
 	};
 	const { provider, providers, relations, meta } = additions;
@@ -115,4 +94,8 @@ export function rowToCall< A extends EntityAdditions >(
 			.map( ( { value } ) => value as string );
 	}
 	return call as CallWithAdditions< A >;
+}
+
+export function saveCall( input: CallInput ) {
+	return saveContentEntity( input, callToRow );
 }

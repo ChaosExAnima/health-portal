@@ -1,16 +1,18 @@
-import { isString } from 'lodash';
-import Router from 'next/router';
+import { isPlainObject, toArray } from 'lib/casting';
+import { typeToUrl } from './utils';
 
-import type { Nullable } from 'global-types';
+import type { AnyObjectSchema } from 'yup';
+import type { Nullable, PlainObject } from 'global-types';
+import type { InputEntity, SaveEntityFunction, Slug } from 'lib/entities/types';
 import type {
 	ErrorHandler,
 	ErrorHandlerArg,
 	EntityUpdateResponse,
 	EntityTypes,
+	WithStatus,
+	QueryPagination,
 } from './types';
-import { typeToUrl } from './utils';
-
-import type { Slug } from 'lib/entities/types';
+import { StatusError } from './errors';
 
 export async function handleUpdateType(
 	form: unknown,
@@ -18,7 +20,7 @@ export async function handleUpdateType(
 	handleError: ErrorHandler,
 	slug?: Slug
 ): Promise< void > {
-	const response = await fetch( `/api/${ type }/${ slug }`, {
+	const response = await fetch( '/api' + typeToUrl( type, slug ), {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -33,19 +35,55 @@ export async function handleUpdateType(
 		handleError( body.errors );
 	} else {
 		const slug = body.slug;
-		Router.push( typeToUrl( type, slug ) );
+		const { default: router } = await import( 'next/router' );
+		router.push( typeToUrl( type, slug ) );
 	}
 }
 
-export function formatErrors( errors: ErrorHandlerArg ): string[] {
-	if ( ! Array.isArray( errors ) ) {
-		if ( ! errors ) {
-			return [];
-		}
-		if ( isString( errors ) ) {
-			return [ errors ];
-		}
-		return [ errors.text ];
+export function formatErrors( errors?: ErrorHandlerArg ): string[] {
+	if ( ! errors ) {
+		return [];
 	}
-	return errors.map( formatErrors ).flat();
+	errors = toArray( errors );
+	return errors.map( ( error ) =>
+		typeof error === 'object' ? error.text : error
+	);
+}
+
+export async function saveEntity< Input extends InputEntity >(
+	input: Input,
+	schema: AnyObjectSchema,
+	save: SaveEntityFunction< Input >
+): Promise< WithStatus< EntityUpdateResponse > > {
+	const entity = ( await schema.validate( input ) ) as Input;
+	const slug = await save( entity );
+	return {
+		success: true,
+		status: 200,
+		slug,
+	};
+}
+
+export async function insertEntity< Input extends InputEntity >(
+	input: Input,
+	schema: AnyObjectSchema,
+	save: SaveEntityFunction< Input >
+): Promise< WithStatus< EntityUpdateResponse > > {
+	if ( isPlainObject( input ) && 'id' in input && !! input.id ) {
+		throw new StatusError( 'Cannot insert with ID', 400 );
+	}
+	return saveEntity( input, schema.omit( [ 'id' ] ), save );
+}
+
+export async function queryEntities(
+	query: PlainObject
+): Promise< QueryPagination > {
+	const { object, number } = await import( 'yup' );
+	return await object( {
+		offset: number().min( 0 ).default( 0 ),
+		limit: number()
+			.min( 1, 'Limit needs to be more than zero' )
+			.max( 100, 'Limit cannot exceed 100' )
+			.default( 100 ),
+	} ).validate( query, { stripUnknown: true } );
 }

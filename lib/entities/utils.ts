@@ -1,11 +1,20 @@
+import { isSafeInteger } from 'lodash';
 import { isObjectWithKeys } from 'lib/casting';
 import { CONTENTS_TYPE } from 'lib/constants';
-import { ContentDB, MetaDB } from 'lib/db/types';
-import { isInteger } from 'lodash';
-import { Entity, Id, Slug } from './types';
+import getDB from 'lib/db';
+import { upsertContent } from 'lib/db/update';
+
+import type { ContentDB, MetaDB } from 'lib/db/types';
+import type {
+	Entity,
+	EntityToRowFunction,
+	Id,
+	InputEntity,
+	Slug,
+} from './types';
 
 export function isValidId( id: number ): id is Id {
-	return isInteger( id ) && id > 0;
+	return isSafeInteger( id ) && id > 0;
 }
 
 export function isSlug( slug: string ): slug is Slug {
@@ -57,4 +66,21 @@ export function inReadonlyArray< T extends readonly string[] >(
 	fallback?: T[ number ]
 ): T[ number ] | false {
 	return types.includes( input ) ? input : fallback || false;
+}
+
+export async function saveContentEntity< Input extends InputEntity >(
+	entity: Input,
+	entityToRow: EntityToRowFunction< Input >
+): Promise< Slug > {
+	const knex = getDB();
+	let slug: Slug | undefined;
+	await knex.transaction( async ( trx ) => {
+		const row = await entityToRow( entity, trx );
+		const updatedRow = await upsertContent( row, trx );
+		slug = updatedRow.identifier as Slug;
+	} );
+	if ( ! slug ) {
+		throw new Error( 'Could not save call' );
+	}
+	return slug;
 }

@@ -4,15 +4,18 @@ import {
 	Except,
 	NonNegativeInteger,
 	Opaque,
+	Promisable,
 	SetRequired,
 	Simplify,
 } from 'type-fest';
 import { ObjectSchema } from 'yup';
 
+import type { Knex } from 'knex';
 import { DeepReplace, Nullable, RemoveNever } from 'global-types';
 import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
 import {
 	ContentDB,
+	DBMaybeInsert,
 	ImportDB,
 	LoadedRelationDB,
 	MetaDB,
@@ -101,7 +104,7 @@ interface Call extends Content, WithNotes, WithProvider {
 
 interface Claim extends Content, WithNotes, WithProvider, WithImport {
 	number: string;
-	type?: typeof CLAIM_TYPES[ number ];
+	type: typeof CLAIM_TYPES[ number ];
 	status: typeof CLAIM_STATUSES[ number ];
 	billed?: Nullable< number >;
 	cost?: Nullable< number >;
@@ -114,18 +117,18 @@ interface FileEntity extends Content, WithNotes {
 }
 
 interface Note extends Content, WithLinks {
-	description?: string;
+	description: string;
 	files?: FileEntity[];
 	due?: Nullable< Date >;
 	resolved?: boolean;
 }
 
 // Input utils
+type InputEntity = MaybeNewEntity & Partial< Pick< Entity, 'created' > >;
 type MaybeNewEntity = { id?: Id | NewId };
 type CreatedEntity = { created: Date };
 type ProviderEntity = { provider?: Except< ProviderInput, 'id' > | Id };
-type WithMaybeNewId< Input extends Entity > = MaybeNewEntity &
-	Except< Input, 'id' >;
+type WithMaybeNewId< Input > = MaybeNewEntity & Except< Input, 'id' >;
 type WithInput< Input extends Entity > = MaybeNewEntity &
 	Except<
 		Input,
@@ -154,3 +157,12 @@ type ClaimInput = Simplify<
 >;
 type FileInput = WithMaybeNewId< FileEntity > | { file: File };
 type NoteInput = Simplify< WithInput< Except< Note, 'files' > > & WithLinks >;
+
+// Functions
+type SaveEntityFunction< Input > = (
+	entity: WithMaybeNewId< Input >
+) => Promise< Slug >;
+type EntityToRowFunction< Input > = (
+	entity: WithMaybeNewId< Input >,
+	trx?: Knex.Transaction
+) => Promisable< DBMaybeInsert< ContentDB > >;
