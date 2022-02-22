@@ -8,11 +8,8 @@ import { queryAllProviders } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 
-import type {
-	PaginatedPageContext,
-	PaginatedPageProps,
-	StringKeys,
-} from 'global-types';
+import type { StringKeys } from 'global-types';
+import type { PaginatedPageContext, PaginatedPageProps } from 'pages/types';
 import type { Provider } from 'lib/entities/types';
 import type { GetStaticProps } from 'next';
 

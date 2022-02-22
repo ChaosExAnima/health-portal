@@ -14,7 +14,7 @@ import Page from 'components/page';
 import { callSchema } from 'lib/entities/schemas';
 
 import type { GetStaticProps } from 'next';
-import type { PageProps } from 'global-types';
+import type { PageProps } from 'pages/types';
 import { CallInput, WithNumberIds } from 'lib/entities/types';
 
 function NewCallPage( { title }: PageProps ) {

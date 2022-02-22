@@ -13,7 +13,7 @@ import ButtonLink from 'components/button-link';
 import Footer from 'components/footer';
 import Header from 'components/header';
 
-import type { PageProps } from 'global-types';
+import type { PageProps } from 'pages/types';
 
 type ClaimUploadPageProps = PageProps;
 

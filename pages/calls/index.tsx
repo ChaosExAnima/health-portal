@@ -24,7 +24,8 @@ import {
 import { formatDate } from 'lib/strings';
 
 import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import type { PaginatedPageProps, StringKeys } from 'global-types';
+import type { StringKeys } from 'global-types';
+import type { PaginatedPageProps } from 'pages/types';
 import type {
 	DateQuery,
 	PaginationQuery,

@@ -13,7 +13,8 @@ import { useProvidersForSelect } from 'lib/hooks';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { capitalize } from 'lib/strings';
 
-import type { PaginatedPageProps, StringKeys } from 'global-types';
+import type { StringKeys } from 'global-types';
+import type { PaginatedPageProps } from 'pages/types';
 import type { GetStaticPropsContext } from 'next';
 import type { Appeal } from 'lib/entities/types';
 

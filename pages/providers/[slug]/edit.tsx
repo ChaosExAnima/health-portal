@@ -8,7 +8,7 @@ import {
 } from './index';
 
 import type { GetStaticPaths, GetStaticProps } from 'next';
-import type { SinglePageProps } from 'global-types';
+import type { SinglePageProps } from 'pages/types';
 import type { Provider } from 'lib/entities/types';
 import type { ActionItem } from 'components/header';
 

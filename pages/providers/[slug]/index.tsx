@@ -9,7 +9,7 @@ import { rowToProvider } from 'lib/entities/provider';
 
 import type { SetRequired } from 'type-fest';
 import type { GetStaticPathsResult } from 'next';
-import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
 import type { Provider } from 'lib/entities/types';
 
 export type ProviderWithAdditions = SetRequired< Provider, 'claims' | 'notes' >;

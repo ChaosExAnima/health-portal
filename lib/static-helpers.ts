@@ -8,11 +8,8 @@ import type {
 	GetStaticPropsContext,
 } from 'next';
 import type { Knex } from 'knex';
-import type {
-	GetSinglePageResult,
-	Serialized,
-	SinglePageProps,
-} from 'global-types';
+import type { Serialized } from 'global-types';
+import type { GetSinglePageResult, SinglePageProps } from 'pages/types';
 import type { DBCommonFields } from 'lib/db/types';
 import type { Entity } from 'lib/entities/types';
 

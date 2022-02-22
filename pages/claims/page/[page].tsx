@@ -10,7 +10,7 @@ import Claims, {
 } from '../index';
 import { queryClaims } from 'lib/db/helpers';
 import { getPageNumber } from 'lib/static-helpers';
-import { PaginatedPageContext } from 'global-types';
+import type { PaginatedPageContext } from 'pages/types';
 
 export async function getStaticPaths(): Promise< GetStaticPathsResult > {
 	const claims = await queryClaims().select( 'identifier' );

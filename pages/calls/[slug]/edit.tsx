@@ -7,7 +7,7 @@ import {
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import type { GetStaticPaths } from 'next';
-import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
 import type { Call, CallInput, WithNumberIds } from 'lib/entities/types';
 import Page from 'components/page';
 import {

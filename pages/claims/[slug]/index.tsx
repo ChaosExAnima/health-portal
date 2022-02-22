@@ -16,7 +16,7 @@ import { formatClaimStatus, formatCurrency, formatDate } from 'lib/strings';
 
 import type { GetStaticPathsResult } from 'next';
 import type { SetRequired } from 'type-fest';
-import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
 import type { Claim } from 'lib/entities/types';
 
 export type ClaimWithAdditions = SetRequired<

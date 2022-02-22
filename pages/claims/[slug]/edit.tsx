@@ -20,7 +20,7 @@ import Link from 'components/link';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import type { GetStaticPaths } from 'next';
-import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
 
 export default function ClaimPageEdit( {
 	slug,

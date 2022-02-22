@@ -1,6 +1,6 @@
 import Page from 'components/page';
 
-import type { PageProps } from 'global-types';
+import { PageProps } from 'pages/types';
 
 type ClaimNewPageProps = PageProps;
 

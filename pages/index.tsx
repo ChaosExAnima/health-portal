@@ -10,7 +10,7 @@ import { extractCount, extractSum } from 'lib/db/utils';
 import { queryAllMeta, queryClaims } from 'lib/db/helpers';
 import { formatCurrency } from 'lib/strings';
 
-import type { PageProps } from 'global-types';
+import type { PageProps } from 'pages/types';
 import type { Claim } from 'lib/entities/types';
 
 type HomeProps = PageProps & {

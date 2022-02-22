@@ -7,7 +7,7 @@ import { queryAppeals, queryRelatedOfType } from 'lib/db/helpers';
 
 import type { GetStaticPathsResult } from 'next';
 import type { SetRequired } from 'type-fest';
-import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
 import type { Appeal } from 'lib/entities/types';
 
 type AppealWithAdditions = SetRequired< Appeal, 'claims' | 'notes' >;

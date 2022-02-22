@@ -27,7 +27,8 @@ import {
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 
 import type { SetRequired } from 'type-fest';
-import type { PageProps, StringKeys } from 'global-types';
+import type { StringKeys } from 'global-types';
+import type { PageProps } from 'pages/types';
 import type { Claim, Provider } from 'lib/entities/types';
 
 export type ClaimsProps = PageProps & {

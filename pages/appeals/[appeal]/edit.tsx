@@ -8,7 +8,7 @@ import { Appeal } from 'lib/entities/types';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import type { GetStaticPaths } from 'next';
-import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
 
 const AppealEditPage: React.FC< SinglePageProps< Appeal > > = () => {
 	return (

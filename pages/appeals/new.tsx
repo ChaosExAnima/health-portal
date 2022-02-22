@@ -1,6 +1,6 @@
 import { Box, Container } from '@mui/material';
 
-import type { PageProps } from 'global-types';
+import type { PageProps } from 'pages/types';
 
 const NewAppealPage: React.FC< PageProps > = () => {
 	return (

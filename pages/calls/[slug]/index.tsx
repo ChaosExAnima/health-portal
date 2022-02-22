@@ -20,7 +20,7 @@ import type {
 	GetSinglePageContext,
 	GetSinglePageResult,
 	SinglePageProps,
-} from 'global-types';
+} from 'pages/types';
 
 type CallWithAdditions = SetRequired< Call, 'notes' | 'reps' >;
 
