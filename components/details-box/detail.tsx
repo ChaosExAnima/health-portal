@@ -13,7 +13,7 @@ export default function Detail( {
 			<Typography
 				variant="body1"
 				component="dt"
-				minWidth="6em"
+				minWidth="8em"
 				color="grey.500"
 			>
 				{ label }

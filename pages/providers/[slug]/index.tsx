@@ -4,20 +4,21 @@ import { Container } from '@mui/material';
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import { Detail, DetailsBox } from 'components/details-box';
+import { entityDateToTS } from 'lib/casting';
 import { queryAllProviders, queryContentType } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 
+import type { GetStaticPathsResult, GetStaticPropsContext } from 'next';
 import type { SetRequired } from 'type-fest';
-import type { GetStaticPathsResult } from 'next';
-import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
+import type { GetSinglePageResult, SinglePageProps } from 'pages/types';
 import type { Provider } from 'lib/entities/types';
 
 export type ProviderWithAdditions = SetRequired< Provider, 'claims' | 'notes' >;
 
-const ProviderPage: React.FC< SinglePageProps< ProviderWithAdditions > > = ( {
+function ProviderPage( {
 	slug,
 	record,
-} ) => {
+}: SinglePageProps< ProviderWithAdditions > ) {
 	return (
 		<Container maxWidth="md">
 			<Breadcrumbs
@@ -46,7 +47,7 @@ const ProviderPage: React.FC< SinglePageProps< ProviderWithAdditions > > = ( {
 			</DetailsBox>
 		</Container>
 	);
-};
+}
 
 export async function getStaticPaths(): Promise< GetStaticPathsResult > {
 	const claims = await queryAllProviders().select( 'slug' );
@@ -56,9 +57,9 @@ export async function getStaticPaths(): Promise< GetStaticPathsResult > {
 	};
 }
 
-export const getStaticProps: GetSinglePageProps< ProviderWithAdditions > = async ( {
+export async function getStaticProps( {
 	params,
-} ) => {
+}: GetStaticPropsContext ): GetSinglePageResult< ProviderWithAdditions > {
 	if ( ! params ) {
 		return {
 			notFound: true,
@@ -75,7 +76,7 @@ export const getStaticProps: GetSinglePageProps< ProviderWithAdditions > = async
 		.andWhere( 'providerId', row.id )
 		.limit( 10 )
 		.orderBy( 'created', 'desc' );
-	const record = rowToProvider( row, { relations } );
+	const record = entityDateToTS( rowToProvider( row, { relations } ) );
 	return {
 		props: {
 			id: row.id,
@@ -84,6 +85,6 @@ export const getStaticProps: GetSinglePageProps< ProviderWithAdditions > = async
 			record,
 		},
 	};
-};
+}
 
 export default ProviderPage;

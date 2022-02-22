@@ -4,7 +4,7 @@ import {
 	GetStaticPropsResult,
 } from 'next';
 import { Entity } from 'lib/entities/types';
-import { Serialized } from 'global-types';
+import { Timestamp } from 'global-types';
 
 // Contexts
 type PaginatedPageContext = {
@@ -13,6 +13,8 @@ type PaginatedPageContext = {
 type SinglePageContext = {
 	slug: string;
 };
+type GetSinglePageContext = GetStaticPropsContext< SinglePageContext >;
+
 // Props
 type PageProps = {
 	title: string;
@@ -32,7 +34,8 @@ type GetSinglePageProps< T extends Entity > = GetStaticProps<
 	SinglePageProps< T >,
 	SinglePageContext
 >;
-type GetSinglePageContext = GetStaticPropsContext< SinglePageContext >;
+
+// Returns
 type GetSinglePageResult< T extends Entity > = Promise<
-	GetStaticPropsResult< Serialized< T > >
+	GetStaticPropsResult< Replace< T, Date, Timestamp > >
 >;

@@ -4,20 +4,22 @@ import { Container, Link } from '@mui/material';
 import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
 import DataTable, { DataTableColumn } from 'components/data-table';
+import { entityDateToTS, entityTStoDate } from 'lib/casting';
 import { queryAllProviders } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 
+import type { GetStaticPropsContext } from 'next';
 import type { StringKeys } from 'global-types';
-import type { PaginatedPageContext, PaginatedPageProps } from 'pages/types';
+import type { PaginatedPageProps } from 'pages/types';
 import type { Provider } from 'lib/entities/types';
-import type { GetStaticProps } from 'next';
 
-const ProvidersPage: React.FC< PaginatedPageProps< Provider > > = ( {
+export default function ProvidersPage( {
 	currentPage,
 	totalPages,
-	records,
-} ) => {
+	records: rawRecords,
+}: PaginatedPageProps< Provider > ) {
+	const records = rawRecords.map( entityTStoDate ) as typeof rawRecords;
 	const actions: ActionItem[] = [
 		{
 			href: '/providers/new',
@@ -58,12 +60,9 @@ const ProvidersPage: React.FC< PaginatedPageProps< Provider > > = ( {
 			<Footer wrap />
 		</>
 	);
-};
+}
 
-export const getStaticProps: GetStaticProps<
-	PaginatedPageProps< Provider >,
-	PaginatedPageContext
-> = async ( { params } ) => {
+export async function getStaticProps( { params }: GetStaticPropsContext ) {
 	// Pagination.
 	const pageSize = 20;
 	const currentPage = getPageNumber( params?.page );
@@ -76,7 +75,10 @@ export const getStaticProps: GetStaticProps<
 	const calls = await queryAllProviders()
 		.limit( pageSize )
 		.offset( currentPage * pageSize );
-	const records = calls.map( ( row ) => rowToProvider( row ) );
+	const records = calls.map( ( row ) =>
+		entityDateToTS( rowToProvider( row ) )
+	);
+
 	return {
 		props: {
 			title: 'Providers',
@@ -85,6 +87,4 @@ export const getStaticProps: GetStaticProps<
 			records,
 		},
 	};
-};
-
-export default ProvidersPage;
+}

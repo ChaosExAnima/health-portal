@@ -1,4 +1,5 @@
-import { isDate, isObjectLike, toSafeInteger } from 'lodash';
+import { toSafeInteger } from 'lodash';
+import { entityDateToTS } from './casting';
 
 import type {
 	GetStaticPaths,
@@ -8,7 +9,6 @@ import type {
 	GetStaticPropsContext,
 } from 'next';
 import type { Knex } from 'knex';
-import type { Serialized } from 'global-types';
 import type { GetSinglePageResult, SinglePageProps } from 'pages/types';
 import type { DBCommonFields } from 'lib/db/types';
 import type { Entity } from 'lib/entities/types';
@@ -76,20 +76,7 @@ export async function staticPropsEdit<
 	if ( 'props' in rootProps ) {
 		rootProps.props.originalTitle = rootProps.props.title;
 		rootProps.props.title = `Editing ${ rootProps.props.title }`;
+		rootProps.props.record = entityDateToTS( rootProps.props.record ) as E;
 	}
 	return rootProps;
-}
-
-export function serialize< T >( object: T ): Serialized< T > {
-	if ( Array.isArray( object ) ) {
-		return object.map( serialize );
-	} else if ( isDate( object ) ) {
-		return object.toDateString();
-	} else if ( isObjectLike( object ) ) {
-		for ( const key in object ) {
-			object[ key ] = serialize( object[ key ] );
-		}
-		return object;
-	}
-	return object;
 }
