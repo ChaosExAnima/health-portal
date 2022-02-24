@@ -90,20 +90,10 @@ export interface FormTermFieldChipsProps extends MuiChipProps {
 type WithoutFormValues< I > = Omit< I, 'value' | 'onChange' | 'renderInput' >;
 export interface FormDateFieldProps< S >
 	extends FormBaseFieldProps< S >,
-		WithoutFormValues< MuiDatePickerProps > {
-	type?: 'date';
-}
+		WithoutFormValues< MuiDatePickerProps > {}
 export interface FormTimeFieldProps< S >
 	extends FormBaseFieldProps< S >,
-		WithoutFormValues< MuiTimePickerProps > {
-	type: 'time';
-}
+		WithoutFormValues< MuiTimePickerProps > {}
 export interface FormDateTimeFieldProps< S >
 	extends FormBaseFieldProps< S >,
-		WithoutFormValues< MuiDateTimePickerProps > {
-	type: 'datetime';
-}
-export type FormDateTimeAnyFieldProps< S > =
-	| FormDateFieldProps< S >
-	| FormTimeFieldProps< S >
-	| FormDateTimeFieldProps< S >;
+		WithoutFormValues< MuiDateTimePickerProps > {}

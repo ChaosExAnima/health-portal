@@ -1,8 +1,15 @@
-import { CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
 import { capitalize } from 'lodash';
 import * as yup from 'yup';
 
 import {
+	APPEAL_STATUSES,
+	CLAIM_STATUSES,
+	CLAIM_STATUS_TYPE,
+	CLAIM_TYPES,
+	CLAIM_TYPES_TYPE,
+} from 'lib/constants';
+
+import type {
 	AppealInput,
 	CallInput,
 	ClaimInput,
@@ -45,7 +52,7 @@ export const providerSchema: ToSchema< ProviderInput > = yup
 export const noteSchema: ToSchema< NoteInput > = yup
 	.object( {
 		id: idSchema,
-		description: stringSchema,
+		description: stringSchema.default( '' ).required(),
 		due: yup.date(),
 		resolved: yup.bool(),
 		links: linksSchema,
@@ -56,7 +63,7 @@ export const appealSchema: ToSchema< AppealInput > = yup
 	.object( {
 		id: idSchema,
 		name: stringSchema.required(),
-		status: stringSchema.oneOf( [ 'foo' ] ).required(),
+		status: stringSchema.oneOf( APPEAL_STATUSES ).required(),
 		notes: schemaNewOrId( noteSchema, 'note' ),
 		provider: schemaNewOrId( providerSchema, 'provider' ),
 		links: linksSchema,
@@ -84,9 +91,9 @@ export const claimSchema: ToSchema< ClaimInput > = yup
 	.object( {
 		id: idSchema,
 		created: createdSchema.required(),
-		number: stringSchema.required(),
-		status: yup.mixed().oneOf( [ ...CLAIM_STATUSES ] ),
-		type: yup.mixed().oneOf( [ ...CLAIM_TYPES ] ),
+		number: stringSchema.uppercase().required(),
+		status: yup.mixed< CLAIM_STATUS_TYPE >().oneOf( CLAIM_STATUSES ),
+		type: yup.mixed< CLAIM_TYPES_TYPE >().oneOf( CLAIM_TYPES ),
 		billed: yup.number(),
 		cost: yup.number(),
 		provider: schemaNewOrId( providerSchema, 'provider' ).required(),
@@ -96,19 +103,11 @@ export const claimSchema: ToSchema< ClaimInput > = yup
 
 export const fileSchema: ToSchema< FileInput > = yup
 	.object( {
-		id: idSchema.when( 'file', {
-			is: ( file: unknown ) => !! file,
-			then: ( schema ) => schema.strip(),
-		} ),
-		file: yup.mixed().nullable().default( null ),
-		url: stringSchema.url().when( 'file', {
-			is: null,
-			then: ( schema ) => schema.required(),
-		} ),
-		source: stringSchema.when( 'file', {
-			is: null,
-			then: ( schema ) => schema.required(),
-		} ),
+		id: idSchema,
+		slug: slugSchema.required(),
+		created: createdSchema,
+		url: stringSchema.url().required(),
+		source: stringSchema.required(),
 	} )
 	.required();
 
@@ -122,8 +121,10 @@ function schemaNewOrId( schema: yup.AnyObjectSchema, type = 'entity' ) {
 		.test(
 			'new or saved',
 			'${path} is not a valid ID or a new ' + type,
-			async ( value ) =>
-				( await savedIdSchema.isValid( value ) ) ||
-				( await schema.isValid( value ) )
+			( value ) =>
+				Promise.any( [
+					savedIdSchema.isValid( value ),
+					schema.isValid( value ),
+				] )
 		);
 }

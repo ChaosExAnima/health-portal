@@ -33,7 +33,6 @@ function NewCallPage( { title }: PageProps ) {
 						control={ control }
 						name="created"
 						label="Call Date"
-						type="datetime"
 						required
 						disableFuture
 						showTodayButton

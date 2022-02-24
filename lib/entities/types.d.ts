@@ -11,7 +11,7 @@ import {
 import { ObjectSchema } from 'yup';
 
 import type { Knex } from 'knex';
-import { DeepReplace, Nullable, RemoveNever } from 'global-types';
+import { Replace, Nullable, RemoveNever } from 'global-types';
 import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
 import {
 	ContentDB,
@@ -75,10 +75,10 @@ abstract interface Content extends Entity {
 interface Provider extends Entity, WithNotes, WithImport {
 	slug: Slug;
 	name: string;
-	address?: Nullable< string >;
-	phone?: Nullable< string >;
-	email?: Nullable< string >;
-	website?: Nullable< string >;
+	address?: string;
+	phone?: string;
+	email?: string;
+	website?: string;
 	claims?: Claim[];
 }
 
@@ -134,14 +134,12 @@ type WithInput< Input extends Entity > = MaybeNewEntity &
 		Input,
 		'id' | 'created' | 'slug' | 'import' | 'notes' | 'provider' | 'claims'
 	>;
-type WithNumberIds< Input > = DeepReplace<
+type WithNumberIds< Input > = Replace<
 	Input,
 	Id | NewId | undefined,
 	number | undefined
 >;
-type ToSchema< Input > = ObjectSchema<
-	Simplify< WithNumberIds< Required< Input > > >
->;
+type ToSchema< Input > = ObjectSchema< Simplify< WithNumberIds< Input > > >;
 
 // Entity inputs
 type ProviderInput = Simplify< WithInput< Provider > & { slug?: string } >;
@@ -155,7 +153,8 @@ type ClaimInput = Simplify<
 		Required< ProviderEntity > &
 		CreatedEntity
 >;
-type FileInput = WithMaybeNewId< FileEntity > | { file: File };
+type FileInput = WithMaybeNewId< FileEntity >;
+type UploadInput = { file: File };
 type NoteInput = Simplify< WithInput< Except< Note, 'files' > > & WithLinks >;
 
 // Functions
