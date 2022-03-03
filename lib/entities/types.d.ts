@@ -134,11 +134,7 @@ type WithInput< Input extends Entity > = MaybeNewEntity &
 		Input,
 		'id' | 'created' | 'slug' | 'import' | 'notes' | 'provider' | 'claims'
 	>;
-type WithNumberIds< Input > = Replace<
-	Input,
-	Id | NewId | undefined,
-	number | undefined
->;
+type WithNumberIds< Input > = Replace< Input, Id | NewId, number >;
 type ToSchema< Input > = ObjectSchema< Simplify< WithNumberIds< Input > > >;
 
 // Entity inputs

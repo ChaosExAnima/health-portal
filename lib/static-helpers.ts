@@ -9,7 +9,7 @@ import type {
 	GetStaticPropsContext,
 } from 'next';
 import type { Knex } from 'knex';
-import type { GetSinglePageResult, SinglePageProps } from 'pages/types';
+import type { GetSingleEditPageResult, SinglePageProps } from 'pages/types';
 import type { DBCommonFields } from 'lib/db/types';
 import type { Entity } from 'lib/entities/types';
 
@@ -71,12 +71,18 @@ export async function staticPropsEdit<
 >(
 	root: GetStaticProps< T >,
 	context: GetStaticPropsContext
-): GetSinglePageResult< E > {
+): GetSingleEditPageResult< E > {
 	const rootProps = await root( context );
-	if ( 'props' in rootProps ) {
-		rootProps.props.originalTitle = rootProps.props.title;
-		rootProps.props.title = `Editing ${ rootProps.props.title }`;
-		rootProps.props.record = entityDateToTS( rootProps.props.record ) as E;
+	if ( ! ( 'props' in rootProps ) ) {
+		return rootProps;
 	}
-	return rootProps;
+	return {
+		...rootProps,
+		props: {
+			...rootProps.props,
+			originalTitle: rootProps.props.title,
+			title: `Editing ${ rootProps.props.title }`,
+			record: entityDateToTS( rootProps.props.record ),
+		},
+	};
 }

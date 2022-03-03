@@ -8,6 +8,7 @@ import DataTable, {
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
 import ProviderLink from 'components/provider-link';
+import { entityDateToTS } from 'lib/casting';
 import {
 	filterQuery,
 	getIdColumn,
@@ -16,16 +17,12 @@ import {
 } from 'lib/db/helpers';
 import { rowToCall } from 'lib/entities/call';
 import { useProvidersForSelect } from 'lib/hooks';
-import {
-	getPageNumber,
-	getTotalPageNumber,
-	serialize,
-} from 'lib/static-helpers';
+import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { formatDate } from 'lib/strings';
 
 import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import type { StringKeys } from 'global-types';
-import type { PaginatedPageProps } from 'pages/types';
+import type { GetPaginatedPageResult, PaginatedPageProps } from 'pages/types';
 import type {
 	DateQuery,
 	PaginationQuery,
@@ -113,7 +110,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 
 export async function getServerSideProps(
 	context: GetServerSidePropsContext
-): Promise< GetServerSidePropsResult< CallsProps > > {
+): GetPaginatedPageResult< Call > {
 	const { params, query } = context;
 	// Pagination.
 	const pageSize = 20;
@@ -131,7 +128,7 @@ export async function getServerSideProps(
 			title: 'Calls',
 			currentPage,
 			totalPages,
-			records: serialize( records ),
+			records: records.map( entityDateToTS ),
 			query,
 		},
 	};

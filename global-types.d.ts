@@ -11,19 +11,10 @@ type Timestamp = Opaque< string, 'Timestamp' >;
 type Nullable< T > = T | null;
 type StringKeys< T > = Extract< keyof T, string >;
 type MaybeArray< T > = T | T[];
-type Replace< T, From, To > = T extends object
-	? {
-			[ key in keyof T ]: T[ key ] extends From
-				? To
-				: Replace< T[ key ], From, To >;
-	  }
+type Replace< T, A, B > = T extends A
+	? B
+	: T extends {}
+	? { [ K in keyof T ]: Replace< T[ K ], A, B > }
 	: T;
-type DeepReplace< T, From, To > = T extends ( ...args: any[] ) => any
-	? T
-	: {
-			[ K in keyof T ]: [ T[ K ], From ] extends [ From, T[ K ] ]
-				? To
-				: DeepReplace< T[ K ], From, To >;
-	  };
 
 type onChangeFunc = ( value: string ) => void;

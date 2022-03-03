@@ -4,7 +4,8 @@ import {
 	GetStaticPropsResult,
 } from 'next';
 import { Entity } from 'lib/entities/types';
-import { Timestamp } from 'global-types';
+import { Timestamp, Replace } from 'global-types';
+import { ParsedUrlQuery } from 'querystring';
 
 // Contexts
 type PaginatedPageContext = {
@@ -23,12 +24,15 @@ type PaginatedPageProps< T extends Entity > = PageProps & {
 	currentPage: number;
 	totalPages: number;
 	records: T[];
+	query?: ParsedUrlQuery;
 };
 type SinglePageProps< T extends Entity > = PageProps & {
 	id: number;
 	slug: string;
-	originalTitle?: string;
 	record: T;
+};
+type SingleEditPageProps< T extends Entity > = SinglePageProps< T > & {
+	originalTitle: string;
 };
 type GetSinglePageProps< T extends Entity > = GetStaticProps<
 	SinglePageProps< T >,
@@ -36,6 +40,15 @@ type GetSinglePageProps< T extends Entity > = GetStaticProps<
 >;
 
 // Returns
-type GetSinglePageResult< T extends Entity > = Promise<
-	GetStaticPropsResult< Replace< T, Date, Timestamp > >
+type GetPaginatedPageResult< T extends Entity > = Promise<
+	GetStaticPropsResult< PaginatedPageProps< WithTimestamps< T > > >
 >;
+type GetSinglePageResult< T extends Entity > = Promise<
+	GetStaticPropsResult< SinglePageProps< WithTimestamps< T > > >
+>;
+type GetSingleEditPageResult< T extends Entity > = Promise<
+	GetStaticPropsResult< SingleEditPageProps< WithTimestamps< T > > >
+>;
+
+// Helpers
+type WithTimestamps< I > = Replace< I, Date, Timestamp >;

@@ -7,7 +7,7 @@ import {
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import type { GetStaticPaths } from 'next';
-import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
+import type { GetSinglePageProps, SingleEditPageProps } from 'pages/types';
 import type { Call, CallInput, WithNumberIds } from 'lib/entities/types';
 import Page from 'components/page';
 import {
@@ -21,15 +21,15 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { callSchema } from 'lib/entities/schemas';
 
-function CallEditPage( { record, originalTitle }: SinglePageProps< Call > ) {
+function CallEditPage( {
+	record,
+	originalTitle,
+}: SingleEditPageProps< Call > ) {
 	const { control, handleSubmit } = useForm< WithNumberIds< CallInput > >( {
 		resolver: yupResolver( callSchema ),
 		defaultValues: {
 			...record,
-			provider: {
-				id: record.provider?.id,
-				label: record.provider?.name,
-			},
+			provider: record.provider?.id,
 		},
 	} );
 	return (
@@ -39,7 +39,6 @@ function CallEditPage( { record, originalTitle }: SinglePageProps< Call > ) {
 					control={ control }
 					name="created"
 					label="Call Date"
-					type="datetime"
 					required
 					disableFuture
 					showTodayButton

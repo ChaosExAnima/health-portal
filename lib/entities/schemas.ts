@@ -9,7 +9,7 @@ import {
 	CLAIM_TYPES_TYPE,
 } from 'lib/constants';
 
-import type {
+import {
 	AppealInput,
 	CallInput,
 	ClaimInput,
@@ -24,7 +24,7 @@ import type {
 export const stringSchema = yup.string().trim();
 
 // Fields
-export const idSchema = yup.number().integer().min( 0 ).default( 0 );
+export const idSchema = yup.number().integer().min( 1 );
 export const savedIdSchema = idSchema.positive().required();
 export const slugSchema = yup.string< Slug >().trim();
 export const createdSchema = yup.date().default( () => new Date() );
@@ -87,7 +87,7 @@ export const callSchema: ToSchema< CallInput > = yup
 	} )
 	.required();
 
-export const claimSchema: ToSchema< ClaimInput > = yup
+export const claimSchema = yup
 	.object( {
 		id: idSchema,
 		created: createdSchema.required(),
@@ -112,19 +112,23 @@ export const fileSchema: ToSchema< FileInput > = yup
 	.required();
 
 // Utils
-function schemaNewOrId( schema: yup.AnyObjectSchema, type = 'entity' ) {
+function schemaNewOrId< Schema extends yup.AnyObjectSchema >(
+	schema: Schema,
+	type = 'entity'
+) {
 	return yup
 		.mixed<
-			| yup.InferType< typeof savedIdSchema >
-			| yup.InferType< typeof schema >
+			yup.InferType< typeof savedIdSchema > | yup.InferType< Schema >
 		>()
 		.test(
 			'new or saved',
 			'${path} is not a valid ID or a new ' + type,
-			( value ) =>
-				Promise.any( [
+			async ( value ) => {
+				const [ isId, isSchema ] = await Promise.all( [
 					savedIdSchema.isValid( value ),
 					schema.isValid( value ),
-				] )
+				] );
+				return isId || isSchema;
+			}
 		);
 }

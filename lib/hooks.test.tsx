@@ -57,12 +57,12 @@ describe( 'useProvidersForSelect', () => {
 				{
 					slug: 'test' as Slug,
 					name: 'Test Provider',
-					address: null,
-					phone: null,
-					website: null,
-					email: null,
+					address: undefined,
+					phone: undefined,
+					website: undefined,
+					email: undefined,
 					id: 1 as Id,
-					created: '2022-01-01',
+					created: new Date( '2022-01-01' ),
 				},
 			],
 		};

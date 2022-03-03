@@ -7,10 +7,10 @@ import {
 } from './index';
 
 import type { GetStaticPaths } from 'next';
-import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
+import type { GetSinglePageProps, SingleEditPageProps } from 'pages/types';
 
-export default function AppealEditPage( { title }: SinglePageProps< Appeal > ) {
-	return <Page title={ title }>TODO</Page>;
+export default function AppealEditPage( { originalTitle }: SingleEditPageProps< Appeal > ) {
+	return <Page title={ originalTitle }>TODO</Page>;
 }
 
 export const getStaticProps: GetSinglePageProps< Appeal > = async ( context ) =>

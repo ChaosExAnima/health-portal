@@ -27,6 +27,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "incremental": true
+	// "noErrorTruncation": true
   },
   "include": [
     "next-env.d.ts",

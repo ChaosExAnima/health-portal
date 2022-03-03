@@ -12,7 +12,6 @@ import {
 	queryRelatedProviders,
 } from 'lib/db/helpers';
 import { Call } from 'lib/entities/types';
-import { serialize } from 'lib/static-helpers';
 
 import type { GetStaticPathsResult } from 'next';
 import type { SetRequired } from 'type-fest';
@@ -21,6 +20,7 @@ import type {
 	GetSinglePageResult,
 	SinglePageProps,
 } from 'pages/types';
+import { entityDateToTS } from 'lib/casting';
 
 type CallWithAdditions = SetRequired< Call, 'notes' | 'reps' >;
 
@@ -95,7 +95,7 @@ export async function getStaticProps( {
 			id: call.id,
 			slug: call.identifier,
 			title,
-			record: serialize( rawRecord ),
+			record: entityDateToTS( rawRecord ),
 		},
 	};
 }

@@ -46,18 +46,18 @@ interface LoadedRelationDB extends RelationDB, ContentDB {}
 interface ProviderDB extends DBCommonFields {
 	slug: string;
 	name: string;
-	phone?: Nullable< string >;
-	address?: Nullable< string >;
-	website?: Nullable< string >;
-	email?: Nullable< string >;
-	importId?: Nullable< ImportDB[ 'id' ] >;
+	phone?: string;
+	address?: string;
+	website?: string;
+	email?: string;
+	importId?: ImportDB[ 'id' ];
 }
 
 interface ImportDB extends DBCommonFields {
 	hash: string;
-	inserted?: Nullable< number >;
-	updated?: Nullable< number >;
-	fileId?: Nullable< ContentDB[ 'id' ] >;
+	inserted?: number;
+	updated?: number;
+	fileId?: ContentDB[ 'id' ];
 }
 
 declare module 'knex/types/tables' {

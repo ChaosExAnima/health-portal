@@ -4,7 +4,7 @@ import { Container } from '@mui/material';
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import { Detail, DetailsBox } from 'components/details-box';
-import { entityDateToTS } from 'lib/casting';
+import { entityDateToTS, fromArray } from 'lib/casting';
 import { queryAllProviders, queryContentType } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 
@@ -65,7 +65,12 @@ export async function getStaticProps( {
 			notFound: true,
 		};
 	}
-	const { slug } = params;
+	const slug = fromArray( params.slug );
+	if ( ! slug ) {
+		return {
+			notFound: true,
+		};
+	}
 	const row = await queryAllProviders().where( 'slug', slug ).first();
 	if ( ! row ) {
 		return {

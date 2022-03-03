@@ -1,10 +1,5 @@
-import { DeepReplace, MaybeArray, PlainObject, Timestamp } from 'global-types';
-import {
-	isDate,
-	isPlainObject as isPlainObjectLodash,
-	isSafeInteger,
-	toNumber,
-} from 'lodash';
+import { MaybeArray, PlainObject, Replace, Timestamp } from 'global-types';
+import { isDate, isPlainObject as isPlainObjectLodash, toNumber } from 'lodash';
 import { Primitive } from 'type-fest';
 
 export function toFloat( input: unknown ): number {
@@ -49,7 +44,7 @@ export function entityDateToTS< T >( object: T ) {
 		const value = object[ key ];
 		tsObject[ key ] = isDate( value ) ? dateToTS( value ) : value;
 	}
-	return tsObject as DeepReplace< T, Date, Timestamp >;
+	return tsObject as Replace< T, Date, Timestamp >;
 }
 
 export function entityTStoDate( object: unknown ) {

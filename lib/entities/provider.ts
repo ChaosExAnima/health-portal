@@ -123,7 +123,7 @@ export function providerToRow(
 		...fields,
 		created: new Date(),
 		slug: slug ?? slugify( entity.name ),
-		importId: importField?.id ?? null,
+		importId: importField?.id,
 	};
 }
 
