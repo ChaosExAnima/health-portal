@@ -77,5 +77,8 @@
   "resolutions": {
     "fs-capacitor": "^6.2.0"
   },
-  "prettier": "@wordpress/prettier-config"
+  "prettier": "@wordpress/prettier-config",
+  "volta": {
+    "node": "17.6.0"
+  }
 }
