@@ -9,9 +9,8 @@ import {
 	Simplify,
 } from 'type-fest';
 import { ObjectSchema } from 'yup';
+import { Knex } from 'knex';
 
-import type { Knex } from 'knex';
-import { Replace, Nullable, RemoveNever } from 'global-types';
 import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
 import {
 	ContentDB,
@@ -21,11 +20,13 @@ import {
 	MetaDB,
 	ProviderDB,
 } from 'lib/db/types';
+import { Replace, Nullable, RemoveNever } from 'global-types';
 
 // Opaque types
 type Id = Opaque< number, 'id' >;
 type NewId = Opaque< 0, 'NewId' >;
 type Slug = Opaque< string, 'slug' >;
+type DateString = Opaque< string, 'date' >;
 
 // Additions
 type EntityAdditions = {
@@ -66,7 +67,7 @@ type WithRelationAdditions< A extends EntityAdditions > = SetRequired<
 // Entity types
 abstract interface Entity {
 	id: Id;
-	created: Date;
+	created: DateString;
 }
 abstract interface Content extends Entity {
 	slug: Slug;
@@ -119,14 +120,14 @@ interface FileEntity extends Content, WithNotes {
 interface Note extends Content, WithLinks {
 	description: string;
 	files?: FileEntity[];
-	due?: Nullable< Date >;
+	due?: DateString;
 	resolved?: boolean;
 }
 
 // Input utils
 type InputEntity = MaybeNewEntity & Partial< Pick< Entity, 'created' > >;
 type MaybeNewEntity = { id?: Id | NewId };
-type CreatedEntity = { created: Date };
+type CreatedEntity = { created: DateString };
 type ProviderEntity = { provider?: Except< ProviderInput, 'id' > | Id };
 type WithMaybeNewId< Input > = MaybeNewEntity & Except< Input, 'id' >;
 type WithInput< Input extends Entity > = MaybeNewEntity &
