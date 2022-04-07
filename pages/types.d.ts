@@ -17,23 +17,23 @@ type SinglePageContext = {
 type GetSinglePageContext = GetStaticPropsContext< SinglePageContext >;
 
 // Props
-type PageProps = {
+interface PageProps {
 	title: string;
-};
-type PaginatedPageProps< T extends Entity > = PageProps & {
+}
+interface PaginatedPageProps< T extends Entity > extends PageProps {
 	currentPage: number;
 	totalPages: number;
 	records: T[];
 	query?: ParsedUrlQuery;
-};
-type SinglePageProps< T extends Entity > = PageProps & {
+}
+interface SinglePageProps< T extends Entity > extends PageProps {
 	id: number;
 	slug: string;
 	record: T;
-};
-type SingleEditPageProps< T extends Entity > = SinglePageProps< T > & {
+}
+interface SingleEditPageProps< T extends Entity > extends SinglePageProps< T > {
 	originalTitle: string;
-};
+}
 type GetSinglePageProps< T extends Entity > = GetStaticProps<
 	SinglePageProps< T >,
 	SinglePageContext
@@ -44,10 +44,10 @@ type GetPaginatedPageResult< T extends Entity > = Promise<
 	GetStaticPropsResult< PaginatedPageProps< WithTimestamps< T > > >
 >;
 type GetSinglePageResult< T extends Entity > = Promise<
-	GetStaticPropsResult< SinglePageProps< WithTimestamps< T > > >
+	GetStaticPropsResult< SinglePageProps< T > >
 >;
 type GetSingleEditPageResult< T extends Entity > = Promise<
-	GetStaticPropsResult< SingleEditPageProps< WithTimestamps< T > > >
+	GetStaticPropsResult< SingleEditPageProps< T > >
 >;
 
 // Helpers
