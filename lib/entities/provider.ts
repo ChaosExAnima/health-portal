@@ -8,7 +8,7 @@ import { slugify } from 'lib/strings';
 import { rowToClaim } from './claim';
 import rowToImport from './import';
 import { rowToNote } from './note';
-import { isEntity, relatedOfType } from './utils';
+import { dateToString, isEntity, relatedOfType } from './utils';
 
 import type { Knex } from 'knex';
 import type { SetRequired } from 'type-fest';
@@ -99,7 +99,7 @@ export function rowToProvider< A extends ProviderAdditions >(
 		...omit( row, 'importId', 'slug', 'id' ),
 		id: row.id as Id,
 		slug: row.slug as Slug,
-		created: row.created,
+		created: dateToString( row.created ),
 	};
 
 	const { import: importObj, relations } = additions;

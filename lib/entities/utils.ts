@@ -6,6 +6,7 @@ import { upsertContent } from 'lib/db/update';
 
 import type { ContentDB, MetaDB } from 'lib/db/types';
 import type {
+	DateString,
 	Entity,
 	EntityToRowFunction,
 	Id,
@@ -21,8 +22,8 @@ export function isSlug( slug: string ): slug is Slug {
 	return !! slug;
 }
 
-export function dateToString( date: Date ): string {
-	return date.toUTCString();
+export function dateToString( date: Date ): DateString {
+	return date.toJSON() as DateString;
 }
 
 export function getMeta( key: string, rows: MetaDB[] ): string | null {

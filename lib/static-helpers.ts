@@ -1,5 +1,4 @@
 import { toSafeInteger } from 'lodash';
-import { entityDateToTS } from './casting';
 
 import type {
 	GetStaticPaths,
@@ -79,7 +78,7 @@ export async function staticPropsEdit< E extends Entity >(
 			...rootProps.props,
 			originalTitle: rootProps.props.title,
 			title: `Editing ${ rootProps.props.title }`,
-			record: entityDateToTS( rootProps.props.record ),
+			record: rootProps.props.record,
 		},
 	};
 }

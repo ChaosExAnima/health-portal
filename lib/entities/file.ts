@@ -7,7 +7,7 @@ import {
 	Slug,
 	WithMaybeNewId,
 } from './types';
-import { isEntity, saveContentEntity } from './utils';
+import { dateToString, isEntity, saveContentEntity } from './utils';
 
 import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import { CONTENT_FILE } from 'lib/constants';
@@ -24,7 +24,7 @@ export function rowToFile( row: ContentDB ): FileEntity {
 	const { id, created, identifier: slug, info, status: source } = row;
 	return {
 		id: id as Id,
-		created,
+		created: dateToString( created ),
 		slug: slug as Slug,
 		url: String( info ),
 		source,
@@ -36,7 +36,7 @@ export function fileToRow(
 ): DBMaybeInsert< ContentDB > {
 	return {
 		id: input.id,
-		created: input.created,
+		created: new Date( input.created ),
 		identifier: input.slug,
 		type: CONTENT_FILE,
 		info: input.url,
@@ -54,7 +54,7 @@ export function saveFile( input: FileInput ) {
 		console.warn( 'Trying to upload file:', input.file );
 		saveInput = {
 			id: 0 as NewId,
-			created: new Date(),
+			created: dateToString( new Date() ),
 			slug: slugify( input.file.name ),
 			url: '',
 			source: '',

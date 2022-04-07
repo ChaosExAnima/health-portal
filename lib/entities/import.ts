@@ -3,6 +3,7 @@ import { SetRequired } from 'type-fest';
 import { rowToFile } from './file';
 import { Id, Import } from './types';
 import { ContentDB, ImportDB } from 'lib/db/types';
+import { dateToString } from './utils';
 
 type ImportAdditions = {
 	file?: ContentDB;
@@ -20,7 +21,7 @@ export default function rowToImport< T extends ImportAdditions >(
 	const importObj: Import = {
 		id: id as Id,
 		hash,
-		created,
+		created: dateToString( created ),
 		inserted,
 		updated,
 	};

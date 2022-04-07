@@ -1,5 +1,6 @@
 import { ensureProvider, rowToProvider } from './provider';
 import {
+	dateToString,
 	getNumericMeta,
 	inReadonlyArray,
 	isEntity,
@@ -52,7 +53,7 @@ export function rowToClaim< T extends EntityAdditions >(
 		id: id as Id,
 		number,
 		slug: slugify( number ),
-		created,
+		created: dateToString( created ),
 		status: inReadonlyArray(
 			status,
 			constants.CLAIM_STATUSES,
@@ -95,7 +96,7 @@ export async function claimToRow(
 	}
 	return {
 		id: input.id,
-		created: input.created,
+		created: new Date( input.created ),
 		type: constants.CONTENT_APPEAL,
 		identifier: input.number,
 		status: input.status,

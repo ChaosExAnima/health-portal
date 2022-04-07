@@ -15,7 +15,7 @@ import type {
 	Slug,
 	WithMetaAdditions,
 } from './types';
-import { isEntity, saveContentEntity } from './utils';
+import { dateToString, isEntity, saveContentEntity } from './utils';
 
 type CallWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Call,
@@ -53,7 +53,7 @@ export async function callToRow(
 	return {
 		id: id,
 		type: CONTENT_CALL,
-		created: created ?? new Date(),
+		created: new Date( created ),
 		identifier,
 		info: String( reason ),
 		status: String( result ),
@@ -70,7 +70,7 @@ export function rowToCall< A extends EntityAdditions >(
 	const call: Call = {
 		id: id as Id,
 		slug: slug as Slug,
-		created: row.created,
+		created: dateToString( row.created ),
 		reason: info ?? '',
 		result: status,
 	};

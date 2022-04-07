@@ -1,7 +1,7 @@
 import { Id, Note, NoteInput } from './types';
 import { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import { slugify } from 'lib/strings';
-import { isEntity, saveContentEntity } from './utils';
+import { dateToString, isEntity, saveContentEntity } from './utils';
 import { CONTENT_NOTE } from 'lib/constants';
 
 export function isNote( input: unknown ): input is Note {
@@ -13,9 +13,9 @@ export function rowToNote( row: ContentDB ): Note {
 	return {
 		id: id as Id,
 		slug: slugify( identifier ),
-		created,
+		created: dateToString( created ),
 		description: String( info ),
-		due: new Date( due ),
+		due: dateToString( new Date( due ) ),
 	};
 }
 
@@ -24,14 +24,14 @@ export function noteToRow(
 ): DBMaybeInsert< ContentDB > {
 	let created = new Date();
 	if ( 'created' in input ) {
-		created = input.created;
+		created = new Date( input.created );
 	}
 	return {
 		id: input.id,
 		created,
 		identifier: slugify( input.description ),
 		info: input.description,
-		status: input.due ? input.due.toISOString() : '',
+		status: input.due ? input.due : '',
 		providerId: null,
 		type: CONTENT_NOTE,
 		importId: null,
