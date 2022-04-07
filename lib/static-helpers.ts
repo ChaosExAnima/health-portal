@@ -65,11 +65,8 @@ export function staticPathsNoData(
 	return null;
 }
 
-export async function staticPropsEdit<
-	E extends Entity,
-	T extends SinglePageProps< E >
->(
-	root: GetStaticProps< T >,
+export async function staticPropsEdit< E extends Entity >(
+	root: GetStaticProps< SinglePageProps< E > >,
 	context: GetStaticPropsContext
 ): GetSingleEditPageResult< E > {
 	const rootProps = await root( context );

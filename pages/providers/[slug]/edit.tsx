@@ -5,16 +5,20 @@ import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 import {
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
+	ProviderWithAdditions,
 } from './index';
 
-import type { GetStaticPaths, GetStaticProps } from 'next';
-import type { SinglePageProps } from 'pages/types';
+import type {
+	GetSingleEditPageResult,
+	GetSinglePageContext,
+	SingleEditPageProps,
+} from 'pages/types';
 import type { Provider } from 'lib/entities/types';
 import type { ActionItem } from 'components/header';
 
-const ProviderEditPage: React.FC< SinglePageProps< Provider > > = ( {
+export default function ProviderEditPage( {
 	record,
-} ) => {
+}: SingleEditPageProps< Provider > ) {
 	const breadcrumbs = [
 		{ href: '/providers', name: 'Providers' },
 		{ href: `/providers/${ record.slug }`, name: record.name },
@@ -44,12 +48,17 @@ const ProviderEditPage: React.FC< SinglePageProps< Provider > > = ( {
 			Hello
 		</Page>
 	);
-};
+}
 
-export const getStaticPaths: GetStaticPaths = async ( context ) =>
-	staticPathsEdit( getRootStaticPaths, context );
+export function getStaticPaths( context: GetSinglePageContext ) {
+	return staticPathsEdit( getRootStaticPaths, context );
+}
 
-export const getStaticProps: GetStaticProps = async ( context ) =>
-	staticPropsEdit( getRootStaticProps, context );
-
-export default ProviderEditPage;
+export function getStaticProps(
+	context: GetSinglePageContext
+): GetSingleEditPageResult< ProviderWithAdditions > {
+	return staticPropsEdit< ProviderWithAdditions >(
+		getRootStaticProps,
+		context
+	);
+}

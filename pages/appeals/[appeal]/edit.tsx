@@ -9,7 +9,9 @@ import {
 import type { GetStaticPaths } from 'next';
 import type { GetSinglePageProps, SingleEditPageProps } from 'pages/types';
 
-export default function AppealEditPage( { originalTitle }: SingleEditPageProps< Appeal > ) {
+export default function AppealEditPage( {
+	originalTitle,
+}: SingleEditPageProps< Appeal > ) {
 	return <Page title={ originalTitle }>TODO</Page>;
 }
 
