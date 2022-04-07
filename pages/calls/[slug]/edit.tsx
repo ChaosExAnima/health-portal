@@ -1,15 +1,12 @@
-import { Box, capitalize, Container } from '@mui/material';
+import { capitalize } from 'lodash';
+import { useForm } from 'react-hook-form';
+// import { yupResolver } from '@hookform/resolvers/yup';
 
 import {
+	CallWithAdditions,
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
-} from '.';
-import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
-
-import type { GetStaticPaths } from 'next';
-import type { GetSinglePageProps, SingleEditPageProps } from 'pages/types';
-import type { Call, CallInput, WithNumberIds } from 'lib/entities/types';
-import Page from 'components/page';
+} from './index';
 import {
 	Form,
 	FormAutocompleteField,
@@ -17,16 +14,24 @@ import {
 	FormTermsField,
 	FormTextField,
 } from 'components/form';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { callSchema } from 'lib/entities/schemas';
+import Page from 'components/page';
+// import { callSchema } from 'lib/entities/schemas';
+import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
+
+import type { GetStaticPathsResult } from 'next';
+import type {
+	GetSingleEditPageResult,
+	GetSinglePageContext,
+	SingleEditPageProps,
+} from 'pages/types';
+import type { Call, CallInput, WithNumberIds } from 'lib/entities/types';
 
 function CallEditPage( {
 	record,
 	originalTitle,
 }: SingleEditPageProps< Call > ) {
 	const { control, handleSubmit } = useForm< WithNumberIds< CallInput > >( {
-		resolver: yupResolver( callSchema ),
+		// resolver: yupResolver( callSchema ),
 		defaultValues: {
 			...record,
 			provider: record.provider?.id,
@@ -87,10 +92,16 @@ function CallEditPage( {
 	);
 }
 
-export const getStaticProps: GetSinglePageProps< Call > = async ( context ) =>
-	staticPropsEdit( getRootStaticProps, context );
+export async function getStaticPaths(
+	context: GetSinglePageContext
+): Promise< GetStaticPathsResult > {
+	return staticPathsEdit( getRootStaticPaths, context );
+}
 
-export const getStaticPaths: GetStaticPaths = async ( context ) =>
-	staticPathsEdit( getRootStaticPaths, context );
+export async function getStaticProps(
+	context: GetSinglePageContext
+): Promise< GetSingleEditPageResult< CallWithAdditions > > {
+	return staticPropsEdit< CallWithAdditions >( getRootStaticProps, context );
+}
 
 export default CallEditPage;

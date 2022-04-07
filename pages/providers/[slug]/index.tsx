@@ -4,7 +4,7 @@ import { Container } from '@mui/material';
 import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import { Detail, DetailsBox } from 'components/details-box';
-import { entityDateToTS, fromArray } from 'lib/casting';
+import { fromArray } from 'lib/casting';
 import { queryAllProviders, queryContentType } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 
@@ -81,7 +81,7 @@ export async function getStaticProps( {
 		.andWhere( 'providerId', row.id )
 		.limit( 10 )
 		.orderBy( 'created', 'desc' );
-	const record = entityDateToTS( rowToProvider( row, { relations } ) );
+	const record = rowToProvider( row, { relations } );
 	return {
 		props: {
 			id: row.id,

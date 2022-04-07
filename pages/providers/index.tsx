@@ -4,7 +4,6 @@ import { Container, Link } from '@mui/material';
 import Header, { ActionItem } from 'components/header';
 import Footer from 'components/footer';
 import DataTable, { DataTableColumn } from 'components/data-table';
-import { entityDateToTS, entityTStoDate } from 'lib/casting';
 import { queryAllProviders } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
@@ -17,9 +16,8 @@ import type { Provider } from 'lib/entities/types';
 export default function ProvidersPage( {
 	currentPage,
 	totalPages,
-	records: rawRecords,
+	records,
 }: PaginatedPageProps< Provider > ) {
-	const records = rawRecords.map( entityTStoDate ) as typeof rawRecords;
 	const actions: ActionItem[] = [
 		{
 			href: '/providers/new',
@@ -75,9 +73,7 @@ export async function getStaticProps( { params }: GetStaticPropsContext ) {
 	const calls = await queryAllProviders()
 		.limit( pageSize )
 		.offset( currentPage * pageSize );
-	const records = calls.map( ( row ) =>
-		entityDateToTS( rowToProvider( row ) )
-	);
+	const records = calls.map( ( row ) => rowToProvider( row ) );
 
 	return {
 		props: {

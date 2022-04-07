@@ -8,7 +8,6 @@ import DataTable, {
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
 import ProviderLink from 'components/provider-link';
-import { entityDateToTS } from 'lib/casting';
 import {
 	filterQuery,
 	getIdColumn,
@@ -128,7 +127,7 @@ export async function getServerSideProps(
 			title: 'Calls',
 			currentPage,
 			totalPages,
-			records: records.map( entityDateToTS ),
+			records,
 			query,
 		},
 	};
