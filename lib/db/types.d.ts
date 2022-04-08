@@ -27,8 +27,7 @@ interface ContentDB extends DBCommonFields {
 	type: CONTENTS_TYPE;
 	info: Nullable< string >;
 	status: string;
-	providerId: Nullable< ProviderDB[ 'id' ] >;
-	importId: Nullable< ImportDB[ 'id' ] >;
+	providerId?: Nullable< ProviderDB[ 'id' ] >;
 }
 
 interface MetaDB extends DBCommonFields, DBMetaField {

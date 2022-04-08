@@ -100,7 +100,9 @@ export const getStaticProps: GetSinglePageProps< ClaimWithAdditions > = async ( 
 		};
 	}
 	const meta = await queryMeta( row.id );
-	const provider = await queryProvider( row.providerId );
+	const provider = row.providerId
+		? await queryProvider( row.providerId )
+		: undefined;
 	const relations = await queryRelated( row.id );
 	const record = rowToClaim( row, { meta, provider, relations } );
 	return {

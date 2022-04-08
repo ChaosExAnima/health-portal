@@ -41,8 +41,6 @@ export function fileToRow(
 		type: CONTENT_FILE,
 		info: input.url,
 		status: input.source,
-		providerId: null,
-		importId: null,
 	};
 }
 

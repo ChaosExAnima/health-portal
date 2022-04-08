@@ -58,7 +58,6 @@ export async function callToRow(
 		info: String( reason ),
 		status: String( result ),
 		providerId: provider.id,
-		importId: null,
 	};
 }
 

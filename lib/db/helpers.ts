@@ -6,7 +6,7 @@ import * as constants from 'lib/constants';
 import getDB from 'lib/db';
 
 import type { ParsedUrlQuery } from 'node:querystring';
-import type { Nullable, StringKeys } from 'global-types';
+import type { StringKeys } from 'global-types';
 import type { Entity } from 'lib/entities/types';
 import type {
 	ContentDB,
@@ -98,7 +98,7 @@ export function queryAllMeta< T extends Entity >(
 }
 
 export function queryProvider(
-	providerId: Nullable< number >
+	providerId: number
 ): Knex.QueryBuilder< ProviderDB, ProviderDB | undefined > {
 	const knex = getDB();
 	return knex( constants.TABLE_PROVIDERS ).where( 'id', providerId ).first();

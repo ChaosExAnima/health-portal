@@ -53,7 +53,6 @@ export async function appealToRow(
 		type: constants.CONTENT_APPEAL,
 		status: input.status,
 		info: null,
-		importId: null,
 	} as const;
 	let providerId = null;
 	if ( input.provider ) {

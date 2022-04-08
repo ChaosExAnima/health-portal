@@ -97,12 +97,11 @@ export async function claimToRow(
 	return {
 		id: input.id,
 		created: new Date( input.created ),
-		type: constants.CONTENT_APPEAL,
+		type: constants.CONTENT_CLAIM,
 		identifier: input.number,
 		status: input.status,
 		info: String( input.type ),
 		providerId,
-		importId: null,
 	};
 }
 

@@ -32,9 +32,7 @@ export function noteToRow(
 		identifier: slugify( input.description ),
 		info: input.description,
 		status: input.due ? input.due : '',
-		providerId: null,
 		type: CONTENT_NOTE,
-		importId: null,
 	};
 }
 
