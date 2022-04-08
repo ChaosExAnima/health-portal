@@ -13,7 +13,7 @@ import {
 	stringSchema,
 } from './schemas';
 
-import { Id, NewId, ProviderInput } from './types';
+import { Id, ProviderInput } from './types';
 
 const schemaTypes = {
 	appeal: appealSchema,
@@ -88,7 +88,7 @@ describe( 'schemas with ids', () => {
 	test.concurrent.each(
 		withExpect( schemasWithIds, undefined, 1 )
 	)( '%p schema validates id %p', ( _name, id, schema ) =>
-		expect( schema.validateAt( 'id', { id } ) ).resolves.toBe( id )
+		expect( schema.validateAt( 'id', { id } ) ).resolves.toBe( id || 0 )
 	);
 	test.concurrent.each(
 		withExpect( schemasWithIds, -1, 1.1, null, Infinity )
@@ -156,7 +156,7 @@ describe( 'provider schema', () => {
 	it( 'only needs a name', () =>
 		expect(
 			providerSchema.validate( { name: 'test' } )
-		).resolves.toEqual( { id: undefined, name: 'test' } ) );
+		).resolves.toEqual( { id: 0, name: 'test' } ) );
 	it( 'throws with invalid email', () =>
 		expect( () =>
 			providerSchema.validate( { name: 'test', email: 'test' } )
@@ -187,6 +187,7 @@ describe( 'provider schema', () => {
 				phone: '1234567890',
 			} )
 		).resolves.toEqual( {
+			id: 0,
 			name: 'test',
 			phone: '123-456-7890',
 		} ) );

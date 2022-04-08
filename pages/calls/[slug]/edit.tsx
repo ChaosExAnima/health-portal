@@ -1,6 +1,6 @@
 import { capitalize } from 'lodash';
 import { useForm } from 'react-hook-form';
-// import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import {
 	CallWithAdditions,
@@ -15,7 +15,7 @@ import {
 	FormTextField,
 } from 'components/form';
 import Page from 'components/page';
-// import { callSchema } from 'lib/entities/schemas';
+import { callSchema } from 'lib/entities/schemas';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import type { GetStaticPathsResult } from 'next';
@@ -24,14 +24,14 @@ import type {
 	GetSinglePageContext,
 	SingleEditPageProps,
 } from 'pages/types';
-import type { Call, CallInput, WithNumberIds } from 'lib/entities/types';
+import type { Call, CallInput } from 'lib/entities/types';
 
 function CallEditPage( {
 	record,
 	originalTitle,
 }: SingleEditPageProps< Call > ) {
-	const { control, handleSubmit } = useForm< WithNumberIds< CallInput > >( {
-		// resolver: yupResolver( callSchema ),
+	const { control, handleSubmit } = useForm< CallInput >( {
+		resolver: yupResolver( callSchema ),
 		defaultValues: {
 			...record,
 			provider: record.provider?.id,

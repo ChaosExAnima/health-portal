@@ -15,10 +15,10 @@ import { callSchema } from 'lib/entities/schemas';
 
 import type { GetStaticProps } from 'next';
 import type { PageProps } from 'pages/types';
-import { CallInput, WithNumberIds } from 'lib/entities/types';
+import { CallInput } from 'lib/entities/types';
 
 function NewCallPage( { title }: PageProps ) {
-	const { control, handleSubmit } = useForm< WithNumberIds< CallInput > >( {
+	const { control, handleSubmit } = useForm< CallInput >( {
 		resolver: yupResolver( callSchema ),
 	} );
 	return (

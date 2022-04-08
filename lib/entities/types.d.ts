@@ -11,7 +11,11 @@ import {
 import { ObjectSchema } from 'yup';
 import { Knex } from 'knex';
 
-import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
+import {
+	APPEAL_STATUSES_TYPE,
+	CLAIM_STATUS_TYPE,
+	CLAIM_TYPES_TYPE,
+} from 'lib/constants';
 import {
 	ContentDB,
 	DBMaybeInsert,
@@ -24,7 +28,6 @@ import { Replace, Nullable, RemoveNever } from 'global-types';
 
 // Opaque types
 type Id = Opaque< number, 'id' >;
-type NewId = Opaque< 0, 'NewId' >;
 type Slug = Opaque< string, 'slug' >;
 type DateString = Opaque< string, 'date' >;
 
@@ -85,15 +88,15 @@ interface Provider extends Entity, WithNotes, WithImport {
 
 interface Import extends Entity {
 	hash: string;
-	inserted: Nullable< number >;
-	updated: Nullable< number >;
+	inserted?: number;
+	updated?: number;
 	file?: FileEntity;
 }
 
 interface Appeal extends Content, WithNotes, WithProvider {
 	name: string;
 	claims?: Claim[];
-	status: typeof APPEAL_STATUSES[ number ];
+	status: APPEAL_STATUSES_TYPE;
 }
 
 interface Call extends Content, WithNotes, WithProvider {
@@ -105,10 +108,10 @@ interface Call extends Content, WithNotes, WithProvider {
 
 interface Claim extends Content, WithNotes, WithProvider, WithImport {
 	number: string;
-	type: typeof CLAIM_TYPES[ number ];
-	status: typeof CLAIM_STATUSES[ number ];
-	billed?: Nullable< number >;
-	cost?: Nullable< number >;
+	type: CLAIM_TYPES_TYPE;
+	status: CLAIM_STATUS_TYPE;
+	billed?: number;
+	cost?: number;
 	appeals?: Appeal[];
 }
 
@@ -124,38 +127,52 @@ interface Note extends Content, WithLinks {
 	resolved?: boolean;
 }
 
-// Input utils
-type InputEntity = MaybeNewEntity & Partial< Pick< Entity, 'created' > >;
-type MaybeNewEntity = { id: Id | NewId };
-type CreatedEntity = { created: Date };
-type ProviderEntity = { provider?: Except< ProviderInput, 'id' > | Id };
-type WithMaybeNewId< Input > = MaybeNewEntity & Except< Input, 'id' >;
-type WithInput< Input extends Entity > = MaybeNewEntity &
-	Except<
-		Input,
-		'id' | 'created' | 'slug' | 'import' | 'notes' | 'provider' | 'claims'
-	>;
-type WithNumberIds< Input > = Replace< Input, Id | NewId, number >;
-type ToSchema< Input > = ObjectSchema< Simplify< WithNumberIds< Input > > >;
+// Input interfaces
+abstract interface EntityInput {
+	id?: number;
+}
+abstract interface WithProviderInput {
+	provider?: number | ProviderInput;
+}
+interface ProviderInput extends EntityInput {
+	name: string;
+	slug?: string;
+	address?: string;
+	phone?: string;
+	email?: string;
+	website?: string;
+}
+interface AppealInput extends EntityInput, WithProviderInput {
+	name: string;
+	status: APPEAL_STATUSES_TYPE;
+}
+interface CallInput extends EntityInput, WithProviderInput {
+	created: Date;
+	reps?: string[];
+	reason: string;
+	result: string;
+	reference?: string;
+}
+interface ClaimInput extends EntityInput {
+	number: string;
+	type: CLAIM_TYPES_TYPE;
+	status: CLAIM_STATUS_TYPE;
+	provider: Id | ProviderInput;
+	created: Date;
+}
+interface FileInput extends EntityInput {
+	url: string;
+	source: string;
+}
+interface NoteInput extends EntityInput {
+	description: string;
+	due?: Date;
+	resolved?: boolean;
+}
 
-// Entity inputs
-type ProviderInput = Simplify< WithInput< Provider > & { slug?: string } >;
-type AppealInput = Simplify< WithInput< Appeal > & WithLinks & ProviderEntity >;
-type CallInput = Simplify<
-	WithInput< Call > & WithLinks & ProviderEntity & CreatedEntity
->;
-type ClaimInput = Simplify<
-	WithInput< Except< Claim, 'appeals' > > &
-		WithLinks &
-		Required< ProviderEntity > &
-		CreatedEntity
->;
-type FileInput = Except< WithMaybeNewId< FileEntity >, 'created' > &
-	Partial< CreatedEntity >;
-type UploadInput = { file: File };
-type NoteInput = Simplify<
-	WithInput< Except< Note, 'files' | 'due' > > & WithLinks
-> & { due?: Date };
+// Input utils
+type MaybeNewEntity = { id?: Id };
+type WithMaybeNewId< Input > = MaybeNewEntity & Except< Input, 'id' >;
 
 // Functions
 type SaveEntityFunction< Input > = (

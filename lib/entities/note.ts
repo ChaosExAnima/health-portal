@@ -1,3 +1,5 @@
+import { isDate } from 'lodash';
+
 import { Id, Note, NoteInput } from './types';
 import { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import { slugify } from 'lib/strings';
@@ -31,7 +33,9 @@ export function noteToRow(
 		created,
 		identifier: slugify( input.description ),
 		info: input.description,
-		status: input.due ? input.due : '',
+		status: isDate( input.due )
+			? dateToString( input.due )
+			: input.due || '',
 		type: CONTENT_NOTE,
 	};
 }

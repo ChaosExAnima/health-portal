@@ -1,12 +1,5 @@
 import { isObjectWithKeys } from 'lib/casting';
-import {
-	FileEntity,
-	FileInput,
-	Id,
-	NewId,
-	Slug,
-	WithMaybeNewId,
-} from './types';
+import { FileEntity, FileInput, Id, Slug, WithMaybeNewId } from './types';
 import { dateToString, isEntity, saveContentEntity } from './utils';
 
 import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
@@ -31,9 +24,7 @@ export function rowToFile( row: ContentDB ): FileEntity {
 	};
 }
 
-export function fileToRow(
-	input: WithMaybeNewId< FileEntity >
-): DBMaybeInsert< ContentDB > {
+export function fileToRow( input: FileEntity ): DBMaybeInsert< ContentDB > {
 	return {
 		id: input.id,
 		created: new Date( input.created ),
@@ -45,20 +36,21 @@ export function fileToRow(
 }
 
 export function saveFile( input: FileInput ) {
-	let saveInput: WithMaybeNewId< FileEntity >;
+	let saveInput: FileEntity;
 	if ( 'file' in input ) {
 		// TODO: Handle file uploads
 		// eslint-disable-next-line no-console
 		console.warn( 'Trying to upload file:', input.file );
 		saveInput = {
-			id: 0 as NewId,
-			created: dateToString( new Date() ),
+			created: dateToString(),
 			slug: slugify( input.file.name ),
 			url: '',
 			source: '',
 		};
 	} else {
-		saveInput = input;
+		saveInput = {
+			...input,
+		};
 	}
 	return saveContentEntity( saveInput, fileToRow );
 }

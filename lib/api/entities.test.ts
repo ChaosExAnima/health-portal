@@ -6,7 +6,7 @@ import {
 	queryEntities,
 } from './entities';
 
-import type { Id, NewId, Slug } from 'lib/entities/types';
+import type { Id, Slug } from 'lib/entities/types';
 import { AnyObjectSchema, ValidationError } from 'yup';
 import { inspect } from 'util';
 import { PlainObject } from 'global-types';
@@ -103,7 +103,7 @@ describe( 'API Entities', () => {
 			expect( saveFunc ).not.toHaveBeenCalled();
 		} );
 		test( 'works with id of zero', async () => {
-			const input = { id: 0 as NewId };
+			const input = { id: 0 as Id };
 			const result = await insertEntity( input, schema, saveFunc );
 			expect( result ).toEqual( {
 				success: true,

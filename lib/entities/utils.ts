@@ -8,9 +8,9 @@ import type { ContentDB, MetaDB } from 'lib/db/types';
 import type {
 	DateString,
 	Entity,
+	EntityInput,
 	EntityToRowFunction,
 	Id,
-	InputEntity,
 	Slug,
 } from './types';
 
@@ -22,8 +22,8 @@ export function isSlug( slug: string ): slug is Slug {
 	return !! slug;
 }
 
-export function dateToString( date: Date ): DateString {
-	return date.toJSON() as DateString;
+export function dateToString( date?: Date ): DateString {
+	return ( date || new Date() ).toJSON() as DateString;
 }
 
 export function getMeta( key: string, rows: MetaDB[] ): string | null {
@@ -34,9 +34,12 @@ export function getMeta( key: string, rows: MetaDB[] ): string | null {
 	return meta.value;
 }
 
-export function getNumericMeta( key: string, rows: MetaDB[] ): number | null {
+export function getNumericMeta(
+	key: string,
+	rows: MetaDB[]
+): number | undefined {
 	const value = getMeta( key, rows );
-	return value ? Number.parseFloat( value ) : null;
+	return value ? Number.parseFloat( value ) : undefined;
 }
 
 export function relatedOfType< R extends ContentDB >(
@@ -69,7 +72,7 @@ export function inReadonlyArray< T extends readonly string[] >(
 	return types.includes( input ) ? input : fallback || false;
 }
 
-export async function saveContentEntity< Input extends InputEntity >(
+export async function saveContentEntity< Input extends EntityInput >(
 	entity: Input,
 	entityToRow: EntityToRowFunction< Input >
 ): Promise< Slug > {

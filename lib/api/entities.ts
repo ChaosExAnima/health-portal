@@ -3,7 +3,7 @@ import { typeToUrl } from './utils';
 
 import type { AnyObjectSchema } from 'yup';
 import type { Nullable, PlainObject } from 'global-types';
-import type { InputEntity, SaveEntityFunction, Slug } from 'lib/entities/types';
+import type { EntityInput, SaveEntityFunction, Slug } from 'lib/entities/types';
 import type {
 	ErrorHandler,
 	ErrorHandlerArg,
@@ -50,7 +50,7 @@ export function formatErrors( errors?: ErrorHandlerArg ): string[] {
 	);
 }
 
-export async function saveEntity< Input extends InputEntity >(
+export async function saveEntity< Input >(
 	input: Input,
 	schema: AnyObjectSchema,
 	save: SaveEntityFunction< Input >
@@ -64,7 +64,7 @@ export async function saveEntity< Input extends InputEntity >(
 	};
 }
 
-export async function insertEntity< Input extends InputEntity >(
+export async function insertEntity< Input extends EntityInput >(
 	input: Input,
 	schema: AnyObjectSchema,
 	save: SaveEntityFunction< Input >
