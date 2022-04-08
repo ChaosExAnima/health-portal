@@ -135,6 +135,13 @@ describe( 'schemas with provider', () => {
 			schema.validateAt( 'provider', { provider } )
 		).resolves.toEqual( provider )
 	);
+	test.concurrent.each(
+		withExpect< number | ProviderInput >( schemasWithProvider, -1 )
+	)( '%p schema throws provider when %p', ( _name, provider, schema ) =>
+		expect( () =>
+			schema.validateAt( 'provider', { provider } )
+		).rejects.toThrow( 'provider is not a valid ID or a new provider' )
+	);
 } );
 
 describe( 'call schema', () => {

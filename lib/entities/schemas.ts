@@ -17,7 +17,6 @@ import {
 	NoteInput,
 	ProviderInput,
 	Slug,
-	ToSchema,
 } from './types';
 
 // Primitives
@@ -31,7 +30,7 @@ export const createdSchema = yup.date().default( () => new Date() );
 export const linksSchema = yup.array().of( savedIdSchema ).ensure();
 
 // Entities
-export const providerSchema: ToSchema< ProviderInput > = yup
+export const providerSchema: yup.ObjectSchema< ProviderInput > = yup
 	.object( {
 		id: idSchema,
 		slug: slugSchema,
@@ -49,7 +48,7 @@ export const providerSchema: ToSchema< ProviderInput > = yup
 	} )
 	.required();
 
-export const noteSchema: ToSchema< NoteInput > = yup
+export const noteSchema: yup.ObjectSchema< NoteInput > = yup
 	.object( {
 		id: idSchema,
 		description: stringSchema.default( '' ).required(),
@@ -59,7 +58,7 @@ export const noteSchema: ToSchema< NoteInput > = yup
 	} )
 	.required();
 
-export const appealSchema: ToSchema< AppealInput > = yup
+export const appealSchema: yup.ObjectSchema< AppealInput > = yup
 	.object( {
 		id: idSchema,
 		name: stringSchema.required(),
@@ -70,7 +69,7 @@ export const appealSchema: ToSchema< AppealInput > = yup
 	} )
 	.required();
 
-export const callSchema: ToSchema< CallInput > = yup
+export const callSchema: yup.ObjectSchema< CallInput > = yup
 	.object( {
 		id: idSchema,
 		created: createdSchema,
@@ -102,7 +101,7 @@ export const claimSchema: ToSchema< ClaimInput > = yup
 	} )
 	.required();
 
-export const fileSchema: ToSchema< FileInput > = yup
+export const fileSchema: yup.ObjectSchema< FileInput > = yup
 	.object( {
 		id: idSchema,
 		slug: slugSchema.required(),
