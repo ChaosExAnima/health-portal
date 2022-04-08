@@ -126,8 +126,8 @@ interface Note extends Content, WithLinks {
 
 // Input utils
 type InputEntity = MaybeNewEntity & Partial< Pick< Entity, 'created' > >;
-type MaybeNewEntity = { id?: Id | NewId };
-type CreatedEntity = { created: DateString };
+type MaybeNewEntity = { id: Id | NewId };
+type CreatedEntity = { created: Date };
 type ProviderEntity = { provider?: Except< ProviderInput, 'id' > | Id };
 type WithMaybeNewId< Input > = MaybeNewEntity & Except< Input, 'id' >;
 type WithInput< Input extends Entity > = MaybeNewEntity &
@@ -150,9 +150,12 @@ type ClaimInput = Simplify<
 		Required< ProviderEntity > &
 		CreatedEntity
 >;
-type FileInput = WithMaybeNewId< FileEntity >;
+type FileInput = Except< WithMaybeNewId< FileEntity >, 'created' > &
+	Partial< CreatedEntity >;
 type UploadInput = { file: File };
-type NoteInput = Simplify< WithInput< Except< Note, 'files' > > & WithLinks >;
+type NoteInput = Simplify<
+	WithInput< Except< Note, 'files' | 'due' > > & WithLinks
+> & { due?: Date };
 
 // Functions
 type SaveEntityFunction< Input > = (

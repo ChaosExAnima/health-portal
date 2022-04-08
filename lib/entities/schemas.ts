@@ -24,10 +24,10 @@ import {
 export const stringSchema = yup.string().trim();
 
 // Fields
-export const idSchema = yup.number().integer().min( 1 );
+export const idSchema = yup.number().integer().min( 0 ).required();
 export const savedIdSchema = idSchema.positive().required();
 export const slugSchema = yup.string< Slug >().trim();
-export const createdSchema = yup.date().default( () => new Date() );
+export const createdSchema = yup.date();
 export const linksSchema = yup.array().of( savedIdSchema ).ensure();
 
 // Entities
@@ -73,7 +73,7 @@ export const appealSchema: ToSchema< AppealInput > = yup
 export const callSchema: ToSchema< CallInput > = yup
 	.object( {
 		id: idSchema,
-		created: createdSchema,
+		created: createdSchema.default( () => new Date() ),
 		provider: schemaNewOrId( providerSchema, 'provider' ),
 		reps: yup
 			.array()
@@ -87,7 +87,8 @@ export const callSchema: ToSchema< CallInput > = yup
 	} )
 	.required();
 
-export const claimSchema = yup
+// @ts-expect-error
+export const claimSchema: ToSchema< ClaimInput > = yup
 	.object( {
 		id: idSchema,
 		created: createdSchema.required(),

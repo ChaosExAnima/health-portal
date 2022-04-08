@@ -62,19 +62,32 @@ export async function ensureProvider(
 	let id: Id | undefined;
 	if ( typeof provider === 'number' ) {
 		id = provider as Id;
+	} else if (
+		isPlainObject( provider ) &&
+		'id' in provider &&
+		provider.id > 0
+	) {
+		id = provider.id;
 	} else if ( isPlainObject( provider ) && 'name' in provider ) {
 		if ( isProvider( provider ) ) {
 			return provider;
 		}
 		const { providerSchema } = await import( './schemas' );
 		const validProvider = await providerSchema
-			.omit( [ 'id' ] )
+			.omit( [ 'id', 'slug' ] )
 			.validate( provider );
+		const created = new Date();
 		const [ providerId ] = await trx( TABLE_PROVIDERS ).insert( {
 			slug: slugify( validProvider.name ),
+			created,
 			...validProvider,
 		} );
-		id = providerId as Id;
+		return {
+			id: providerId as Id,
+			slug: slugify( validProvider.name ),
+			created: dateToString( created ),
+			...validProvider,
+		};
 	}
 
 	if ( ! id ) {
