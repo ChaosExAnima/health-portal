@@ -34,7 +34,7 @@ export default function AutocompleteField< Schema extends Input >( {
 		formState: { isSubmitting },
 	} = useController( { control, name, rules: { required } } );
 	const [ searchTerm, setSearchTerm ] = useState< string >(
-		getOptionLabel( value )
+		getOptionLabel( value, targetKey )
 	);
 	const searchPath = searchTerm
 		? encodeURI(
@@ -70,7 +70,7 @@ export default function AutocompleteField< Schema extends Input >( {
 			autoComplete
 			clearOnEscape
 			freeSolo={ free }
-			getOptionLabel={ getOptionLabel }
+			getOptionLabel={ ( option ) => getOptionLabel( option, targetKey ) }
 			filterOptions={ filterOptions }
 			loading={ loading }
 			multiple={ multiple }
