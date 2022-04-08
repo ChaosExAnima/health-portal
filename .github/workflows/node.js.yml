@@ -27,6 +27,3 @@ jobs:
       name: Run unit tests
     - name: Linting
       run: yarn lint
-    - uses: codecov/codecov-action@v1
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
