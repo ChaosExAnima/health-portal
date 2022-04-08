@@ -86,12 +86,12 @@ const Claims: React.FC< ClaimsProps > = ( {
 			name: 'Service Date',
 			width: 150,
 			format: formatDate( 'YYYY-MM-DD' ),
+			link: true,
 		},
 		{
 			key: 'number',
 			name: 'Claim #',
 			link: true,
-			linkPrefix: '/claims/',
 		},
 		{
 			key: 'provider',

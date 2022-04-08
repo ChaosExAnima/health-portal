@@ -47,7 +47,7 @@ export function rowToClaim< T extends EntityAdditions >(
 	row: ContentDB,
 	additions: T = {} as T
 ): ClaimWithAdditions< T > {
-	const { meta, provider, relations } = additions;
+	const { meta, provider, providers, relations } = additions;
 	const { id, identifier: number, created, info, status } = row;
 	const claim: Claim = {
 		id: id as Id,
@@ -68,6 +68,11 @@ export function rowToClaim< T extends EntityAdditions >(
 
 	if ( provider ) {
 		claim.provider = rowToProvider( provider );
+	} else if ( providers ) {
+		const providerRow = providers.find(
+			( { id: providerId } ) => providerId === row.providerId
+		);
+		claim.provider = providerRow ? rowToProvider( providerRow ) : undefined;
 	}
 
 	const contentMeta = ( meta || [] ).filter(
