@@ -8,12 +8,7 @@ import {
 } from './index';
 
 import type { CallInput } from 'lib/entities/types';
-import type { GetStaticPathsResult } from 'next';
-import type {
-	GetSingleEditPageResult,
-	GetSinglePageContext,
-	SingleEditPageProps,
-} from 'pages/types';
+import type { GetSinglePageContext, SingleEditPageProps } from 'pages/types';
 
 export default function CallEditPage( {
 	record,
@@ -36,14 +31,10 @@ export default function CallEditPage( {
 	);
 }
 
-export async function getStaticPaths(
-	context: GetSinglePageContext
-): Promise< GetStaticPathsResult > {
+export function getStaticPaths( context: GetSinglePageContext ) {
 	return staticPathsEdit( getRootStaticPaths, context );
 }
 
-export async function getStaticProps(
-	context: GetSinglePageContext
-): GetSingleEditPageResult< CallInput > {
-	return staticPropsEdit< CallInput >( getRootStaticProps, context );
+export function getStaticProps( context: GetSinglePageContext ) {
+	return staticPropsEdit( getRootStaticProps, context );
 }

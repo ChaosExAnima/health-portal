@@ -8,8 +8,11 @@ import {
 	getStaticProps as getRootStaticProps,
 } from './index';
 
-import type { GetStaticPaths } from 'next';
-import type { GetSinglePageProps, SingleEditPageProps } from 'pages/types';
+import type {
+	GetSingleEditPageResult,
+	GetSinglePageContext,
+	SingleEditPageProps,
+} from 'pages/types';
 
 export default function ClaimPageEdit( {
 	originalTitle,
@@ -32,9 +35,12 @@ export default function ClaimPageEdit( {
 	);
 }
 
-export const getStaticPaths: GetStaticPaths = async ( context ) =>
-	staticPathsEdit( getRootStaticPaths, context );
+export function getStaticPaths( context: GetSinglePageContext ) {
+	return staticPathsEdit( getRootStaticPaths, context );
+}
 
-export const getStaticProps: GetSinglePageProps< ClaimInput > = async (
-	context
-) => staticPropsEdit( getRootStaticProps, context );
+export function getStaticProps(
+	context: GetSinglePageContext
+): GetSingleEditPageResult< ClaimInput > {
+	return staticPropsEdit( getRootStaticProps, context );
+}

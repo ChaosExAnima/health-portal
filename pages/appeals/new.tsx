@@ -3,7 +3,7 @@ import Page from 'components/page';
 
 import type { GetPageResult, PageProps } from 'pages/types';
 
-function NewAppealPage( { title }: PageProps ) {
+export default function NewAppealPage( { title }: PageProps ) {
 	return (
 		<Page
 			title={ title }
@@ -22,5 +22,3 @@ export function getStaticProps(): GetPageResult {
 		},
 	};
 }
-
-export default NewAppealPage;

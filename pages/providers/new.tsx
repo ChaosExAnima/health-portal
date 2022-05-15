@@ -1,9 +1,7 @@
-import { GetStaticPropsResult } from 'next';
-
 import { ProviderForm } from 'components/entity-forms';
 import Page from 'components/page';
 
-import type { PageProps } from 'pages/types';
+import type { GetPageResult, PageProps } from 'pages/types';
 
 export default function NewProviderPage( { title }: PageProps ) {
 	return (
@@ -17,7 +15,7 @@ export default function NewProviderPage( { title }: PageProps ) {
 	);
 }
 
-export function getStaticProps(): GetStaticPropsResult< PageProps > {
+export function getStaticProps(): GetPageResult {
 	return {
 		props: {
 			title: 'New provider',

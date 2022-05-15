@@ -1,7 +1,7 @@
 import { ClaimForm } from 'components/entity-forms';
 import Page from 'components/page';
 
-import type { PageProps } from 'pages/types';
+import type { GetPageResult, PageProps } from 'pages/types';
 
 export default function ClaimNewPage( { title }: PageProps ) {
 	return (
@@ -15,9 +15,7 @@ export default function ClaimNewPage( { title }: PageProps ) {
 	);
 }
 
-export async function getStaticProps(): Promise< {
-	props: PageProps;
-} > {
+export function getStaticProps(): GetPageResult {
 	return {
 		props: {
 			title: 'New Claim',

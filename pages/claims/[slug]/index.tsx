@@ -16,7 +16,12 @@ import { formatClaimStatus, formatCurrency, formatDate } from 'lib/strings';
 
 import type { Claim } from 'lib/entities/types';
 import type { GetStaticPathsResult } from 'next';
-import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
+import type {
+	GetSinglePageContext,
+	GetSinglePageProps,
+	GetSinglePageResult,
+	SinglePageProps,
+} from 'pages/types';
 import type { SetRequired } from 'type-fest';
 
 export type ClaimWithAdditions = SetRequired<
@@ -82,9 +87,9 @@ export async function getStaticPaths(): Promise< GetStaticPathsResult > {
 	};
 }
 
-export const getStaticProps: GetSinglePageProps< ClaimWithAdditions > = async ( {
+export async function getStaticProps( {
 	params,
-} ) => {
+}: GetSinglePageContext ): GetSinglePageResult< ClaimWithAdditions > {
 	const slug = params?.slug;
 	if ( ! slug ) {
 		return {
@@ -113,4 +118,4 @@ export const getStaticProps: GetSinglePageProps< ClaimWithAdditions > = async ( 
 			record,
 		},
 	};
-};
+}

@@ -8,8 +8,7 @@ import {
 } from './index';
 
 import type { Appeal } from 'lib/entities/types';
-import type { GetStaticPaths } from 'next';
-import type { GetSinglePageProps, SingleEditPageProps } from 'pages/types';
+import type { GetSinglePageContext, SingleEditPageProps } from 'pages/types';
 
 export default function AppealEditPage( {
 	originalTitle,
@@ -31,8 +30,10 @@ export default function AppealEditPage( {
 	);
 }
 
-export const getStaticProps: GetSinglePageProps< Appeal > = async ( context ) =>
-	staticPropsEdit( getRootStaticProps, context );
+export function getStaticProps( context: GetSinglePageContext ) {
+	return staticPropsEdit( getRootStaticProps, context );
+}
 
-export const getStaticPaths: GetStaticPaths = async ( context ) =>
-	staticPathsEdit( getRootStaticPaths, context );
+export function getStaticPaths( context: GetSinglePageContext ) {
+	return staticPathsEdit( getRootStaticPaths, context );
+}
