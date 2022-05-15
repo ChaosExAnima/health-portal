@@ -2,7 +2,7 @@ import { toSafeInteger } from 'lodash';
 
 import type { Knex } from 'knex';
 import type { DBCommonFields } from 'lib/db/types';
-import type { Entity } from 'lib/entities/types';
+import type { Entity, EntityInput } from 'lib/entities/types';
 import type {
 	GetStaticPaths,
 	GetStaticPathsContext,
@@ -64,7 +64,7 @@ export function staticPathsNoData(
 	return null;
 }
 
-export async function staticPropsEdit< E extends Entity >(
+export async function staticPropsEdit< E extends EntityInput >(
 	root: GetStaticProps< SinglePageProps< E > >,
 	context: GetStaticPropsContext
 ): GetSingleEditPageResult< E > {

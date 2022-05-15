@@ -1,16 +1,15 @@
 import React from 'react';
 
+import { ProviderForm } from 'components/entity-forms';
 import Page from 'components/page';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import {
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
-	ProviderWithAdditions,
 } from './index';
 
-import type { ActionItem } from 'components/header';
-import type { Provider } from 'lib/entities/types';
+import type { ProviderInput } from 'lib/entities/types';
 import type {
 	GetSingleEditPageResult,
 	GetSinglePageContext,
@@ -19,34 +18,19 @@ import type {
 
 export default function ProviderEditPage( {
 	record,
-}: SingleEditPageProps< Provider > ) {
-	const breadcrumbs = [
-		{ href: '/providers', name: 'Providers' },
-		{ href: `/providers/${ record.slug }`, name: record.name },
-		'Edit',
-	];
-	const actions: ActionItem[] = [
-		{
-			action: 'Save',
-			icon: 'save',
-			onClick: () => {},
-			disabled: false,
-		},
-		{
-			action: 'Cancel',
-			href: `/providers/${ record.slug }`,
-			icon: 'cancel',
-			color: 'secondary',
-		},
-	];
+	originalTitle,
+	slug,
+}: SingleEditPageProps< ProviderInput > ) {
 	return (
 		<Page
-			breadcrumbs={ breadcrumbs }
-			title={ record.name }
-			buttonsBelow
-			actions={ actions }
+			breadcrumbs={ [
+				{ href: '/providers', name: 'Providers' },
+				{ href: `/providers/${ slug }`, name: originalTitle },
+				'Edit',
+			] }
+			title={ originalTitle }
 		>
-			Hello
+			<ProviderForm saved={ record } />
 		</Page>
 	);
 }
@@ -57,9 +41,6 @@ export function getStaticPaths( context: GetSinglePageContext ) {
 
 export function getStaticProps(
 	context: GetSinglePageContext
-): GetSingleEditPageResult< ProviderWithAdditions > {
-	return staticPropsEdit< ProviderWithAdditions >(
-		getRootStaticProps,
-		context
-	);
+): GetSingleEditPageResult< ProviderInput > {
+	return staticPropsEdit< ProviderInput >( getRootStaticProps, context );
 }

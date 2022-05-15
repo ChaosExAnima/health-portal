@@ -1,4 +1,4 @@
-import { Box, Container, Theme } from '@mui/material';
+import { Box, Container } from '@mui/material';
 
 import Breadcrumbs from 'components/breadcrumbs';
 import Footer from 'components/footer';

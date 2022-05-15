@@ -1,16 +1,21 @@
-import { Box, Container } from '@mui/material';
+import { AppealForm } from 'components/entity-forms';
+import Page from 'components/page';
 
-import type { PageProps } from 'pages/types';
+import type { GetPageResult, PageProps } from 'pages/types';
 
-const NewAppealPage: React.FC< PageProps > = () => {
+function NewAppealPage( { title }: PageProps ) {
 	return (
-		<Container maxWidth="md">
-			<Box my={ 4 }>Hello</Box>
-		</Container>
+		<Page
+			title={ title }
+			breadcrumbs={ [ { href: '/appeals', name: 'Appeals' }, title ] }
+			maxWidth="sm"
+		>
+			<AppealForm />
+		</Page>
 	);
-};
+}
 
-export async function getStaticProps(): Promise< { props: PageProps } > {
+export function getStaticProps(): GetPageResult {
 	return {
 		props: {
 			title: 'New appeal',

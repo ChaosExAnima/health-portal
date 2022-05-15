@@ -1,5 +1,5 @@
+import { AppealForm } from 'components/entity-forms';
 import Page from 'components/page';
-import { Appeal } from 'lib/entities/types';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import {
@@ -7,13 +7,28 @@ import {
 	getStaticProps as getRootStaticProps,
 } from './index';
 
+import type { Appeal } from 'lib/entities/types';
 import type { GetStaticPaths } from 'next';
 import type { GetSinglePageProps, SingleEditPageProps } from 'pages/types';
 
 export default function AppealEditPage( {
 	originalTitle,
+	record,
+	slug,
 }: SingleEditPageProps< Appeal > ) {
-	return <Page title={ originalTitle }>TODO</Page>;
+	return (
+		<Page
+			title={ originalTitle }
+			subtitle="Editing"
+			breadcrumbs={ [
+				{ href: '/appeals', name: 'Appeals' },
+				{ href: `/appeals/${ slug }`, name: originalTitle },
+				'Editing',
+			] }
+		>
+			<AppealForm saved={ record } />
+		</Page>
+	);
 }
 
 export const getStaticProps: GetSinglePageProps< Appeal > = async ( context ) =>

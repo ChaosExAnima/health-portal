@@ -6,7 +6,7 @@ import {
 import { ParsedUrlQuery } from 'querystring';
 
 import { Timestamp, Replace } from 'global-types';
-import { Entity } from 'lib/entities/types';
+import { Entity, EntityInput } from 'lib/entities/types';
 
 // Contexts
 type PaginatedPageContext = {
@@ -32,7 +32,8 @@ interface SinglePageProps< T extends Entity > extends PageProps {
 	slug: string;
 	record: T;
 }
-interface SingleEditPageProps< T extends Entity > extends SinglePageProps< T > {
+interface SingleEditPageProps< T extends EntityInput >
+	extends SinglePageProps< T > {
 	originalTitle: string;
 }
 type GetSinglePageProps< T extends Entity > = GetStaticProps<
@@ -48,7 +49,7 @@ type GetPaginatedPageResult< T extends Entity > = Promise<
 type GetSinglePageResult< T extends Entity > = Promise<
 	GetStaticPropsResult< SinglePageProps< T > >
 >;
-type GetSingleEditPageResult< T extends Entity > = Promise<
+type GetSingleEditPageResult< T extends EntityInput > = Promise<
 	GetStaticPropsResult< SingleEditPageProps< T > >
 >;
 
