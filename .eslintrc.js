@@ -12,4 +12,5 @@ module.exports = {
 		'prettier/prettier': 'warn',
 		'jest/no-disabled-tests': 'off',
 	},
+	ignorePatterns: [],
 };
