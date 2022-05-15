@@ -134,6 +134,9 @@ abstract interface EntityInput {
 abstract interface WithProviderInput {
 	provider?: number | ProviderInput;
 }
+abstract interface WithLinksInput {
+	links?: number[];
+}
 interface ProviderInput extends EntityInput {
 	name: string;
 	slug?: string;
@@ -142,29 +145,31 @@ interface ProviderInput extends EntityInput {
 	email?: string;
 	website?: string;
 }
-interface AppealInput extends EntityInput, WithProviderInput {
+interface AppealInput extends EntityInput, WithProviderInput, WithLinksInput {
 	name: string;
 	status: APPEAL_STATUSES_TYPE;
 }
-interface CallInput extends EntityInput, WithProviderInput {
+interface CallInput extends EntityInput, WithProviderInput, WithLinksInput {
 	created: Date;
 	reps?: string[];
 	reason: string;
 	result: string;
 	reference?: string;
 }
-interface ClaimInput extends EntityInput {
+interface ClaimInput extends EntityInput, WithLinksInput {
+	created: Date;
 	number: string;
 	type: CLAIM_TYPES_TYPE;
 	status: CLAIM_STATUS_TYPE;
-	provider: Id | ProviderInput;
-	created: Date;
+	provider: number | ProviderInput;
+	billed?: number;
+	cost?: number;
 }
 interface FileInput extends EntityInput {
 	url: string;
 	source: string;
 }
-interface NoteInput extends EntityInput {
+interface NoteInput extends EntityInput, WithLinksInput {
 	description: string;
 	due?: Date;
 	resolved?: boolean;

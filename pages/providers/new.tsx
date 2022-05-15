@@ -1,21 +1,25 @@
-import { Box, Container } from '@mui/material';
+import { ProviderForm } from 'components/entity-forms';
+import Page from 'components/page';
+import { GetStaticPropsResult } from 'next';
 
 import type { PageProps } from 'pages/types';
 
-const NewProviderPage: React.FC< PageProps > = () => {
+export default function NewProviderPage( { title }: PageProps ) {
 	return (
-		<Container maxWidth="md">
-			<Box my={ 4 }>Hello</Box>
-		</Container>
+		<Page
+			title={ title }
+			breadcrumbs={ [ { href: '/providers', name: 'Providers' }, title ] }
+			maxWidth="sm"
+		>
+			<ProviderForm />
+		</Page>
 	);
-};
+}
 
-export async function getStaticProps(): Promise< { props: PageProps } > {
+export function getStaticProps(): GetStaticPropsResult< PageProps > {
 	return {
 		props: {
 			title: 'New provider',
 		},
 	};
 }
-
-export default NewProviderPage;

@@ -1,13 +1,7 @@
 import { capitalize } from 'lodash';
 import * as yup from 'yup';
 
-import {
-	APPEAL_STATUSES,
-	CLAIM_STATUSES,
-	CLAIM_STATUS_TYPE,
-	CLAIM_TYPES,
-	CLAIM_TYPES_TYPE,
-} from 'lib/constants';
+import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
 
 import {
 	AppealInput,
@@ -16,7 +10,6 @@ import {
 	FileInput,
 	NoteInput,
 	ProviderInput,
-	Slug,
 } from './types';
 
 // Primitives
@@ -25,7 +18,6 @@ export const stringSchema = yup.string().trim();
 // Fields
 export const idSchema = yup.number().integer().min( 0 ).default( 0 );
 export const savedIdSchema = idSchema.positive().required();
-export const slugSchema = yup.string< Slug >().trim();
 export const createdSchema = yup.date().default( () => new Date() );
 export const linksSchema = yup.array().of( savedIdSchema ).ensure();
 
@@ -33,7 +25,7 @@ export const linksSchema = yup.array().of( savedIdSchema ).ensure();
 export const providerSchema: yup.ObjectSchema< ProviderInput > = yup
 	.object( {
 		id: idSchema,
-		slug: slugSchema,
+		slug: stringSchema,
 		name: stringSchema.required(),
 		address: stringSchema,
 		email: stringSchema.email(),
@@ -86,14 +78,13 @@ export const callSchema: yup.ObjectSchema< CallInput > = yup
 	} )
 	.required();
 
-// @ts-expect-error
-export const claimSchema: ToSchema< ClaimInput > = yup
+export const claimSchema: yup.ObjectSchema< ClaimInput > = yup
 	.object( {
 		id: idSchema,
 		created: createdSchema.required(),
 		number: stringSchema.uppercase().required(),
-		status: yup.mixed< CLAIM_STATUS_TYPE >().oneOf( CLAIM_STATUSES ),
-		type: yup.mixed< CLAIM_TYPES_TYPE >().oneOf( CLAIM_TYPES ),
+		status: stringSchema.oneOf( CLAIM_STATUSES ).required(),
+		type: stringSchema.oneOf( CLAIM_TYPES ).required(),
 		billed: yup.number(),
 		cost: yup.number(),
 		provider: schemaNewOrId( providerSchema, 'provider' ).required(),
@@ -104,7 +95,7 @@ export const claimSchema: ToSchema< ClaimInput > = yup
 export const fileSchema: yup.ObjectSchema< FileInput > = yup
 	.object( {
 		id: idSchema,
-		slug: slugSchema.required(),
+		slug: stringSchema.required(),
 		created: createdSchema,
 		url: stringSchema.url().required(),
 		source: stringSchema.required(),
