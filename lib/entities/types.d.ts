@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import {
 	ConditionalExcept,
 	ConditionalKeys,
@@ -9,8 +10,8 @@ import {
 	Simplify,
 } from 'type-fest';
 import { ObjectSchema } from 'yup';
-import { Knex } from 'knex';
 
+import { Replace, Nullable, RemoveNever } from 'global-types';
 import {
 	APPEAL_STATUSES_TYPE,
 	CLAIM_STATUS_TYPE,
@@ -24,7 +25,6 @@ import {
 	MetaDB,
 	ProviderDB,
 } from 'lib/db/types';
-import { Replace, Nullable, RemoveNever } from 'global-types';
 
 // Opaque types
 type Id = Opaque< number, 'id' >;

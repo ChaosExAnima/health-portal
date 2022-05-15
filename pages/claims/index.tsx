@@ -1,6 +1,6 @@
-import { GetStaticPropsContext } from 'next';
-import { Container } from '@mui/material';
 import UploadIcon from '@mui/icons-material/CloudUpload';
+import { Container } from '@mui/material';
+import { GetStaticPropsContext } from 'next';
 
 import DataTable, {
 	DataTableColumn,
@@ -9,14 +9,7 @@ import DataTable, {
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
 import ProviderLink from 'components/provider-link';
-import {
-	formatClaimStatus,
-	formatClaimType,
-	formatCurrency,
-	formatDate,
-} from 'lib/strings';
 import { CLAIM_STATUSES } from 'lib/constants';
-import { rowToClaim } from 'lib/entities/claim';
 import {
 	getIdColumn,
 	getIds,
@@ -24,12 +17,19 @@ import {
 	queryMeta,
 	queryRelatedProviders,
 } from 'lib/db/helpers';
+import { rowToClaim } from 'lib/entities/claim';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
+import {
+	formatClaimStatus,
+	formatClaimType,
+	formatCurrency,
+	formatDate,
+} from 'lib/strings';
 
-import type { SetRequired } from 'type-fest';
 import type { StringKeys } from 'global-types';
-import type { PageProps } from 'pages/types';
 import type { Claim, Provider } from 'lib/entities/types';
+import type { PageProps } from 'pages/types';
+import type { SetRequired } from 'type-fest';
 
 export type ClaimsProps = PageProps & {
 	currentPage: number;

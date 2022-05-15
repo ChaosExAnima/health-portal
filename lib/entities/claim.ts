@@ -1,3 +1,8 @@
+import { isObjectWithKeys } from 'lib/casting';
+import * as constants from 'lib/constants';
+import { slugify } from 'lib/strings';
+
+import { rowToNote } from './note';
 import { ensureProvider, rowToProvider } from './provider';
 import {
 	dateToString,
@@ -7,13 +12,7 @@ import {
 	relatedOfType,
 	saveContentEntity,
 } from './utils';
-import * as constants from 'lib/constants';
-import { slugify } from 'lib/strings';
-import { isObjectWithKeys } from 'lib/casting';
-import { rowToNote } from './note';
 
-import type { Knex } from 'knex';
-import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import type {
 	Claim,
 	ClaimInput,
@@ -22,6 +21,8 @@ import type {
 	Id,
 	WithMetaAdditions,
 } from './types';
+import type { Knex } from 'knex';
+import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 
 type ClaimWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Claim,

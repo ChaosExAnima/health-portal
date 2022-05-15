@@ -1,4 +1,9 @@
 import router from 'next/router';
+import { inspect } from 'util';
+import { AnyObjectSchema, ValidationError } from 'yup';
+
+import { PlainObject } from 'global-types';
+
 import {
 	formatErrors,
 	handleUpdateType,
@@ -7,9 +12,6 @@ import {
 } from './entities';
 
 import type { Id, Slug } from 'lib/entities/types';
-import { AnyObjectSchema, ValidationError } from 'yup';
-import { inspect } from 'util';
-import { PlainObject } from 'global-types';
 
 const json = jest.fn().mockReturnValue( { success: true, slug: 'test' } );
 global.fetch = jest.fn().mockResolvedValue( { json } );

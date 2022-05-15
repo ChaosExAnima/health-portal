@@ -1,5 +1,5 @@
-import React from 'react';
 import { Container } from '@mui/material';
+import React from 'react';
 
 import DataTable, {
 	DataTableColumn,
@@ -19,17 +19,17 @@ import { useProvidersForSelect } from 'lib/hooks';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { formatDate } from 'lib/strings';
 
-import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import type { StringKeys } from 'global-types';
-import type { GetPaginatedPageResult, PaginatedPageProps } from 'pages/types';
 import type {
 	DateQuery,
 	PaginationQuery,
 	ProviderQuery,
 	WithQuery,
 } from 'components/data-table/types';
+import type { StringKeys } from 'global-types';
 import type { ContentDB } from 'lib/db/types';
 import type { Call, Provider } from 'lib/entities/types';
+import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import type { GetPaginatedPageResult, PaginatedPageProps } from 'pages/types';
 
 type CallsProps = PaginatedPageProps< Call > &
 	WithQuery< DateQuery & PaginationQuery & ProviderQuery >;

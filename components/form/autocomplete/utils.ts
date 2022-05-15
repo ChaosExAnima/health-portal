@@ -1,5 +1,3 @@
-import type { FilterOptionsState } from '@mui/material/useAutocomplete';
-
 import { isPlainObject } from 'lib/casting';
 
 import type {
@@ -7,6 +5,7 @@ import type {
 	AutocompleteOptionNew,
 	AutocompleteOptions,
 } from '../types';
+import type { FilterOptionsState } from '@mui/material/useAutocomplete';
 
 /**
  * Checks whether this is an AutocompleteOption.

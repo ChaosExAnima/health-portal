@@ -1,23 +1,23 @@
-import React from 'react';
 import { Container } from '@mui/material';
+import React from 'react';
 
+import Breadcrumbs from 'components/breadcrumbs';
 import { Detail, DetailsBox } from 'components/details-box';
 import Header from 'components/header';
-import Breadcrumbs from 'components/breadcrumbs';
 import ProviderLink from 'components/provider-link';
-import { rowToClaim } from 'lib/entities/claim';
 import {
 	queryClaims,
 	queryMeta,
 	queryProvider,
 	queryRelated,
 } from 'lib/db/helpers';
+import { rowToClaim } from 'lib/entities/claim';
 import { formatClaimStatus, formatCurrency, formatDate } from 'lib/strings';
 
-import type { GetStaticPathsResult } from 'next';
-import type { SetRequired } from 'type-fest';
-import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
 import type { Claim } from 'lib/entities/types';
+import type { GetStaticPathsResult } from 'next';
+import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
+import type { SetRequired } from 'type-fest';
 
 export type ClaimWithAdditions = SetRequired<
 	Claim,

@@ -1,10 +1,10 @@
 import { isSafeInteger } from 'lodash';
+
 import { isObjectWithKeys } from 'lib/casting';
 import { CONTENTS_TYPE } from 'lib/constants';
 import getDB from 'lib/db';
 import { upsertContent } from 'lib/db/update';
 
-import type { ContentDB, MetaDB } from 'lib/db/types';
 import type {
 	DateString,
 	Entity,
@@ -13,6 +13,7 @@ import type {
 	Id,
 	Slug,
 } from './types';
+import type { ContentDB, MetaDB } from 'lib/db/types';
 
 export function isValidId( id: number ): id is Id {
 	return isSafeInteger( id ) && id > 0;

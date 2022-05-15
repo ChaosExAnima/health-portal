@@ -1,7 +1,9 @@
 import { Box, Container, Theme } from '@mui/material';
+
 import Breadcrumbs from 'components/breadcrumbs';
 import Footer from 'components/footer';
 import Header from 'components/header';
+
 import { PageProps } from './types';
 
 export default function Page( {

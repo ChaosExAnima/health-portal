@@ -1,3 +1,5 @@
+import * as constants from 'lib/constants';
+
 import {
 	capitalize,
 	formatClaimStatus,
@@ -5,7 +7,6 @@ import {
 	priceToNumber,
 	slugify,
 } from './strings';
-import * as constants from 'lib/constants';
 
 describe( 'capitalize', () => {
 	test( 'Capitalizes words', () => {

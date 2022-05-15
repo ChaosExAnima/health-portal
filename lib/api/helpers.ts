@@ -1,11 +1,11 @@
-import { ValidationError } from 'yup';
 import debug from 'debug';
+import { isSafeInteger } from 'lodash';
+import { ValidationError } from 'yup';
 
 import { toArray } from 'lib/casting';
+
 import { StatusError } from './errors';
 
-import type { NextApiResponse } from 'next';
-import type { MaybeArray } from 'global-types';
 import type {
 	ErrorInformation,
 	ErrorResponse,
@@ -13,7 +13,8 @@ import type {
 	WithStatus,
 	WithStatusCallback,
 } from './types';
-import { isSafeInteger } from 'lodash';
+import type { MaybeArray } from 'global-types';
+import type { NextApiResponse } from 'next';
 
 const log = debug( 'lib/api' );
 

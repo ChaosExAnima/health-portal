@@ -1,3 +1,4 @@
+import { CacheProvider, EmotionCache } from '@emotion/react';
 import {
 	Box,
 	CssBaseline,
@@ -5,7 +6,6 @@ import {
 	StyledEngineProvider,
 } from '@mui/material';
 import Head from 'next/head';
-import { CacheProvider, EmotionCache } from '@emotion/react';
 
 import Navigation from 'components/navigation';
 import createEmotionCache from 'config/emotion-cache';

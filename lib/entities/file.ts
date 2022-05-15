@@ -1,10 +1,11 @@
 import { isObjectWithKeys } from 'lib/casting';
+import { CONTENT_FILE } from 'lib/constants';
+import { slugify } from 'lib/strings';
+
 import { FileEntity, FileInput, Id, Slug, WithMaybeNewId } from './types';
 import { dateToString, isEntity, saveContentEntity } from './utils';
 
 import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
-import { CONTENT_FILE } from 'lib/constants';
-import { slugify } from 'lib/strings';
 
 export function isFile( input: unknown ): input is FileEntity {
 	return (

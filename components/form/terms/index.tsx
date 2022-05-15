@@ -3,10 +3,9 @@ import { uniq } from 'lodash';
 import { ChangeEvent, useRef, useState } from 'react';
 import { useController } from 'react-hook-form';
 
-import ClearButton from './clear-button';
-import TermFieldChips from './chips';
-
 import { FormTermFieldProps, Input } from '../types';
+import TermFieldChips from './chips';
+import ClearButton from './clear-button';
 
 export default function FormTermField< Schema extends Input >( {
 	control,

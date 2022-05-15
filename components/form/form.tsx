@@ -1,16 +1,16 @@
-import { Box, Button } from '@mui/material';
-import DateAdaptor from '@mui/lab/AdapterDayjs';
 import { LocalizationProvider } from '@mui/lab';
+import DateAdaptor from '@mui/lab/AdapterDayjs';
+import { Box, Button } from '@mui/material';
 import React, { useState } from 'react';
 
 import ErrorNotice from 'components/error-notice';
 import { formatErrors, handleUpdateType } from 'lib/api/entities';
 import { isPlainObject } from 'lib/casting';
 
-import type { AnyObjectSchema } from 'yup';
+import type { FormProps } from './types';
 import type { ErrorHandler } from 'lib/api/types';
 import type { Slug } from 'lib/entities/types';
-import type { FormProps } from './types';
+import type { AnyObjectSchema } from 'yup';
 
 export default function Form< Schema extends AnyObjectSchema >( {
 	type,

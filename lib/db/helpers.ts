@@ -5,9 +5,7 @@ import { toArray } from 'lib/casting';
 import * as constants from 'lib/constants';
 import getDB from 'lib/db';
 
-import type { ParsedUrlQuery } from 'node:querystring';
 import type { StringKeys } from 'global-types';
-import type { Entity } from 'lib/entities/types';
 import type {
 	ContentDB,
 	DBCommonFields,
@@ -16,6 +14,8 @@ import type {
 	MetaDB,
 	ProviderDB,
 } from 'lib/db/types';
+import type { Entity } from 'lib/entities/types';
+import type { ParsedUrlQuery } from 'node:querystring';
 
 export function getIdColumn< T extends DBCommonFields >(
 	entities: T[],

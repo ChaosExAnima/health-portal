@@ -3,9 +3,10 @@ import {
 	GetStaticPropsContext,
 	GetStaticPropsResult,
 } from 'next';
-import { Entity } from 'lib/entities/types';
-import { Timestamp, Replace } from 'global-types';
 import { ParsedUrlQuery } from 'querystring';
+
+import { Timestamp, Replace } from 'global-types';
+import { Entity } from 'lib/entities/types';
 
 // Contexts
 type PaginatedPageContext = {
@@ -40,6 +41,7 @@ type GetSinglePageProps< T extends Entity > = GetStaticProps<
 >;
 
 // Returns
+type GetPageResult = GetStaticPropsResult< PageProps >;
 type GetPaginatedPageResult< T extends Entity > = Promise<
 	GetStaticPropsResult< PaginatedPageProps< WithTimestamps< T > > >
 >;

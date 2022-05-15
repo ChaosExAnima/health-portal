@@ -1,12 +1,7 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import { capitalize } from 'lodash';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 
-import {
-	CallWithAdditions,
-	getStaticPaths as getRootStaticPaths,
-	getStaticProps as getRootStaticProps,
-} from './index';
 import {
 	Form,
 	FormAutocompleteField,
@@ -18,13 +13,19 @@ import Page from 'components/page';
 import { callSchema } from 'lib/entities/schemas';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
+import {
+	CallWithAdditions,
+	getStaticPaths as getRootStaticPaths,
+	getStaticProps as getRootStaticProps,
+} from './index';
+
+import type { Call, CallInput } from 'lib/entities/types';
 import type { GetStaticPathsResult } from 'next';
 import type {
 	GetSingleEditPageResult,
 	GetSinglePageContext,
 	SingleEditPageProps,
 } from 'pages/types';
-import type { Call, CallInput } from 'lib/entities/types';
 
 function CallEditPage( {
 	record,

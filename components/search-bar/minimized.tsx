@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Box, Drawer, IconButton, InputBase } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { Box, Drawer, IconButton, InputBase } from '@mui/material';
+import React, { useState } from 'react';
 
 import styles from './styles';
 import { SearchBarProps } from './types';

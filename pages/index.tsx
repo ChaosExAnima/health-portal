@@ -1,17 +1,17 @@
-import { Box, Container, Grid, Paper, Typography } from '@mui/material';
 import UploadIcon from '@mui/icons-material/CloudUpload';
 import CallIcon from '@mui/icons-material/Phone';
+import { Box, Container, Grid, Paper, Typography } from '@mui/material';
 import { toInteger } from 'lodash';
 
 import ButtonLink from 'components/button-link';
 import Footer from 'components/footer';
 import InfoRow from 'components/info-row';
-import { extractCount, extractSum } from 'lib/db/utils';
 import { queryAllMeta, queryClaims } from 'lib/db/helpers';
+import { extractCount, extractSum } from 'lib/db/utils';
 import { formatCurrency } from 'lib/strings';
 
-import type { PageProps } from 'pages/types';
 import type { Claim } from 'lib/entities/types';
+import type { PageProps } from 'pages/types';
 
 type HomeProps = PageProps & {
 	welcomeMessage: string;

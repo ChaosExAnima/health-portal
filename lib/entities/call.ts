@@ -1,11 +1,11 @@
 import { isObjectWithKeys } from 'lib/casting';
 import { CONTENT_CALL, CONTENT_NOTE } from 'lib/constants';
 import { slugify } from 'lib/strings';
+
 import { rowToNote } from './note';
 import { ensureProvider, rowToProvider } from './provider';
+import { dateToString, isEntity, saveContentEntity } from './utils';
 
-import type { Knex } from 'knex';
-import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import type {
 	Call,
 	CallInput,
@@ -15,7 +15,8 @@ import type {
 	Slug,
 	WithMetaAdditions,
 } from './types';
-import { dateToString, isEntity, saveContentEntity } from './utils';
+import type { Knex } from 'knex';
+import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 
 type CallWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Call,

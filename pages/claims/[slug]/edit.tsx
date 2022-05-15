@@ -1,3 +1,6 @@
+import CancelIcon from '@mui/icons-material/Cancel';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
 import {
 	Box,
 	Breadcrumbs,
@@ -7,17 +10,15 @@ import {
 	Paper,
 	Typography,
 } from '@mui/material';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
-import DeleteIcon from '@mui/icons-material/Delete';
+
+import Link from 'components/link';
+import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import {
 	ClaimWithAdditions,
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
 } from '.';
-import Link from 'components/link';
-import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import type { GetStaticPaths } from 'next';
 import type { GetSinglePageProps, SinglePageProps } from 'pages/types';

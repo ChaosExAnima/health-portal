@@ -1,7 +1,7 @@
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { DevTool } from '@hookform/devtools';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { capitalize } from 'lodash';
+import { useForm } from 'react-hook-form';
 
 import {
 	Form,
@@ -12,10 +12,10 @@ import {
 } from 'components/form';
 import Page from 'components/page';
 import { callSchema } from 'lib/entities/schemas';
+import { CallInput } from 'lib/entities/types';
 
 import type { GetStaticProps } from 'next';
 import type { PageProps } from 'pages/types';
-import { CallInput } from 'lib/entities/types';
 
 function NewCallPage( { title }: PageProps ) {
 	const { control, handleSubmit } = useForm< CallInput >( {

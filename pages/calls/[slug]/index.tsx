@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
-import Page from 'components/page';
 import { Detail, DetailsBox } from 'components/details-box';
+import Page from 'components/page';
 import ProviderLink from 'components/provider-link';
 import {
 	queryCalls,
@@ -11,14 +11,14 @@ import {
 } from 'lib/db/helpers';
 import { rowToCall } from 'lib/entities/call';
 
-import type { GetStaticPathsResult } from 'next';
-import type { SetRequired } from 'type-fest';
 import type { Call } from 'lib/entities/types';
+import type { GetStaticPathsResult } from 'next';
 import type {
 	GetSinglePageContext,
 	GetSinglePageResult,
 	SinglePageProps,
 } from 'pages/types';
+import type { SetRequired } from 'type-fest';
 
 export type CallWithAdditions = SetRequired< Call, 'notes' | 'reps' >;
 

@@ -1,17 +1,17 @@
-import React from 'react';
 import { Container } from '@mui/material';
+import React from 'react';
 
-import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import { Detail, DetailsBox } from 'components/details-box';
+import Header from 'components/header';
 import { fromArray } from 'lib/casting';
 import { queryAllProviders, queryContentType } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 
-import type { GetStaticPathsResult, GetStaticPropsContext } from 'next';
-import type { SetRequired } from 'type-fest';
-import type { GetSinglePageResult, SinglePageProps } from 'pages/types';
 import type { Provider } from 'lib/entities/types';
+import type { GetStaticPathsResult, GetStaticPropsContext } from 'next';
+import type { GetSinglePageResult, SinglePageProps } from 'pages/types';
+import type { SetRequired } from 'type-fest';
 
 export type ProviderWithAdditions = SetRequired< Provider, 'claims' | 'notes' >;
 

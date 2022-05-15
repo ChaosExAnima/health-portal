@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { Form, FormTextField } from 'components/form';
 import { providerSchema } from 'lib/entities/schemas';
 
-import type { ProviderInput } from 'lib/entities/types';
 import type { EntityFormProps } from './types';
+import type { ProviderInput } from 'lib/entities/types';
 
 export default function ProviderForm( {
 	saved,

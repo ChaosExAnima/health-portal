@@ -1,9 +1,10 @@
 import { isObjectWithKeys } from 'lib/casting';
 import * as constants from 'lib/constants';
 import { slugify } from 'lib/strings';
+
 import { rowToClaim } from './claim';
-import { ensureProvider } from './provider';
 import { rowToNote } from './note';
+import { ensureProvider } from './provider';
 import {
 	dateToString,
 	inReadonlyArray,
@@ -11,8 +12,6 @@ import {
 	saveContentEntity,
 } from './utils';
 
-import type { Knex } from 'knex';
-import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import type {
 	Appeal,
 	AppealInput,
@@ -22,6 +21,8 @@ import type {
 	Id,
 	WithRelationAdditions,
 } from './types';
+import type { Knex } from 'knex';
+import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 
 type AppealWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Appeal,

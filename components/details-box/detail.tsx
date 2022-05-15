@@ -1,5 +1,5 @@
-import React, { PropsWithChildren } from 'react';
 import { Stack, Typography } from '@mui/material';
+import React, { PropsWithChildren } from 'react';
 
 import { DetailProps } from './types';
 

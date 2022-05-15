@@ -1,4 +1,5 @@
 import { knex } from 'knex';
+
 import { Nullable } from 'global-types';
 import {
 	CONTENTS_TYPE,

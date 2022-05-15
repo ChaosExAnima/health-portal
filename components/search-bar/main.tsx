@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
 import {
 	Autocomplete,
 	Popper,
@@ -8,7 +8,7 @@ import {
 	Box,
 	AutocompleteRenderInputParams,
 } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import React, { useState } from 'react';
 
 import styles from './styles';
 import { SearchBarProps } from './types';

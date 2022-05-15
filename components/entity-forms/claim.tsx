@@ -1,5 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { MenuItem } from '@mui/material';
+import { useForm } from 'react-hook-form';
+
 import {
 	Form,
 	FormTextField,
@@ -15,7 +17,7 @@ import {
 import { claimSchema } from 'lib/entities/schemas';
 import { ClaimInput } from 'lib/entities/types';
 import { formatClaimStatus, formatClaimType } from 'lib/strings';
-import { useForm } from 'react-hook-form';
+
 import { EntityFormProps } from './types';
 
 export default function ClaimForm( { saved }: EntityFormProps< ClaimInput > ) {

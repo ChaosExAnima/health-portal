@@ -1,5 +1,8 @@
 import { toSafeInteger } from 'lodash';
 
+import type { Knex } from 'knex';
+import type { DBCommonFields } from 'lib/db/types';
+import type { Entity } from 'lib/entities/types';
 import type {
 	GetStaticPaths,
 	GetStaticPathsContext,
@@ -7,10 +10,7 @@ import type {
 	GetStaticProps,
 	GetStaticPropsContext,
 } from 'next';
-import type { Knex } from 'knex';
 import type { GetSingleEditPageResult, SinglePageProps } from 'pages/types';
-import type { DBCommonFields } from 'lib/db/types';
-import type { Entity } from 'lib/entities/types';
 
 export function isSSR(): boolean {
 	return typeof window === 'undefined';

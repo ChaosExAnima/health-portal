@@ -5,19 +5,12 @@ import { isObjectWithKeys, isPlainObject } from 'lib/casting';
 import { CONTENT_CLAIM, CONTENT_NOTE, TABLE_PROVIDERS } from 'lib/constants';
 import { queryProvider } from 'lib/db/helpers';
 import { slugify } from 'lib/strings';
+
 import { rowToClaim } from './claim';
 import rowToImport from './import';
 import { rowToNote } from './note';
 import { dateToString, isEntity, relatedOfType } from './utils';
 
-import type { Knex } from 'knex';
-import type { SetRequired } from 'type-fest';
-import type {
-	ContentDB,
-	DBMaybeInsert,
-	ImportDB,
-	ProviderDB,
-} from 'lib/db/types';
 import type {
 	Claim,
 	Import,
@@ -28,6 +21,14 @@ import type {
 	ProviderInput,
 	WithImport,
 } from './types';
+import type { Knex } from 'knex';
+import type {
+	ContentDB,
+	DBMaybeInsert,
+	ImportDB,
+	ProviderDB,
+} from 'lib/db/types';
+import type { SetRequired } from 'type-fest';
 
 type ProviderAdditions = {
 	relations?: ContentDB[];

@@ -2,19 +2,20 @@ import React from 'react';
 
 import Page from 'components/page';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
+
 import {
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
 	ProviderWithAdditions,
 } from './index';
 
+import type { ActionItem } from 'components/header';
+import type { Provider } from 'lib/entities/types';
 import type {
 	GetSingleEditPageResult,
 	GetSinglePageContext,
 	SingleEditPageProps,
 } from 'pages/types';
-import type { Provider } from 'lib/entities/types';
-import type { ActionItem } from 'components/header';
 
 export default function ProviderEditPage( {
 	record,

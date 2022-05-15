@@ -1,13 +1,12 @@
 import { TABLES_TYPE } from 'lib/constants';
 
-import type { Knex } from 'knex';
-
 import type {
 	ContentDB,
 	DBCommonFields,
 	DBMaybeInsert,
 	ProviderDB,
 } from './types';
+import type { Knex } from 'knex';
 
 export async function upsert< Table extends DBCommonFields >(
 	table: TABLES_TYPE,

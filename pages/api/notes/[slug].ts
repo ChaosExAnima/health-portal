@@ -7,9 +7,9 @@ import {
 import { fromArray } from 'lib/casting';
 import { getContentBySlug } from 'lib/db/helpers';
 
-import type { NextApiRequest, NextApiResponse } from 'next';
 import type { EntityUpdateResponse, RecordResponse } from 'lib/api/types';
 import type { Note } from 'lib/entities/types';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(
 	req: NextApiRequest,

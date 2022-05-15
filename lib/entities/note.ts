@@ -1,10 +1,11 @@
 import { isDate } from 'lodash';
 
-import { Id, Note, NoteInput } from './types';
+import { CONTENT_NOTE } from 'lib/constants';
 import { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import { slugify } from 'lib/strings';
+
+import { Id, Note, NoteInput } from './types';
 import { dateToString, isEntity, saveContentEntity } from './utils';
-import { CONTENT_NOTE } from 'lib/constants';
 
 export function isNote( input: unknown ): input is Note {
 	return isEntity( input ) && 'description' in input;

@@ -1,6 +1,7 @@
+import { GetStaticPropsResult } from 'next';
+
 import { ProviderForm } from 'components/entity-forms';
 import Page from 'components/page';
-import { GetStaticPropsResult } from 'next';
 
 import type { PageProps } from 'pages/types';
 

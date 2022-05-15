@@ -8,9 +8,10 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/router';
 
-import SearchBar from 'components/search-bar';
 import Link from 'components/link';
+import SearchBar from 'components/search-bar';
 import navigation from 'config/navigation';
+
 import NavItem from './nav-item';
 
 import type { SearchOption } from 'components/search-bar/types';

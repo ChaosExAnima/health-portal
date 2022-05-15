@@ -1,6 +1,7 @@
 import Page from 'components/page';
 import { Appeal } from 'lib/entities/types';
 import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
+
 import {
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,

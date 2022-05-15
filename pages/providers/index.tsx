@@ -1,17 +1,17 @@
-import React from 'react';
 import { Container, Link } from '@mui/material';
+import React from 'react';
 
-import Header, { ActionItem } from 'components/header';
-import Footer from 'components/footer';
 import DataTable, { DataTableColumn } from 'components/data-table';
+import Footer from 'components/footer';
+import Header, { ActionItem } from 'components/header';
 import { queryAllProviders } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 
-import type { GetStaticPropsContext } from 'next';
 import type { StringKeys } from 'global-types';
-import type { PaginatedPageProps } from 'pages/types';
 import type { Provider } from 'lib/entities/types';
+import type { GetStaticPropsContext } from 'next';
+import type { PaginatedPageProps } from 'pages/types';
 
 export default function ProvidersPage( {
 	currentPage,

@@ -1,8 +1,9 @@
 import { SetRequired } from 'type-fest';
 
+import { ContentDB, ImportDB } from 'lib/db/types';
+
 import { rowToFile } from './file';
 import { Id, Import } from './types';
-import { ContentDB, ImportDB } from 'lib/db/types';
 import { dateToString } from './utils';
 
 type ImportAdditions = {

@@ -1,4 +1,4 @@
-import React from 'react';
+import createEmotionServer from '@emotion/server/create-instance';
 import Document, {
 	Html,
 	Head,
@@ -6,10 +6,10 @@ import Document, {
 	NextScript,
 	DocumentContext,
 } from 'next/document';
-import createEmotionServer from '@emotion/server/create-instance';
+import React from 'react';
 
-import theme from 'config/theme';
 import createEmotionCache from 'config/emotion-cache';
+import theme from 'config/theme';
 
 export default class HealthPortal extends Document {
 	render(): JSX.Element {
