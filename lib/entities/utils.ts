@@ -1,17 +1,19 @@
 import { isSafeInteger } from 'lodash';
+
 import { isObjectWithKeys } from 'lib/casting';
 import { CONTENTS_TYPE } from 'lib/constants';
 import getDB from 'lib/db';
 import { upsertContent } from 'lib/db/update';
 
-import type { ContentDB, MetaDB } from 'lib/db/types';
 import type {
+	DateString,
 	Entity,
+	EntityInput,
 	EntityToRowFunction,
 	Id,
-	InputEntity,
 	Slug,
 } from './types';
+import type { ContentDB, MetaDB } from 'lib/db/types';
 
 export function isValidId( id: number ): id is Id {
 	return isSafeInteger( id ) && id > 0;
@@ -21,8 +23,8 @@ export function isSlug( slug: string ): slug is Slug {
 	return !! slug;
 }
 
-export function dateToString( date: Date ): string {
-	return date.toUTCString();
+export function dateToString( date?: Date ): DateString {
+	return ( date || new Date() ).toJSON() as DateString;
 }
 
 export function getMeta( key: string, rows: MetaDB[] ): string | null {
@@ -33,9 +35,12 @@ export function getMeta( key: string, rows: MetaDB[] ): string | null {
 	return meta.value;
 }
 
-export function getNumericMeta( key: string, rows: MetaDB[] ): number | null {
+export function getNumericMeta(
+	key: string,
+	rows: MetaDB[]
+): number | undefined {
 	const value = getMeta( key, rows );
-	return value ? Number.parseFloat( value ) : null;
+	return value ? Number.parseFloat( value ) : undefined;
 }
 
 export function relatedOfType< R extends ContentDB >(
@@ -68,7 +73,7 @@ export function inReadonlyArray< T extends readonly string[] >(
 	return types.includes( input ) ? input : fallback || false;
 }
 
-export async function saveContentEntity< Input extends InputEntity >(
+export async function saveContentEntity< Input extends EntityInput >(
 	entity: Input,
 	entityToRow: EntityToRowFunction< Input >
 ): Promise< Slug > {

@@ -1,26 +1,23 @@
-import React from 'react';
 import { Container, Link } from '@mui/material';
+import React from 'react';
 
-import Header, { ActionItem } from 'components/header';
-import Footer from 'components/footer';
 import DataTable, { DataTableColumn } from 'components/data-table';
+import Footer from 'components/footer';
+import Header, { ActionItem } from 'components/header';
 import { queryAllProviders } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 
-import type {
-	PaginatedPageContext,
-	PaginatedPageProps,
-	StringKeys,
-} from 'global-types';
+import type { StringKeys } from 'global-types';
 import type { Provider } from 'lib/entities/types';
-import type { GetStaticProps } from 'next';
+import type { GetStaticPropsContext } from 'next';
+import type { PaginatedPageProps } from 'pages/types';
 
-const ProvidersPage: React.FC< PaginatedPageProps< Provider > > = ( {
+export default function ProvidersPage( {
 	currentPage,
 	totalPages,
 	records,
-} ) => {
+}: PaginatedPageProps< Provider > ) {
 	const actions: ActionItem[] = [
 		{
 			href: '/providers/new',
@@ -61,12 +58,9 @@ const ProvidersPage: React.FC< PaginatedPageProps< Provider > > = ( {
 			<Footer wrap />
 		</>
 	);
-};
+}
 
-export const getStaticProps: GetStaticProps<
-	PaginatedPageProps< Provider >,
-	PaginatedPageContext
-> = async ( { params } ) => {
+export async function getStaticProps( { params }: GetStaticPropsContext ) {
 	// Pagination.
 	const pageSize = 20;
 	const currentPage = getPageNumber( params?.page );
@@ -80,6 +74,7 @@ export const getStaticProps: GetStaticProps<
 		.limit( pageSize )
 		.offset( currentPage * pageSize );
 	const records = calls.map( ( row ) => rowToProvider( row ) );
+
 	return {
 		props: {
 			title: 'Providers',
@@ -88,6 +83,4 @@ export const getStaticProps: GetStaticProps<
 			records,
 		},
 	};
-};
-
-export default ProvidersPage;
+}

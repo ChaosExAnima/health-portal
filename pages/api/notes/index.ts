@@ -5,13 +5,13 @@ import {
 	respondWithStatus,
 } from 'lib/api/helpers';
 
-import type { NextApiRequest, NextApiResponse } from 'next';
 import type {
 	EntityUpdateResponse,
 	RecordsResponse,
 	WithStatus,
 } from 'lib/api/types';
 import type { Note } from 'lib/entities/types';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 type NotesResponse = RecordsResponse< Note > | EntityUpdateResponse;
 

@@ -7,15 +7,16 @@ import DataTable, {
 } from 'components/data-table';
 import Footer from 'components/footer';
 import Header, { ActionItem } from 'components/header';
-import { rowToAppeal } from 'lib/entities/appeal';
 import { queryAppeals } from 'lib/db/helpers';
+import { rowToAppeal } from 'lib/entities/appeal';
 import { useProvidersForSelect } from 'lib/hooks';
 import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { capitalize } from 'lib/strings';
 
-import type { PaginatedPageProps, StringKeys } from 'global-types';
-import type { GetStaticPropsContext } from 'next';
+import type { StringKeys } from 'global-types';
 import type { Appeal } from 'lib/entities/types';
+import type { GetStaticPropsContext } from 'next';
+import type { PaginatedPageProps } from 'pages/types';
 
 type AppealsProps = PaginatedPageProps< Appeal >;
 

@@ -1,18 +1,18 @@
+import { isObjectWithKeys } from 'lib/casting';
+import * as constants from 'lib/constants';
+import { slugify } from 'lib/strings';
+
+import { rowToNote } from './note';
 import { ensureProvider, rowToProvider } from './provider';
 import {
+	dateToString,
 	getNumericMeta,
 	inReadonlyArray,
 	isEntity,
 	relatedOfType,
 	saveContentEntity,
 } from './utils';
-import * as constants from 'lib/constants';
-import { slugify } from 'lib/strings';
-import { isObjectWithKeys } from 'lib/casting';
-import { rowToNote } from './note';
 
-import type { Knex } from 'knex';
-import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import type {
 	Claim,
 	ClaimInput,
@@ -21,6 +21,8 @@ import type {
 	Id,
 	WithMetaAdditions,
 } from './types';
+import type { Knex } from 'knex';
+import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 
 type ClaimWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Claim,
@@ -46,13 +48,13 @@ export function rowToClaim< T extends EntityAdditions >(
 	row: ContentDB,
 	additions: T = {} as T
 ): ClaimWithAdditions< T > {
-	const { meta, provider, relations } = additions;
+	const { meta, provider, providers, relations } = additions;
 	const { id, identifier: number, created, info, status } = row;
 	const claim: Claim = {
 		id: id as Id,
 		number,
 		slug: slugify( number ),
-		created,
+		created: dateToString( created ),
 		status: inReadonlyArray(
 			status,
 			constants.CLAIM_STATUSES,
@@ -67,6 +69,11 @@ export function rowToClaim< T extends EntityAdditions >(
 
 	if ( provider ) {
 		claim.provider = rowToProvider( provider );
+	} else if ( providers ) {
+		const providerRow = providers.find(
+			( { id: providerId } ) => providerId === row.providerId
+		);
+		claim.provider = providerRow ? rowToProvider( providerRow ) : undefined;
 	}
 
 	const contentMeta = ( meta || [] ).filter(
@@ -95,13 +102,12 @@ export async function claimToRow(
 	}
 	return {
 		id: input.id,
-		created: input.created,
-		type: constants.CONTENT_APPEAL,
+		created: new Date( input.created ),
+		type: constants.CONTENT_CLAIM,
 		identifier: input.number,
 		status: input.status,
 		info: String( input.type ),
 		providerId,
-		importId: null,
 	};
 }
 

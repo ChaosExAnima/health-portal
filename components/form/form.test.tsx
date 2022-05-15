@@ -8,11 +8,12 @@ import {
 } from '@testing-library/react';
 
 import { formatErrors, handleUpdateType } from 'lib/api/entities';
+
 import Form from './form';
 
-import type { AnyObjectSchema } from 'yup';
-import type { BaseSyntheticEvent } from 'react';
 import type { FormProps } from './types';
+import type { BaseSyntheticEvent } from 'react';
+import type { AnyObjectSchema } from 'yup';
 
 jest.mock( 'lib/api/entities', () => ( {
 	formatErrors: jest.fn( ( arg0: any ) =>

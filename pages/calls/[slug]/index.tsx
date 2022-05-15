@@ -1,28 +1,26 @@
 import dayjs from 'dayjs';
 
-import Page from 'components/page';
 import { Detail, DetailsBox } from 'components/details-box';
+import Page from 'components/page';
 import ProviderLink from 'components/provider-link';
-import { rowToCall } from 'lib/entities/call';
 import {
 	queryCalls,
 	queryMeta,
 	queryProvider,
 	queryRelatedOfType,
-	queryRelatedProviders,
 } from 'lib/db/helpers';
-import { Call } from 'lib/entities/types';
-import { serialize } from 'lib/static-helpers';
+import { rowToCall } from 'lib/entities/call';
 
+import type { Call } from 'lib/entities/types';
 import type { GetStaticPathsResult } from 'next';
-import type { SetRequired } from 'type-fest';
 import type {
 	GetSinglePageContext,
 	GetSinglePageResult,
 	SinglePageProps,
-} from 'global-types';
+} from 'pages/types';
+import type { SetRequired } from 'type-fest';
 
-type CallWithAdditions = SetRequired< Call, 'notes' | 'reps' >;
+export type CallWithAdditions = SetRequired< Call, 'notes' | 'reps' >;
 
 export default function CallPage( {
 	title,
@@ -78,24 +76,23 @@ export async function getStaticProps( {
 	}
 	const date = dayjs( call.created ).format( 'M/D/YY' );
 	let title = `Call on ${ date }`;
-	if ( call.providerId ) {
-		const provider = await queryRelatedProviders( call.providerId ).first();
-		if ( provider ) {
-			title = `Call with ${ provider.name } on ${ date }`;
-		}
+	const provider = call.providerId
+		? await queryProvider( call.providerId )
+		: undefined;
+	if ( provider ) {
+		title = `Call with ${ provider.name } on ${ date }`;
 	}
 
 	const meta = await queryMeta( call.id );
 	const relations = await queryRelatedOfType( call.id, 'note' );
-	const provider = await queryProvider( call.providerId );
-	const rawRecord = rowToCall( call, { meta, relations, provider } );
+	const record = rowToCall( call, { meta, relations, provider } );
 
 	return {
 		props: {
 			id: call.id,
 			slug: call.identifier,
 			title,
-			record: serialize( rawRecord ),
+			record,
 		},
 	};
 }

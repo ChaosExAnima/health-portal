@@ -1,3 +1,12 @@
+import {
+	DatePickerProps as MuiDatePickerProps,
+	TimePickerProps as MuiTimePickerProps,
+	DateTimePickerProps as MuiDateTimePickerProps,
+} from '@mui/lab';
+import {
+	StandardTextFieldProps as MuiTextFieldProps,
+	ChipProps as MuiChipProps,
+} from '@mui/material';
 import { MutableRefObject, ReactNode } from 'react';
 import {
 	Control,
@@ -10,15 +19,6 @@ import {
 } from 'react-hook-form';
 import { Promisable } from 'type-fest';
 import { AnyObjectSchema, InferType } from 'yup';
-import {
-	StandardTextFieldProps as MuiTextFieldProps,
-	ChipProps as MuiChipProps,
-} from '@mui/material';
-import {
-	DatePickerProps as MuiDatePickerProps,
-	TimePickerProps as MuiTimePickerProps,
-	DateTimePickerProps as MuiDateTimePickerProps,
-} from '@mui/lab';
 
 import type { API_ENTITY_TYPE } from 'lib/constants';
 
@@ -90,20 +90,10 @@ export interface FormTermFieldChipsProps extends MuiChipProps {
 type WithoutFormValues< I > = Omit< I, 'value' | 'onChange' | 'renderInput' >;
 export interface FormDateFieldProps< S >
 	extends FormBaseFieldProps< S >,
-		WithoutFormValues< MuiDatePickerProps > {
-	type?: 'date';
-}
+		WithoutFormValues< MuiDatePickerProps > {}
 export interface FormTimeFieldProps< S >
 	extends FormBaseFieldProps< S >,
-		WithoutFormValues< MuiTimePickerProps > {
-	type: 'time';
-}
+		WithoutFormValues< MuiTimePickerProps > {}
 export interface FormDateTimeFieldProps< S >
 	extends FormBaseFieldProps< S >,
-		WithoutFormValues< MuiDateTimePickerProps > {
-	type: 'datetime';
-}
-export type FormDateTimeAnyFieldProps< S > =
-	| FormDateFieldProps< S >
-	| FormTimeFieldProps< S >
-	| FormDateTimeFieldProps< S >;
+		WithoutFormValues< MuiDateTimePickerProps > {}

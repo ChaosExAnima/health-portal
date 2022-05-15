@@ -1,6 +1,11 @@
 import csv from 'csv-parser';
 import debug from 'debug';
 
+import * as constants from 'lib/constants';
+import getDB from 'lib/db';
+import { queryMeta } from 'lib/db/helpers';
+import { slugify } from 'lib/strings';
+
 import {
 	getProviderFromClaim,
 	isAnthemClaim,
@@ -12,16 +17,12 @@ import {
 	parseTestClaim,
 } from './test-utils';
 import { getHash } from './utils';
-import * as constants from 'lib/constants';
-import getDB from 'lib/db';
-import { queryMeta } from 'lib/db/helpers';
-import { slugify } from 'lib/strings';
 
-import type { Readable } from 'stream';
-import type { Knex } from 'knex';
 import type { RawClaim, RawData } from './types';
 import type { Nullable } from 'global-types';
+import type { Knex } from 'knex';
 import type { ContentDB, ImportDB, ProviderDB } from 'lib/db/types';
+import type { Readable } from 'stream';
 
 const log = debug( 'app:parser' );
 

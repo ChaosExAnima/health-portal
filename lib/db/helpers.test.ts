@@ -1,4 +1,5 @@
 import mockKnex, { queryBuilder } from '__mocks__/knex';
+
 import { queryProviderBySlug } from './helpers';
 
 describe( 'queryProviderBySlug', () => {

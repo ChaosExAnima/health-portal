@@ -1,9 +1,11 @@
-import type { FilterOptionsState } from '@mui/material/useAutocomplete';
+import { isPlainObject } from 'lib/casting';
+
 import type {
 	AutocompleteOption,
 	AutocompleteOptionNew,
 	AutocompleteOptions,
 } from '../types';
+import type { FilterOptionsState } from '@mui/material/useAutocomplete';
 
 /**
  * Checks whether this is an AutocompleteOption.
@@ -14,12 +16,7 @@ import type {
 export function isOptionObject(
 	option: unknown
 ): option is AutocompleteOption {
-	return (
-		!! option &&
-		typeof option === 'object' &&
-		'label' in option &&
-		'id' in option
-	);
+	return isPlainObject( option ) && 'label' in option && 'id' in option;
 }
 
 /**
@@ -40,13 +37,15 @@ export function isNewOptionObject(
  * @param {unknown} option Unknown object!
  * @return {string} The label to display in the input.
  */
-export function getOptionLabel( option: unknown ): string {
+export function getOptionLabel( option: unknown, targetKey?: string ): string {
 	if ( typeof option === 'string' ) {
 		return option;
 	} else if ( isNewOptionObject( option ) ) {
 		return option.value;
 	} else if ( isOptionObject( option ) ) {
 		return option.label;
+	} else if ( targetKey && isPlainObject( option ) && targetKey in option ) {
+		return option[ targetKey ];
 	}
 	return '';
 }

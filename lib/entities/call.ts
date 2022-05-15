@@ -1,11 +1,11 @@
 import { isObjectWithKeys } from 'lib/casting';
 import { CONTENT_CALL, CONTENT_NOTE } from 'lib/constants';
 import { slugify } from 'lib/strings';
+
 import { rowToNote } from './note';
 import { ensureProvider, rowToProvider } from './provider';
+import { dateToString, isEntity, saveContentEntity } from './utils';
 
-import type { Knex } from 'knex';
-import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 import type {
 	Call,
 	CallInput,
@@ -15,7 +15,8 @@ import type {
 	Slug,
 	WithMetaAdditions,
 } from './types';
-import { isEntity, saveContentEntity } from './utils';
+import type { Knex } from 'knex';
+import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 
 type CallWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Call,
@@ -53,12 +54,11 @@ export async function callToRow(
 	return {
 		id: id,
 		type: CONTENT_CALL,
-		created: created ?? new Date(),
+		created: new Date( created ),
 		identifier,
 		info: String( reason ),
 		status: String( result ),
 		providerId: provider.id,
-		importId: null,
 	};
 }
 
@@ -70,7 +70,7 @@ export function rowToCall< A extends EntityAdditions >(
 	const call: Call = {
 		id: id as Id,
 		slug: slug as Slug,
-		created: row.created,
+		created: dateToString( row.created ),
 		reason: info ?? '',
 		result: status,
 	};

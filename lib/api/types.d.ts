@@ -1,5 +1,5 @@
-import { API_ENTITY_TYPE } from 'lib/constants';
 import { MaybeArray } from 'global-types';
+import { API_ENTITY_TYPE } from 'lib/constants';
 import { Entity, Slug } from 'lib/entities/types';
 
 type Methods = 'GET' | 'POST';

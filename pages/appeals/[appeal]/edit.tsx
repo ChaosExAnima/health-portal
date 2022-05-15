@@ -1,27 +1,39 @@
-import { Box, Container } from '@mui/material';
+import { AppealForm } from 'components/entity-forms';
+import Page from 'components/page';
+import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import {
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
-} from '.';
-import { Appeal } from 'lib/entities/types';
-import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
+} from './index';
 
-import type { GetStaticPaths } from 'next';
-import type { GetSinglePageProps, SinglePageProps } from 'global-types';
+import type { Appeal } from 'lib/entities/types';
+import type { GetSinglePageContext, SingleEditPageProps } from 'pages/types';
 
-const AppealEditPage: React.FC< SinglePageProps< Appeal > > = () => {
+export default function AppealEditPage( {
+	originalTitle,
+	record,
+	slug,
+}: SingleEditPageProps< Appeal > ) {
 	return (
-		<Container maxWidth="md">
-			<Box my={ 4 }>Hello</Box>
-		</Container>
+		<Page
+			title={ originalTitle }
+			subtitle="Editing"
+			breadcrumbs={ [
+				{ href: '/appeals', name: 'Appeals' },
+				{ href: `/appeals/${ slug }`, name: originalTitle },
+				'Editing',
+			] }
+		>
+			<AppealForm saved={ record } />
+		</Page>
 	);
-};
+}
 
-export const getStaticProps: GetSinglePageProps< Appeal > = async ( context ) =>
-	staticPropsEdit( getRootStaticProps, context );
+export function getStaticProps( context: GetSinglePageContext ) {
+	return staticPropsEdit( getRootStaticProps, context );
+}
 
-export const getStaticPaths: GetStaticPaths = async ( context ) =>
-	staticPathsEdit( getRootStaticPaths, context );
-
-export default AppealEditPage;
+export function getStaticPaths( context: GetSinglePageContext ) {
+	return staticPathsEdit( getRootStaticPaths, context );
+}

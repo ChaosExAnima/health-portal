@@ -13,9 +13,7 @@ import ButtonLink from 'components/button-link';
 import Footer from 'components/footer';
 import Header from 'components/header';
 
-import type { PageProps } from 'global-types';
-
-type ClaimUploadPageProps = PageProps;
+import type { GetPageResult, PageProps } from 'pages/types';
 
 const styles = {
 	dropzone: {
@@ -41,7 +39,7 @@ const styles = {
 	},
 };
 
-const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
+export default function ClaimUploadPage( { title }: PageProps ) {
 	const {
 		getRootProps,
 		getInputProps,
@@ -58,10 +56,7 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 	return (
 		<Container maxWidth="md">
 			<Breadcrumbs
-				breadcrumbs={ [
-					{ href: '/claims', name: 'Claims' },
-					'Upload claims',
-				] }
+				breadcrumbs={ [ { href: '/claims', name: 'Claims' }, title ] }
 			/>
 			<Header title="Upload Claims" />
 			{ hasUploadError && (
@@ -104,16 +99,12 @@ const ClaimUploadPage: React.FC< ClaimUploadPageProps > = () => {
 			<Footer />
 		</Container>
 	);
-};
+}
 
-export async function getStaticProps(): Promise< {
-	props: ClaimUploadPageProps;
-} > {
+export function getStaticProps(): GetPageResult {
 	return {
 		props: {
 			title: 'Upload Claims',
 		},
 	};
 }
-
-export default ClaimUploadPage;

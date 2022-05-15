@@ -1,6 +1,7 @@
-import { CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
 import { capitalize } from 'lodash';
 import * as yup from 'yup';
+
+import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
 
 import {
 	AppealInput,
@@ -9,8 +10,6 @@ import {
 	FileInput,
 	NoteInput,
 	ProviderInput,
-	Slug,
-	ToSchema,
 } from './types';
 
 // Primitives
@@ -19,15 +18,14 @@ export const stringSchema = yup.string().trim();
 // Fields
 export const idSchema = yup.number().integer().min( 0 ).default( 0 );
 export const savedIdSchema = idSchema.positive().required();
-export const slugSchema = yup.string< Slug >().trim();
 export const createdSchema = yup.date().default( () => new Date() );
 export const linksSchema = yup.array().of( savedIdSchema ).ensure();
 
 // Entities
-export const providerSchema: ToSchema< ProviderInput > = yup
+export const providerSchema: yup.ObjectSchema< ProviderInput > = yup
 	.object( {
 		id: idSchema,
-		slug: slugSchema,
+		slug: stringSchema,
 		name: stringSchema.required(),
 		address: stringSchema,
 		email: stringSchema.email(),
@@ -42,28 +40,28 @@ export const providerSchema: ToSchema< ProviderInput > = yup
 	} )
 	.required();
 
-export const noteSchema: ToSchema< NoteInput > = yup
+export const noteSchema: yup.ObjectSchema< NoteInput > = yup
 	.object( {
 		id: idSchema,
-		description: stringSchema,
+		description: stringSchema.default( '' ).required(),
 		due: yup.date(),
 		resolved: yup.bool(),
 		links: linksSchema,
 	} )
 	.required();
 
-export const appealSchema: ToSchema< AppealInput > = yup
+export const appealSchema: yup.ObjectSchema< AppealInput > = yup
 	.object( {
 		id: idSchema,
 		name: stringSchema.required(),
-		status: stringSchema.oneOf( [ 'foo' ] ).required(),
+		status: stringSchema.oneOf( APPEAL_STATUSES ).required(),
 		notes: schemaNewOrId( noteSchema, 'note' ),
 		provider: schemaNewOrId( providerSchema, 'provider' ),
 		links: linksSchema,
 	} )
 	.required();
 
-export const callSchema: ToSchema< CallInput > = yup
+export const callSchema: yup.ObjectSchema< CallInput > = yup
 	.object( {
 		id: idSchema,
 		created: createdSchema,
@@ -80,13 +78,13 @@ export const callSchema: ToSchema< CallInput > = yup
 	} )
 	.required();
 
-export const claimSchema: ToSchema< ClaimInput > = yup
+export const claimSchema: yup.ObjectSchema< ClaimInput > = yup
 	.object( {
 		id: idSchema,
 		created: createdSchema.required(),
-		number: stringSchema.required(),
-		status: yup.mixed().oneOf( [ ...CLAIM_STATUSES ] ),
-		type: yup.mixed().oneOf( [ ...CLAIM_TYPES ] ),
+		number: stringSchema.uppercase().required(),
+		status: stringSchema.oneOf( CLAIM_STATUSES ).required(),
+		type: stringSchema.oneOf( CLAIM_TYPES ).required(),
 		billed: yup.number(),
 		cost: yup.number(),
 		provider: schemaNewOrId( providerSchema, 'provider' ).required(),
@@ -94,36 +92,34 @@ export const claimSchema: ToSchema< ClaimInput > = yup
 	} )
 	.required();
 
-export const fileSchema: ToSchema< FileInput > = yup
+export const fileSchema: yup.ObjectSchema< FileInput > = yup
 	.object( {
-		id: idSchema.when( 'file', {
-			is: ( file: unknown ) => !! file,
-			then: ( schema ) => schema.strip(),
-		} ),
-		file: yup.mixed().nullable().default( null ),
-		url: stringSchema.url().when( 'file', {
-			is: null,
-			then: ( schema ) => schema.required(),
-		} ),
-		source: stringSchema.when( 'file', {
-			is: null,
-			then: ( schema ) => schema.required(),
-		} ),
+		id: idSchema,
+		slug: stringSchema.required(),
+		created: createdSchema,
+		url: stringSchema.url().required(),
+		source: stringSchema.required(),
 	} )
 	.required();
 
 // Utils
-function schemaNewOrId( schema: yup.AnyObjectSchema, type = 'entity' ) {
+function schemaNewOrId< Schema extends yup.AnyObjectSchema >(
+	schema: Schema,
+	type = 'entity'
+) {
 	return yup
 		.mixed<
-			| yup.InferType< typeof savedIdSchema >
-			| yup.InferType< typeof schema >
+			yup.InferType< typeof savedIdSchema > | yup.InferType< Schema >
 		>()
 		.test(
 			'new or saved',
 			'${path} is not a valid ID or a new ' + type,
-			async ( value ) =>
-				( await savedIdSchema.isValid( value ) ) ||
-				( await schema.isValid( value ) )
+			async ( value ) => {
+				const [ isId, isSchema ] = await Promise.all( [
+					savedIdSchema.isValid( value ),
+					schema.isValid( value ),
+				] );
+				return isId || isSchema;
+			}
 		);
 }

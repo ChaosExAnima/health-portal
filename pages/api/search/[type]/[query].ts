@@ -20,10 +20,7 @@ export default async function handler(
 	}
 	// @TODO Finish this!
 
-	if (
-		! inReadonlyArray( type, constants.CONTENTS ) &&
-		type !== 'provider'
-	) {
+	if ( ! inReadonlyArray( type, constants.API_ENTITIES ) ) {
 		return res.json( {
 			success: false,
 			errors: [ 'Invalid type' ],

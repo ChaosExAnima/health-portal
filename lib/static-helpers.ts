@@ -1,5 +1,8 @@
-import { isDate, isObjectLike, toSafeInteger } from 'lodash';
+import { toSafeInteger } from 'lodash';
 
+import type { Knex } from 'knex';
+import type { DBCommonFields } from 'lib/db/types';
+import type { Entity, EntityInput } from 'lib/entities/types';
 import type {
 	GetStaticPaths,
 	GetStaticPathsContext,
@@ -7,14 +10,7 @@ import type {
 	GetStaticProps,
 	GetStaticPropsContext,
 } from 'next';
-import type { Knex } from 'knex';
-import type {
-	GetSinglePageResult,
-	Serialized,
-	SinglePageProps,
-} from 'global-types';
-import type { DBCommonFields } from 'lib/db/types';
-import type { Entity } from 'lib/entities/types';
+import type { GetSingleEditPageResult, SinglePageProps } from 'pages/types';
 
 export function isSSR(): boolean {
 	return typeof window === 'undefined';
@@ -68,31 +64,21 @@ export function staticPathsNoData(
 	return null;
 }
 
-export async function staticPropsEdit<
-	E extends Entity,
-	T extends SinglePageProps< E >
->(
-	root: GetStaticProps< T >,
+export async function staticPropsEdit< E extends EntityInput >(
+	root: GetStaticProps< SinglePageProps< E > >,
 	context: GetStaticPropsContext
-): GetSinglePageResult< E > {
+): GetSingleEditPageResult< E > {
 	const rootProps = await root( context );
-	if ( 'props' in rootProps ) {
-		rootProps.props.originalTitle = rootProps.props.title;
-		rootProps.props.title = `Editing ${ rootProps.props.title }`;
+	if ( ! ( 'props' in rootProps ) ) {
+		return rootProps;
 	}
-	return rootProps;
-}
-
-export function serialize< T >( object: T ): Serialized< T > {
-	if ( Array.isArray( object ) ) {
-		return object.map( serialize );
-	} else if ( isDate( object ) ) {
-		return object.toDateString();
-	} else if ( isObjectLike( object ) ) {
-		for ( const key in object ) {
-			object[ key ] = serialize( object[ key ] );
-		}
-		return object;
-	}
-	return object;
+	return {
+		...rootProps,
+		props: {
+			...rootProps.props,
+			originalTitle: rootProps.props.title,
+			title: `Editing ${ rootProps.props.title }`,
+			record: rootProps.props.record,
+		},
+	};
 }

@@ -8,18 +8,19 @@ import {
 	waitFor,
 } from '@testing-library/react';
 import { UseControllerReturn, useForm, useController } from 'react-hook-form';
+import { SWRResponse } from 'swr';
+import { setTimeout } from 'timers/promises';
 
 import { useDebouncedSWR } from 'lib/hooks';
+
 import AutocompleteField from './index';
 
-import type { PartialDeep } from 'type-fest';
 import type {
 	AutocompleteOptions,
 	AutocompleteResponse,
 	FormAutocompleteFieldProps,
 } from '../types';
-import { SWRResponse } from 'swr';
-import { setTimeout } from 'timers/promises';
+import type { PartialDeep } from 'type-fest';
 
 jest.mock( 'react-hook-form', () => ( {
 	...jest.requireActual( 'react-hook-form' ),

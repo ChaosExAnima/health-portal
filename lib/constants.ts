@@ -36,6 +36,7 @@ export const APPEAL_STATUSES = [
 	APPEAL_STATUS_WON,
 	APPEAL_STATUS_LOST,
 ] as const;
+export type APPEAL_STATUSES_TYPE = typeof APPEAL_STATUSES[ number ];
 
 export const CLAIM_TYPE_IN = 'in network';
 export const CLAIM_TYPE_OUT = 'out of network';

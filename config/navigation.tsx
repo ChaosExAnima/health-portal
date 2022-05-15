@@ -1,8 +1,8 @@
-import HomeIcon from '@mui/icons-material/Home';
-import ReceiptIcon from '@mui/icons-material/Receipt';
-import PhoneIcon from '@mui/icons-material/Phone';
 import GavelIcon from '@mui/icons-material/Gavel';
+import HomeIcon from '@mui/icons-material/Home';
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
+import PhoneIcon from '@mui/icons-material/Phone';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 
 type NavigationItem = {
 	href: string;

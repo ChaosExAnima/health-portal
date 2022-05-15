@@ -1,5 +1,5 @@
-import React from 'react';
 import { Container } from '@mui/material';
+import React from 'react';
 
 import DataTable, {
 	DataTableColumn,
@@ -16,23 +16,20 @@ import {
 } from 'lib/db/helpers';
 import { rowToCall } from 'lib/entities/call';
 import { useProvidersForSelect } from 'lib/hooks';
-import {
-	getPageNumber,
-	getTotalPageNumber,
-	serialize,
-} from 'lib/static-helpers';
+import { getPageNumber, getTotalPageNumber } from 'lib/static-helpers';
 import { formatDate } from 'lib/strings';
 
-import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import type { PaginatedPageProps, StringKeys } from 'global-types';
 import type {
 	DateQuery,
 	PaginationQuery,
 	ProviderQuery,
 	WithQuery,
 } from 'components/data-table/types';
+import type { StringKeys } from 'global-types';
 import type { ContentDB } from 'lib/db/types';
 import type { Call, Provider } from 'lib/entities/types';
+import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import type { GetPaginatedPageResult, PaginatedPageProps } from 'pages/types';
 
 type CallsProps = PaginatedPageProps< Call > &
 	WithQuery< DateQuery & PaginationQuery & ProviderQuery >;
@@ -112,7 +109,7 @@ const CallsPage: React.FC< CallsProps > = ( {
 
 export async function getServerSideProps(
 	context: GetServerSidePropsContext
-): Promise< GetServerSidePropsResult< CallsProps > > {
+): GetPaginatedPageResult< Call > {
 	const { params, query } = context;
 	// Pagination.
 	const pageSize = 20;
@@ -130,7 +127,7 @@ export async function getServerSideProps(
 			title: 'Calls',
 			currentPage,
 			totalPages,
-			records: serialize( records ),
+			records,
 			query,
 		},
 	};

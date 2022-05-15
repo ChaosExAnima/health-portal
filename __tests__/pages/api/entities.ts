@@ -6,7 +6,6 @@ import { queryEntities, insertEntity, saveEntity } from 'lib/api/entities';
 import { pluralizeType } from 'lib/api/utils';
 import { API_ENTITIES, API_ENTITY_TYPE } from 'lib/constants';
 import * as dbHelpers from 'lib/db/helpers';
-
 import AppealApiIndex from 'pages/api/appeals';
 import AppealApiSingle from 'pages/api/appeals/[slug]';
 import CallApiIndex from 'pages/api/calls';
@@ -20,8 +19,6 @@ import NoteApiSingle from 'pages/api/notes/[slug]';
 import ProviderApiIndex from 'pages/api/providers';
 import ProviderApiSingle from 'pages/api/providers/[slug]';
 
-import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
-import type { Schema } from 'type-fest';
 import type { PlainObject } from 'global-types';
 import type {
 	EntityUpdateResponse,
@@ -31,6 +28,8 @@ import type {
 	RecordResponse,
 } from 'lib/api/types';
 import type { Slug } from 'lib/entities/types';
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
+import type { Schema } from 'type-fest';
 
 // Maps
 const nameToIndex = new Map< API_ENTITY_TYPE, NextApiHandler >( [

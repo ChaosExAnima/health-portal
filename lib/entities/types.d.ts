@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import {
 	ConditionalExcept,
 	ConditionalKeys,
@@ -10,9 +11,12 @@ import {
 } from 'type-fest';
 import { ObjectSchema } from 'yup';
 
-import type { Knex } from 'knex';
-import { DeepReplace, Nullable, RemoveNever } from 'global-types';
-import { APPEAL_STATUSES, CLAIM_STATUSES, CLAIM_TYPES } from 'lib/constants';
+import { Replace, Nullable, RemoveNever } from 'global-types';
+import {
+	APPEAL_STATUSES_TYPE,
+	CLAIM_STATUS_TYPE,
+	CLAIM_TYPES_TYPE,
+} from 'lib/constants';
 import {
 	ContentDB,
 	DBMaybeInsert,
@@ -24,8 +28,8 @@ import {
 
 // Opaque types
 type Id = Opaque< number, 'id' >;
-type NewId = Opaque< 0, 'NewId' >;
 type Slug = Opaque< string, 'slug' >;
+type DateString = Opaque< string, 'date' >;
 
 // Additions
 type EntityAdditions = {
@@ -66,7 +70,7 @@ type WithRelationAdditions< A extends EntityAdditions > = SetRequired<
 // Entity types
 abstract interface Entity {
 	id: Id;
-	created: Date;
+	created: DateString;
 }
 abstract interface Content extends Entity {
 	slug: Slug;
@@ -75,24 +79,24 @@ abstract interface Content extends Entity {
 interface Provider extends Entity, WithNotes, WithImport {
 	slug: Slug;
 	name: string;
-	address?: Nullable< string >;
-	phone?: Nullable< string >;
-	email?: Nullable< string >;
-	website?: Nullable< string >;
+	address?: string;
+	phone?: string;
+	email?: string;
+	website?: string;
 	claims?: Claim[];
 }
 
 interface Import extends Entity {
 	hash: string;
-	inserted: Nullable< number >;
-	updated: Nullable< number >;
+	inserted?: number;
+	updated?: number;
 	file?: FileEntity;
 }
 
 interface Appeal extends Content, WithNotes, WithProvider {
 	name: string;
 	claims?: Claim[];
-	status: typeof APPEAL_STATUSES[ number ];
+	status: APPEAL_STATUSES_TYPE;
 }
 
 interface Call extends Content, WithNotes, WithProvider {
@@ -104,10 +108,10 @@ interface Call extends Content, WithNotes, WithProvider {
 
 interface Claim extends Content, WithNotes, WithProvider, WithImport {
 	number: string;
-	type: typeof CLAIM_TYPES[ number ];
-	status: typeof CLAIM_STATUSES[ number ];
-	billed?: Nullable< number >;
-	cost?: Nullable< number >;
+	type: CLAIM_TYPES_TYPE;
+	status: CLAIM_STATUS_TYPE;
+	billed?: number;
+	cost?: number;
 	appeals?: Appeal[];
 }
 
@@ -119,44 +123,61 @@ interface FileEntity extends Content, WithNotes {
 interface Note extends Content, WithLinks {
 	description: string;
 	files?: FileEntity[];
-	due?: Nullable< Date >;
+	due?: DateString;
+	resolved?: boolean;
+}
+
+// Input interfaces
+abstract interface EntityInput {
+	id?: number;
+}
+abstract interface WithProviderInput {
+	provider?: number | ProviderInput;
+}
+abstract interface WithLinksInput {
+	links?: number[];
+}
+interface ProviderInput extends EntityInput {
+	name: string;
+	slug?: string;
+	address?: string;
+	phone?: string;
+	email?: string;
+	website?: string;
+}
+interface AppealInput extends EntityInput, WithProviderInput, WithLinksInput {
+	name: string;
+	status: APPEAL_STATUSES_TYPE;
+}
+interface CallInput extends EntityInput, WithProviderInput, WithLinksInput {
+	created: Date;
+	reps?: string[];
+	reason: string;
+	result: string;
+	reference?: string;
+}
+interface ClaimInput extends EntityInput, WithLinksInput {
+	created: Date;
+	number: string;
+	type: CLAIM_TYPES_TYPE;
+	status: CLAIM_STATUS_TYPE;
+	provider: number | ProviderInput;
+	billed?: number;
+	cost?: number;
+}
+interface FileInput extends EntityInput {
+	url: string;
+	source: string;
+}
+interface NoteInput extends EntityInput, WithLinksInput {
+	description: string;
+	due?: Date;
 	resolved?: boolean;
 }
 
 // Input utils
-type InputEntity = MaybeNewEntity & Partial< Pick< Entity, 'created' > >;
-type MaybeNewEntity = { id?: Id | NewId };
-type CreatedEntity = { created: Date };
-type ProviderEntity = { provider?: Except< ProviderInput, 'id' > | Id };
+type MaybeNewEntity = { id?: Id };
 type WithMaybeNewId< Input > = MaybeNewEntity & Except< Input, 'id' >;
-type WithInput< Input extends Entity > = MaybeNewEntity &
-	Except<
-		Input,
-		'id' | 'created' | 'slug' | 'import' | 'notes' | 'provider' | 'claims'
-	>;
-type WithNumberIds< Input > = DeepReplace<
-	Input,
-	Id | NewId | undefined,
-	number | undefined
->;
-type ToSchema< Input > = ObjectSchema<
-	Simplify< WithNumberIds< Required< Input > > >
->;
-
-// Entity inputs
-type ProviderInput = Simplify< WithInput< Provider > & { slug?: string } >;
-type AppealInput = Simplify< WithInput< Appeal > & WithLinks & ProviderEntity >;
-type CallInput = Simplify<
-	WithInput< Call > & WithLinks & ProviderEntity & CreatedEntity
->;
-type ClaimInput = Simplify<
-	WithInput< Except< Claim, 'appeals' > > &
-		WithLinks &
-		Required< ProviderEntity > &
-		CreatedEntity
->;
-type FileInput = WithMaybeNewId< FileEntity > | { file: File };
-type NoteInput = Simplify< WithInput< Except< Note, 'files' > > & WithLinks >;
 
 // Functions
 type SaveEntityFunction< Input > = (

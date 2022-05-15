@@ -1,4 +1,9 @@
 import router from 'next/router';
+import { inspect } from 'util';
+import { AnyObjectSchema, ValidationError } from 'yup';
+
+import { PlainObject } from 'global-types';
+
 import {
 	formatErrors,
 	handleUpdateType,
@@ -6,10 +11,7 @@ import {
 	queryEntities,
 } from './entities';
 
-import type { Id, NewId, Slug } from 'lib/entities/types';
-import { AnyObjectSchema, ValidationError } from 'yup';
-import { inspect } from 'util';
-import { PlainObject } from 'global-types';
+import type { Id, Slug } from 'lib/entities/types';
 
 const json = jest.fn().mockReturnValue( { success: true, slug: 'test' } );
 global.fetch = jest.fn().mockResolvedValue( { json } );
@@ -103,7 +105,7 @@ describe( 'API Entities', () => {
 			expect( saveFunc ).not.toHaveBeenCalled();
 		} );
 		test( 'works with id of zero', async () => {
-			const input = { id: 0 as NewId };
+			const input = { id: 0 as Id };
 			const result = await insertEntity( input, schema, saveFunc );
 			expect( result ).toEqual( {
 				success: true,

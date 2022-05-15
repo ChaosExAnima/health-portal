@@ -1,97 +1,40 @@
-import { Box, capitalize, Container } from '@mui/material';
+import { CallForm } from 'components/entity-forms';
+import Page from 'components/page';
+import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
 
 import {
 	getStaticPaths as getRootStaticPaths,
 	getStaticProps as getRootStaticProps,
-} from '.';
-import { staticPathsEdit, staticPropsEdit } from 'lib/static-helpers';
+} from './index';
 
-import type { GetStaticPaths } from 'next';
-import type { GetSinglePageProps, SinglePageProps } from 'global-types';
-import type { Call, CallInput, WithNumberIds } from 'lib/entities/types';
-import Page from 'components/page';
-import {
-	Form,
-	FormAutocompleteField,
-	FormDateTimeField,
-	FormTermsField,
-	FormTextField,
-} from 'components/form';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { callSchema } from 'lib/entities/schemas';
+import type { CallInput } from 'lib/entities/types';
+import type { GetSinglePageContext, SingleEditPageProps } from 'pages/types';
 
-function CallEditPage( { record, originalTitle }: SinglePageProps< Call > ) {
-	const { control, handleSubmit } = useForm< WithNumberIds< CallInput > >( {
-		resolver: yupResolver( callSchema ),
-		defaultValues: {
-			...record,
-			provider: {
-				id: record.provider?.id,
-				label: record.provider?.name,
-			},
-		},
-	} );
+export default function CallEditPage( {
+	record,
+	originalTitle,
+	slug,
+}: SingleEditPageProps< CallInput > ) {
 	return (
-		<Page title={ originalTitle } subtitle="Editing" maxWidth="sm">
-			<Form type="call" handleSubmit={ handleSubmit }>
-				<FormDateTimeField
-					control={ control }
-					name="created"
-					label="Call Date"
-					type="datetime"
-					required
-					disableFuture
-					showTodayButton
-				/>
-				<FormAutocompleteField
-					control={ control }
-					name="provider"
-					label="Provider"
-					free
-					required
-				/>
-				<FormTermsField
-					control={ control }
-					name="reps"
-					label="Representatives"
-					format={ capitalize }
-				/>
-				<FormTextField
-					control={ control }
-					name="reason"
-					label="Reason"
-					multiline
-					required
-				/>
-				<FormTextField
-					control={ control }
-					name="reference"
-					label="Reference #"
-				/>
-				<FormTextField
-					control={ control }
-					name="result"
-					label="Result"
-					multiline
-					required
-				/>
-				<FormAutocompleteField
-					control={ control }
-					name="links"
-					target="claim"
-					label="Linked Claims"
-					multiple
-				/>
-			</Form>
+		<Page
+			title={ originalTitle }
+			subtitle="Editing"
+			breadcrumbs={ [
+				{ href: '/calls', name: 'Calls' },
+				{ href: `/calls/${ slug }`, name: originalTitle },
+				'Editing',
+			] }
+			maxWidth="sm"
+		>
+			<CallForm saved={ record } />
 		</Page>
 	);
 }
 
-export const getStaticProps: GetSinglePageProps< Call > = async ( context ) =>
-	staticPropsEdit( getRootStaticProps, context );
+export function getStaticPaths( context: GetSinglePageContext ) {
+	return staticPathsEdit( getRootStaticPaths, context );
+}
 
-export const getStaticPaths: GetStaticPaths = async ( context ) =>
-	staticPathsEdit( getRootStaticPaths, context );
-
-export default CallEditPage;
+export function getStaticProps( context: GetSinglePageContext ) {
+	return staticPropsEdit( getRootStaticProps, context );
+}

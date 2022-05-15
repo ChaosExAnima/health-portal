@@ -1,5 +1,5 @@
-import React, { PropsWithChildren } from 'react';
 import { Stack, Typography } from '@mui/material';
+import React, { PropsWithChildren } from 'react';
 
 import { DetailProps } from './types';
 
@@ -13,7 +13,7 @@ export default function Detail( {
 			<Typography
 				variant="body1"
 				component="dt"
-				minWidth="6em"
+				minWidth="8em"
 				color="grey.500"
 			>
 				{ label }

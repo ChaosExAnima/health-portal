@@ -5,19 +5,12 @@ import { isObjectWithKeys, isPlainObject } from 'lib/casting';
 import { CONTENT_CLAIM, CONTENT_NOTE, TABLE_PROVIDERS } from 'lib/constants';
 import { queryProvider } from 'lib/db/helpers';
 import { slugify } from 'lib/strings';
+
 import { rowToClaim } from './claim';
 import rowToImport from './import';
 import { rowToNote } from './note';
-import { isEntity, relatedOfType } from './utils';
+import { dateToString, isEntity, relatedOfType } from './utils';
 
-import type { Knex } from 'knex';
-import type { SetRequired } from 'type-fest';
-import type {
-	ContentDB,
-	DBMaybeInsert,
-	ImportDB,
-	ProviderDB,
-} from 'lib/db/types';
 import type {
 	Claim,
 	Import,
@@ -28,6 +21,14 @@ import type {
 	ProviderInput,
 	WithImport,
 } from './types';
+import type { Knex } from 'knex';
+import type {
+	ContentDB,
+	DBMaybeInsert,
+	ImportDB,
+	ProviderDB,
+} from 'lib/db/types';
+import type { SetRequired } from 'type-fest';
 
 type ProviderAdditions = {
 	relations?: ContentDB[];
@@ -62,19 +63,32 @@ export async function ensureProvider(
 	let id: Id | undefined;
 	if ( typeof provider === 'number' ) {
 		id = provider as Id;
+	} else if (
+		isPlainObject( provider ) &&
+		'id' in provider &&
+		provider.id > 0
+	) {
+		id = provider.id;
 	} else if ( isPlainObject( provider ) && 'name' in provider ) {
 		if ( isProvider( provider ) ) {
 			return provider;
 		}
 		const { providerSchema } = await import( './schemas' );
 		const validProvider = await providerSchema
-			.omit( [ 'id' ] )
+			.omit( [ 'id', 'slug' ] )
 			.validate( provider );
+		const created = new Date();
 		const [ providerId ] = await trx( TABLE_PROVIDERS ).insert( {
 			slug: slugify( validProvider.name ),
+			created,
 			...validProvider,
 		} );
-		id = providerId as Id;
+		return {
+			id: providerId as Id,
+			slug: slugify( validProvider.name ),
+			created: dateToString( created ),
+			...validProvider,
+		};
 	}
 
 	if ( ! id ) {
@@ -99,7 +113,7 @@ export function rowToProvider< A extends ProviderAdditions >(
 		...omit( row, 'importId', 'slug', 'id' ),
 		id: row.id as Id,
 		slug: row.slug as Slug,
-		created: row.created,
+		created: dateToString( row.created ),
 	};
 
 	const { import: importObj, relations } = additions;
@@ -123,7 +137,7 @@ export function providerToRow(
 		...fields,
 		created: new Date(),
 		slug: slug ?? slugify( entity.name ),
-		importId: importField?.id ?? null,
+		importId: importField?.id,
 	};
 }
 

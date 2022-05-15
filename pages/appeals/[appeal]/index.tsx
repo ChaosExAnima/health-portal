@@ -1,14 +1,14 @@
 import { Container } from '@mui/material';
 
-import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
-import { rowToAppeal } from 'lib/entities/appeal';
+import Header from 'components/header';
 import { queryAppeals, queryRelatedOfType } from 'lib/db/helpers';
+import { rowToAppeal } from 'lib/entities/appeal';
 
-import type { GetStaticPathsResult } from 'next';
-import type { SetRequired } from 'type-fest';
-import type { GetSinglePageProps, SinglePageProps } from 'global-types';
 import type { Appeal } from 'lib/entities/types';
+import type { GetStaticPathsResult } from 'next';
+import type { GetSinglePageProps, SinglePageProps } from 'pages/types';
+import type { SetRequired } from 'type-fest';
 
 type AppealWithAdditions = SetRequired< Appeal, 'claims' | 'notes' >;
 

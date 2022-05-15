@@ -1,5 +1,5 @@
-import { Box, Container, Link } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import { Box, Container, Link } from '@mui/material';
 
 const FooterBase: React.FC = () => (
 	<Box

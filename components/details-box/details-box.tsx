@@ -1,5 +1,5 @@
-import React, { PropsWithChildren } from 'react';
 import { Box, Paper, Stack } from '@mui/material';
+import React, { PropsWithChildren } from 'react';
 
 export default function DetailsBox( { children }: PropsWithChildren< {} > ) {
 	return (

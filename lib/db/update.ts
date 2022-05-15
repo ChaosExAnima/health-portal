@@ -1,6 +1,4 @@
-import debug from 'debug';
-import { Knex } from 'knex';
-import { TABLES_TYPE, TABLE_CONTENT, TABLE_PROVIDERS } from 'lib/constants';
+import { TABLES_TYPE } from 'lib/constants';
 
 import type {
 	ContentDB,
@@ -8,8 +6,7 @@ import type {
 	DBMaybeInsert,
 	ProviderDB,
 } from './types';
-
-const log = debug( 'db:update' );
+import type { Knex } from 'knex';
 
 export async function upsert< Table extends DBCommonFields >(
 	table: TABLES_TYPE,

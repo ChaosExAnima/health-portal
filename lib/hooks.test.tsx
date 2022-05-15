@@ -2,6 +2,7 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { mock as swrMock, clearResponse, setResponse } from '__mocks__/swr';
+
 import { useProvidersForSelect } from './hooks';
 
 import type { RecordsResponse, Response } from './api/types';
@@ -57,12 +58,12 @@ describe( 'useProvidersForSelect', () => {
 				{
 					slug: 'test' as Slug,
 					name: 'Test Provider',
-					address: null,
-					phone: null,
-					website: null,
-					email: null,
+					address: undefined,
+					phone: undefined,
+					website: undefined,
+					email: undefined,
 					id: 1 as Id,
-					created: '2022-01-01',
+					created: new Date( '2022-01-01' ),
 				},
 			],
 		};

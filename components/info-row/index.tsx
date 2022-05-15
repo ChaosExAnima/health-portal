@@ -1,5 +1,4 @@
 import { Grid, Typography } from '@mui/material';
-
 import { styled } from '@mui/material/styles';
 
 import OptionalLink from 'components/optional-link';

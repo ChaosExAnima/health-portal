@@ -1,28 +1,24 @@
+import { ClaimForm } from 'components/entity-forms';
 import Page from 'components/page';
 
-import type { PageProps } from 'global-types';
+import type { GetPageResult, PageProps } from 'pages/types';
 
-type ClaimNewPageProps = PageProps;
-
-function ClaimNewPage( { title }: ClaimNewPageProps ) {
+export default function ClaimNewPage( { title }: PageProps ) {
 	return (
 		<Page
 			title={ title }
 			breadcrumbs={ [ { href: '/claims', name: 'Claims' }, title ] }
+			maxWidth="sm"
 		>
-			Test
+			<ClaimForm />
 		</Page>
 	);
 }
 
-export async function getStaticProps(): Promise< {
-	props: ClaimNewPageProps;
-} > {
+export function getStaticProps(): GetPageResult {
 	return {
 		props: {
 			title: 'New Claim',
 		},
 	};
 }
-
-export default ClaimNewPage;

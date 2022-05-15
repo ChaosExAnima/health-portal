@@ -1,13 +1,17 @@
 import { isObjectWithKeys } from 'lib/casting';
 import * as constants from 'lib/constants';
 import { slugify } from 'lib/strings';
-import { rowToClaim } from './claim';
-import { ensureProvider } from './provider';
-import { rowToNote } from './note';
-import { inReadonlyArray, isEntity, saveContentEntity } from './utils';
 
-import type { Knex } from 'knex';
-import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
+import { rowToClaim } from './claim';
+import { rowToNote } from './note';
+import { ensureProvider } from './provider';
+import {
+	dateToString,
+	inReadonlyArray,
+	isEntity,
+	saveContentEntity,
+} from './utils';
+
 import type {
 	Appeal,
 	AppealInput,
@@ -17,6 +21,8 @@ import type {
 	Id,
 	WithRelationAdditions,
 } from './types';
+import type { Knex } from 'knex';
+import type { ContentDB, DBMaybeInsert } from 'lib/db/types';
 
 type AppealWithAdditions< A extends EntityAdditions > = EntityWithAdditions<
 	Appeal,
@@ -48,7 +54,6 @@ export async function appealToRow(
 		type: constants.CONTENT_APPEAL,
 		status: input.status,
 		info: null,
-		importId: null,
 	} as const;
 	let providerId = null;
 	if ( input.provider ) {
@@ -57,7 +62,7 @@ export async function appealToRow(
 	if ( isAppeal( input ) ) {
 		return {
 			...row,
-			created: input.created,
+			created: new Date( input.created ),
 			identifier: input.slug,
 			providerId,
 		};
@@ -85,7 +90,7 @@ export function rowToAppeal< A extends EntityAdditions >(
 			constants.APPEAL_STATUSES,
 			constants.APPEAL_STATUS_PENDING
 		),
-		created,
+		created: dateToString( created ),
 	};
 	if ( relations ) {
 		appeal.claims = [];

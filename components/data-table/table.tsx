@@ -16,12 +16,12 @@ import DataTableFilters from './filters';
 import DataTableHead from './head';
 import DataTableRow from './row';
 
-import type { StringKeys } from 'global-types';
 import type {
 	DataTableColumn,
 	DataTableFilter,
 	DataTableRowData,
 } from './types';
+import type { StringKeys } from 'global-types';
 
 type DataTableProps< Data > = {
 	basePath: string;

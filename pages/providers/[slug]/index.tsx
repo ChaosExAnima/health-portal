@@ -1,23 +1,24 @@
-import React from 'react';
 import { Container } from '@mui/material';
+import React from 'react';
 
-import Header from 'components/header';
 import Breadcrumbs from 'components/breadcrumbs';
 import { Detail, DetailsBox } from 'components/details-box';
+import Header from 'components/header';
+import { fromArray } from 'lib/casting';
 import { queryAllProviders, queryContentType } from 'lib/db/helpers';
 import { rowToProvider } from 'lib/entities/provider';
 
-import type { SetRequired } from 'type-fest';
-import type { GetStaticPathsResult } from 'next';
-import type { GetSinglePageProps, SinglePageProps } from 'global-types';
 import type { Provider } from 'lib/entities/types';
+import type { GetStaticPathsResult, GetStaticPropsContext } from 'next';
+import type { GetSinglePageResult, SinglePageProps } from 'pages/types';
+import type { SetRequired } from 'type-fest';
 
 export type ProviderWithAdditions = SetRequired< Provider, 'claims' | 'notes' >;
 
-const ProviderPage: React.FC< SinglePageProps< ProviderWithAdditions > > = ( {
+function ProviderPage( {
 	slug,
 	record,
-} ) => {
+}: SinglePageProps< ProviderWithAdditions > ) {
 	return (
 		<Container maxWidth="md">
 			<Breadcrumbs
@@ -46,7 +47,7 @@ const ProviderPage: React.FC< SinglePageProps< ProviderWithAdditions > > = ( {
 			</DetailsBox>
 		</Container>
 	);
-};
+}
 
 export async function getStaticPaths(): Promise< GetStaticPathsResult > {
 	const claims = await queryAllProviders().select( 'slug' );
@@ -56,15 +57,20 @@ export async function getStaticPaths(): Promise< GetStaticPathsResult > {
 	};
 }
 
-export const getStaticProps: GetSinglePageProps< ProviderWithAdditions > = async ( {
+export async function getStaticProps( {
 	params,
-} ) => {
+}: GetStaticPropsContext ): GetSinglePageResult< ProviderWithAdditions > {
 	if ( ! params ) {
 		return {
 			notFound: true,
 		};
 	}
-	const { slug } = params;
+	const slug = fromArray( params.slug );
+	if ( ! slug ) {
+		return {
+			notFound: true,
+		};
+	}
 	const row = await queryAllProviders().where( 'slug', slug ).first();
 	if ( ! row ) {
 		return {
@@ -84,6 +90,6 @@ export const getStaticProps: GetSinglePageProps< ProviderWithAdditions > = async
 			record,
 		},
 	};
-};
+}
 
 export default ProviderPage;

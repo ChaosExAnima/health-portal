@@ -1,6 +1,7 @@
-import { MaybeArray, PlainObject } from 'global-types';
 import { isPlainObject as isPlainObjectLodash, toNumber } from 'lodash';
 import { Primitive } from 'type-fest';
+
+import { MaybeArray, PlainObject } from 'global-types';
 
 export function toFloat( input: unknown ): number {
 	const num = toNumber( input );

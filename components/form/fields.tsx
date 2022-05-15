@@ -1,14 +1,9 @@
+import { DatePicker, DateTimePicker } from '@mui/lab';
 import { TextField as MuiTextField, TextField } from '@mui/material';
-import {
-	DatePicker,
-	DateTimePicker,
-	TimePicker,
-	TimePickerProps,
-} from '@mui/lab';
 import { useController } from 'react-hook-form';
-import { omit } from 'lodash';
 
 import type {
+	FormDateFieldProps,
 	FormDateTimeFieldProps,
 	FormTextFieldProps,
 	Input,
@@ -36,6 +31,37 @@ export function FormTextField< Schema extends Input >( {
 			helperText={ errorText }
 			error={ !! error }
 			label={ label }
+		/>
+	);
+}
+
+export function FormDateField< S extends Input >( {
+	control,
+	name,
+	label,
+	...fieldProps
+}: FormDateFieldProps< S > ) {
+	const {
+		field,
+		fieldState: { error },
+	} = useController( { name, control } );
+
+	let errorText = ' ';
+	if ( error ) {
+		errorText = error.message ?? errorText;
+	}
+	return (
+		<DatePicker
+			{ ...field }
+			{ ...fieldProps }
+			label={ label }
+			renderInput={ ( params ) => (
+				<TextField
+					{ ...params }
+					helperText={ errorText }
+					error={ !! error }
+				/>
+			) }
 		/>
 	);
 }
