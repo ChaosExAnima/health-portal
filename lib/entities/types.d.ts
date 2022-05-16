@@ -176,14 +176,11 @@ interface NoteInput extends EntityInput, WithLinksInput {
 }
 
 // Input utils
-type MaybeNewEntity = { id?: Id };
-type WithMaybeNewId< Input > = MaybeNewEntity & Except< Input, 'id' >;
-
 // Functions
-type SaveEntityFunction< Input > = (
-	entity: WithMaybeNewId< Input >
+type SaveEntityFunction< Input extends EntityInput > = (
+	entity: Input
 ) => Promise< Slug >;
-type EntityToRowFunction< Input > = (
-	entity: WithMaybeNewId< Input >,
+type EntityToRowFunction< Input extends EntityInput > = (
+	entity: Input,
 	trx?: Knex.Transaction
 ) => Promisable< DBMaybeInsert< ContentDB > >;
