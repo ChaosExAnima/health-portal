@@ -9,7 +9,6 @@ import { isPlainObject } from 'lib/casting';
 
 import type { FormProps } from './types';
 import type { ErrorHandler } from 'lib/api/types';
-import type { Slug } from 'lib/entities/types';
 import type { AnyObjectSchema } from 'yup';
 
 export default function Form< Schema extends AnyObjectSchema >( {
@@ -36,15 +35,14 @@ export default function Form< Schema extends AnyObjectSchema >( {
 		if ( ! isPlainObject( form ) ) {
 			return handleErrors( 'Invalid submission' );
 		}
-		let slug = undefined;
 		if ( ! newSubmission ) {
-			if ( form && 'slug' in form ) {
-				slug = String( form.slug ) as Slug;
-			} else {
-				return handleErrors( 'No slug provided' );
+			console.log( 'onSubmit:', form );
+
+			if ( ! ( 'id' in form ) ) {
+				return handleErrors( 'No ID provided' );
 			}
 		}
-		return handleUpdateType( form, type, handleErrors, slug );
+		return handleUpdateType( form, type, handleErrors );
 	};
 	return (
 		<Box

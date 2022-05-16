@@ -130,6 +130,7 @@ interface Note extends Content, WithLinks {
 // Input interfaces
 abstract interface EntityInput {
 	id?: number;
+	slug?: string;
 }
 abstract interface WithProviderInput {
 	provider?: number | ProviderInput;

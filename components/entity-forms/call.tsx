@@ -1,3 +1,4 @@
+import { DevTool } from '@hookform/devtools';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { capitalize } from 'lodash';
 import { useForm } from 'react-hook-form';
@@ -72,6 +73,7 @@ export default function CallForm( { saved }: EntityFormProps< CallInput > ) {
 				label="Linked Claims"
 				multiple
 			/>
+			<DevTool control={ control } />
 		</Form>
 	);
 }

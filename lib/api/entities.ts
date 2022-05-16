@@ -18,10 +18,13 @@ import type { AnyObjectSchema } from 'yup';
 export async function handleUpdateType(
 	form: unknown,
 	type: EntityTypes,
-	handleError: ErrorHandler,
-	slug?: Slug
+	handleError: ErrorHandler
 ): Promise< void > {
-	const response = await fetch( '/api' + typeToUrl( type, slug ), {
+	let url = `/api/${ type }`;
+	if ( isPlainObject( form ) && 'id' in form ) {
+		url += `/${ form.id }`;
+	}
+	const response = await fetch( url, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

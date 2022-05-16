@@ -55,7 +55,7 @@ export function errorToResponse(
 
 export function checkMethod(
 	method?: string,
-	allowedMethods = [ 'GET', 'POST' ]
+	allowedMethods = [ 'GET', 'POST', 'PUT' ]
 ) {
 	if ( ! method || ! allowedMethods.includes( method.toUpperCase() ) ) {
 		throw new StatusError( 'Invalid method', 400 );
