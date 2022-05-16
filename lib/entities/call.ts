@@ -81,7 +81,9 @@ export function rowToCall< A extends EntityAdditions >(
 		const providerRow = providers.find(
 			( { id: providerId } ) => providerId === row.providerId
 		);
-		call.provider = providerRow ? rowToProvider( providerRow ) : undefined;
+		if ( providerRow ) {
+			call.provider = rowToProvider( providerRow );
+		}
 	}
 	if ( relations ) {
 		call.notes = relations

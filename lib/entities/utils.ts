@@ -82,6 +82,12 @@ export async function saveContentEntity< Input extends EntityInput >(
 	await knex.transaction( async ( trx ) => {
 		const row = await entityToRow( entity, trx );
 		const updatedRow = await upsertContent( row, trx );
+		try {
+			await trx.commit();
+		} catch ( err ) {
+			await trx.rollback();
+			throw err;
+		}
 		slug = updatedRow.identifier as Slug;
 	} );
 	if ( ! slug ) {
