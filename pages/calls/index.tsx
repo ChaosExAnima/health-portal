@@ -28,18 +28,18 @@ import type {
 import type { StringKeys } from 'global-types';
 import type { ContentDB } from 'lib/db/types';
 import type { Call, Provider } from 'lib/entities/types';
-import type { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
+import type { GetServerSidePropsContext } from 'next';
 import type { GetPaginatedPageResult, PaginatedPageProps } from 'pages/types';
 
 type CallsProps = PaginatedPageProps< Call > &
 	WithQuery< DateQuery & PaginationQuery & ProviderQuery >;
 
-const CallsPage: React.FC< CallsProps > = ( {
+export default function CallsPage( {
 	currentPage,
 	totalPages,
 	records,
 	query,
-} ) => {
+}: CallsProps ) {
 	const providers = useProvidersForSelect();
 	const actions: ActionItem[] = [
 		{
@@ -77,9 +77,10 @@ const CallsPage: React.FC< CallsProps > = ( {
 		{
 			key: 'provider',
 			name: 'Provider',
-			format: ( provider: Provider ) => (
-				<ProviderLink color="inherit" provider={ provider } />
-			),
+			format: ( provider: Provider ) =>
+				provider && (
+					<ProviderLink color="inherit" provider={ provider } />
+				),
 		},
 		{
 			key: 'reason',
@@ -105,22 +106,23 @@ const CallsPage: React.FC< CallsProps > = ( {
 			<Footer wrap />
 		</>
 	);
-};
+}
 
 export async function getServerSideProps(
 	context: GetServerSidePropsContext
 ): GetPaginatedPageResult< Call > {
-	const { params, query } = context;
+	const { query } = context;
 	// Pagination.
 	const pageSize = 20;
-	const currentPage = getPageNumber( params?.page );
-	const totalPages = await getTotalPageNumber( queryCalls(), pageSize );
+	const currentPage = getPageNumber( query?.page );
 
 	// Gets records.
+	const totalPages = await getTotalPageNumber( queryCalls(), pageSize );
 	const calls: ContentDB[] = await filterQuery( queryCalls(), query );
 	const providers = await queryRelatedProviders(
 		getIdColumn( calls, 'providerId' )
 	);
+
 	const records = calls.map( ( row ) => rowToCall( row, { providers } ) );
 	return {
 		props: {
@@ -132,5 +134,3 @@ export async function getServerSideProps(
 		},
 	};
 }
-
-export default CallsPage;

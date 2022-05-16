@@ -147,14 +147,14 @@ export async function filterQuery(
 		qb.offset( page - 1 * pageSize );
 	}
 	if ( query.start && ! Array.isArray( query.start ) ) {
-		qb.andWhere( 'created', '>=', query.start );
+		qb.andWhere( 'created', '>=', `${ query.start } 00:00:00` );
 	}
 	if ( query.end && ! Array.isArray( query.end ) ) {
-		qb.andWhere( 'created', '<=', query.end );
+		qb.andWhere( 'created', '<=', `${ query.end } 23:59:59` );
 	}
-	if ( query.provider ) {
+	if ( query.provider && query.provider !== 'all' ) {
 		const providers = await queryAllProviders()
-			.whereIn( 'slug', toArray( query.provider ) )
+			.whereIn( 'name', toArray( query.provider ) )
 			.limit( 10 );
 		if ( providers.length ) {
 			qb.whereIn( 'providerId', getIdColumn( providers, 'id' ) );
