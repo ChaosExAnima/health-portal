@@ -5,7 +5,7 @@ import {
 	respondWithStatus,
 } from 'lib/api/helpers';
 import { fromArray } from 'lib/casting';
-import { getContentBySlug } from 'lib/db/helpers';
+import { getContentBySlug, queryCalls } from 'lib/db/helpers';
 
 import type { EntityUpdateResponse, RecordResponse } from 'lib/api/types';
 import type { Note } from 'lib/entities/types';
@@ -16,17 +16,16 @@ export default async function handler(
 	res: NextApiResponse< RecordResponse< Note > | EntityUpdateResponse >
 ) {
 	const {
-		query: { slug },
+		query: { id },
 		body,
 		method,
 	} = req;
 	const respond = respondWithStatus( res );
 	try {
 		checkMethod( method );
-		const record = await getContentBySlug(
-			'call',
-			fromArray( slug ) as string
-		);
+		const record = await queryCalls()
+			.where( 'id', fromArray( id ) )
+			.first();
 		if ( ! record ) {
 			throw new NotFoundError();
 		}

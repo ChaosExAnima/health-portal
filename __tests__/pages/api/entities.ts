@@ -9,7 +9,7 @@ import * as dbHelpers from 'lib/db/helpers';
 import AppealApiIndex from 'pages/api/appeals';
 import AppealApiSingle from 'pages/api/appeals/[slug]';
 import CallApiIndex from 'pages/api/calls';
-import CallApiSingle from 'pages/api/calls/[slug]';
+import CallApiSingle from 'pages/api/calls/[id]';
 import ClaimApiIndex from 'pages/api/claims';
 import ClaimApiSingle from 'pages/api/claims/[slug]';
 import FileApiIndex from 'pages/api/files';
