@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { ContentDB, MetaDB } from 'lib/db/types';
 
 import Entity from './entity';
@@ -10,11 +11,10 @@ export default abstract class Content extends Entity {
 
 	public loadMeta( meta: MetaDB[] ) {
 		for ( const row of meta ) {
-			this.setFromMeta( row.key, row.value );
+			this.setFromMeta( row.key, row.value, row );
 		}
 		return this;
 	}
 
-	// eslint-disable-next-line no-unused-vars
-	protected setFromMeta( key: string, value: any ) {}
+	protected setFromMeta( key: string, value?: string, meta?: MetaDB ) {}
 }

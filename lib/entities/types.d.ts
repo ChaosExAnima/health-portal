@@ -127,6 +127,12 @@ interface Note extends Content, WithLinks {
 	resolved?: boolean;
 }
 
+interface Payment {
+	date: Date;
+	amount: number;
+	type: string;
+}
+
 // Input interfaces
 abstract interface EntityInput {
 	id?: number;

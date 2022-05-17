@@ -12,6 +12,7 @@ import { slugify } from 'lib/strings';
 import { ClaimInput } from '../types';
 import { inReadonlyArray } from '../utils';
 import Content from './content';
+import Payment from './payment';
 
 export default class Claim extends Content {
 	public type: CLAIM_TYPES_TYPE;
@@ -20,6 +21,7 @@ export default class Claim extends Content {
 	public cost?: number;
 	public paid = 0;
 	public provider: never;
+	public payments = new Set< Payment >();
 
 	public get number(): string {
 		return String( this.slug );
@@ -44,13 +46,21 @@ export default class Claim extends Content {
 		return super.loadFromDB( row );
 	}
 
-	protected setFromMeta( key: string, value: any ): void {
+	protected setFromMeta( key: string, value?: string, meta?: MetaDB ): void {
+		if ( ! value || ! meta ) {
+			return;
+		}
+		const amount = Number.parseFloat( value );
 		switch ( key ) {
 			case 'billed':
-				this.billed = Number.parseFloat( value );
+				this.billed = amount;
 				break;
 			case 'cost':
-				this.cost = Number.parseFloat( value );
+				this.cost = amount;
+				break;
+			case 'payments':
+				this.payments.add( new Payment( meta ) );
+				break;
 		}
 	}
 }

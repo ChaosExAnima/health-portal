@@ -1,5 +1,3 @@
-import { knex } from 'knex';
-
 import { Nullable } from 'global-types';
 import {
 	CONTENTS_TYPE,
@@ -9,16 +7,11 @@ import {
 	TABLE_PROVIDERS,
 	TABLE_RELATIONS,
 } from 'lib/constants';
-import { Entity, Slug } from 'lib/entities/types';
 
 interface DBCommonFields {
 	id: number;
 	created: Date;
 }
-type DBInsert< Insert extends DBCommonFields > = Omit< Insert, 'id' >;
-type DBMaybeInsert< Insert extends DBCommonFields > = Omit< Insert, 'id' > & {
-	id?: number;
-};
 interface DBMetaField {
 	meta: Record< string, any >;
 }
@@ -34,14 +27,13 @@ interface ContentDB extends DBCommonFields {
 interface MetaDB extends DBCommonFields, DBMetaField {
 	contentId: ContentDB[ 'id' ];
 	key: string;
-	value: Nullable< string >;
+	value?: string;
 }
 
 interface RelationDB extends DBCommonFields, DBMetaField {
 	from: ContentDB[ 'id' ];
 	to: ContentDB[ 'id' ];
 }
-interface LoadedRelationDB extends RelationDB, ContentDB {}
 
 interface ProviderDB extends DBCommonFields {
 	slug: string;

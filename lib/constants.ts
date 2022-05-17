@@ -17,14 +17,12 @@ export const CONTENT_CALL = 'call';
 export const CONTENT_CLAIM = 'claim';
 export const CONTENT_FILE = 'file';
 export const CONTENT_NOTE = 'note';
-export const CONTENT_PAYMENT = 'payment';
 export const CONTENTS = [
 	CONTENT_APPEAL,
 	CONTENT_CALL,
 	CONTENT_CLAIM,
 	CONTENT_FILE,
 	CONTENT_NOTE,
-	CONTENT_PAYMENT,
 ] as const;
 export type CONTENTS_TYPE = typeof CONTENTS[ number ];
 
@@ -70,12 +68,23 @@ export const CLAIM_STATUSES = [
 ] as const;
 export type CLAIM_STATUS_TYPE = typeof CLAIM_STATUSES[ number ];
 
+export const PAYMENT_META = 'payment';
+export const PAYMENT_SOURCE_CHECK = 'check';
+export const PAYMENT_SOURCE_FSA = 'fsa';
+export const PAYMENT_SOURCE_UNKNOWN = 'unknown';
+export const PAYMENT_SOURCES = [
+	PAYMENT_SOURCE_CHECK,
+	PAYMENT_SOURCE_FSA,
+	PAYMENT_SOURCE_UNKNOWN,
+] as const;
+export type PAYMENT_SOURCE_TYPE = typeof PAYMENT_SOURCES[ number ];
+
 export const API_ENTITIES = [
 	CONTENT_APPEAL,
 	CONTENT_CALL,
 	CONTENT_CLAIM,
 	CONTENT_FILE,
 	CONTENT_NOTE,
-	'provider',
+	TABLE_PROVIDERS,
 ] as const;
 export type API_ENTITY_TYPE = typeof API_ENTITIES[ number ];
