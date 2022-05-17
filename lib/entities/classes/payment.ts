@@ -4,6 +4,7 @@ import {
 	PAYMENT_SOURCE_UNKNOWN,
 } from 'lib/constants';
 import { MetaDB } from 'lib/db/types';
+import { formatCurrency } from 'lib/strings';
 
 import { inReadonlyArray } from '../utils';
 
@@ -25,5 +26,9 @@ export default class Payment {
 		);
 		this.claimId = row.contentId;
 		return this;
+	}
+
+	public toString(): string {
+		return formatCurrency( this.amount );
 	}
 }

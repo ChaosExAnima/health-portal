@@ -21,10 +21,14 @@ export default class Claim extends Content {
 	public cost?: number;
 	public paid = 0;
 	public provider: never;
-	public payments = new Set< Payment >();
+	public payments: Payment[] = [];
 
 	public get number(): string {
 		return String( this.slug );
+	}
+
+	public get reimbursed(): number {
+		return this.payments.reduce( ( a, b ) => a + b.amount, 0 );
 	}
 
 	public loadFromForm( { number, ...input }: ClaimInput ): this {
@@ -50,16 +54,14 @@ export default class Claim extends Content {
 		if ( ! value || ! meta ) {
 			return;
 		}
-		const amount = Number.parseFloat( value );
 		switch ( key ) {
 			case 'billed':
-				this.billed = amount;
-				break;
 			case 'cost':
-				this.cost = amount;
+			case 'paid':
+				this[ key ] = Number.parseFloat( value );
 				break;
 			case 'payments':
-				this.payments.add( new Payment( meta ) );
+				this.payments.push( new Payment( meta ) );
 				break;
 		}
 	}
