@@ -3,14 +3,15 @@ import {
 	APPEAL_STATUSES_TYPE,
 	APPEAL_STATUS_PENDING,
 } from 'lib/constants';
-import { ContentDB } from 'lib/db/types';
 import { slugify } from 'lib/strings';
 
-import { AppealInput } from '../types';
 import { inReadonlyArray } from '../utils';
-import Entity from './entity';
+import Content from './content';
 
-export default class Appeal extends Entity {
+import type { AppealInput } from '../types';
+import type { ContentDB } from 'lib/db/types';
+
+export default class Appeal extends Content {
 	protected name: string;
 	protected status: APPEAL_STATUSES_TYPE;
 	protected claims?: never;
@@ -22,14 +23,14 @@ export default class Appeal extends Entity {
 		return super.loadFromForm( rest );
 	}
 
-	public loadFromDB( { identifier, status, ...rest }: ContentDB ) {
-		this.name = identifier;
-		this.slug = slugify( identifier );
+	public loadFromDB( row: ContentDB ) {
+		this.name = row.identifier;
+		this.slug = slugify( row.identifier );
 		this.status = inReadonlyArray(
-			status,
+			row.status,
 			APPEAL_STATUSES,
 			APPEAL_STATUS_PENDING
 		);
-		return super.loadFromDB( rest );
+		return super.loadFromDB( row );
 	}
 }

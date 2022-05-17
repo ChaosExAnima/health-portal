@@ -6,13 +6,14 @@ import {
 	CLAIM_TYPES_TYPE,
 	CLAIM_TYPE_OTHER,
 } from 'lib/constants';
-import { ContentDB, MetaDB } from 'lib/db/types';
 import { slugify } from 'lib/strings';
 
-import { ClaimInput } from '../types';
 import { inReadonlyArray } from '../utils';
 import Content from './content';
 import Payment from './payment';
+
+import type { ClaimInput } from '../types';
+import type { ContentDB, MetaDB } from 'lib/db/types';
 
 export default class Claim extends Content {
 	public type: CLAIM_TYPES_TYPE;

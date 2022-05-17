@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
-import { ContentDB, MetaDB } from 'lib/db/types';
-
 import Entity from './entity';
+
+import type { ContentDB, MetaDB } from 'lib/db/types';
 
 export default abstract class Content extends Entity {
 	public loadFromDB( { identifier, ...row }: ContentDB ) {

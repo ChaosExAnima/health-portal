@@ -1,5 +1,5 @@
-import { DBCommonFields } from 'lib/db/types';
-import { EntityInput } from 'lib/entities/types';
+import type { DBCommonFields } from 'lib/db/types';
+import type { EntityInput } from 'lib/entities/types';
 
 export default abstract class Entity {
 	public id = 0;

@@ -1,5 +1,6 @@
-import { EntityInput, NoteInput } from '../types';
 import Content from './content';
+
+import type { ContentDB } from 'lib/db/types';
 
 export default class Note extends Content {
 	public description: string;
@@ -10,6 +11,12 @@ export default class Note extends Content {
 		return !! this.due && this.due >= new Date();
 	}
 
-	protected setFromMeta( key: string, value: any ): void {}
-	// files?: FileEntity[];
+	public loadFromDB( row: ContentDB ): this {
+		this.description = String( row.info );
+		if ( row.identifier ) {
+			this.due = new Date( row.identifier );
+		}
+		this.resolved = !! row.status;
+		return super.loadFromDB( row );
+	}
 }

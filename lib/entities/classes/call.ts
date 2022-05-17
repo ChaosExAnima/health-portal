@@ -1,7 +1,7 @@
-import { ContentDB, MetaDB } from 'lib/db/types';
-
-import { CallInput } from '../types';
 import Content from './content';
+
+import type { CallInput } from '../types';
+import type { ContentDB, MetaDB } from 'lib/db/types';
 
 export default class Call extends Content {
 	public reps: string[] = [];
