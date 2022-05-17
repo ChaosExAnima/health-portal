@@ -2,7 +2,7 @@
 	"extends": [ "next", "plugin:prettier/recommended" ],
 	"plugins": [ "jest" ],
 	"rules": {
-		"no-unused-vars": "off",
+		"no-unused-vars": "warn",
 		"no-console": "warn",
 		"@wordpress/no-unused-vars-before-return": "off",
 		"@wordpress/no-global-event-listener": "off",
