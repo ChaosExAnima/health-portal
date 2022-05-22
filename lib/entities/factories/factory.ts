@@ -7,6 +7,18 @@ export default abstract class Factory implements Iterable< Entity > {
 		return this.entities.length;
 	}
 
+	/**
+	 * Gets the first entity.
+	 * @returns Entity | undefined
+	 */
+	public first(): Entity | undefined {
+		return this.entities[ 0 ];
+	}
+
+	/**
+	 * Iterates over entities.
+	 * @returns Entity
+	 */
 	public [ Symbol.iterator ]() {
 		let index = 0;
 		return {
@@ -18,4 +30,16 @@ export default abstract class Factory implements Iterable< Entity > {
 			},
 		};
 	}
+
+	/**
+	 * Loads the data from the store.
+	 * @returns Promise
+	 */
+	public abstract load(): Promise< this >;
+
+	/**
+	 * Transforms raw data into the expected entity.
+	 * @param raw Raw entity.
+	 */
+	protected abstract newEntity( raw: any ): Entity; // eslint-disable-line no-unused-vars
 }
