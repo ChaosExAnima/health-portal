@@ -2,6 +2,7 @@ import {
 	APPEAL_STATUSES,
 	APPEAL_STATUSES_TYPE,
 	APPEAL_STATUS_PENDING,
+	CONTENTS_TYPE,
 } from 'lib/constants';
 import { slugify } from 'lib/strings';
 
@@ -32,5 +33,11 @@ export default class Appeal extends Content {
 			APPEAL_STATUS_PENDING
 		);
 		return super.loadFromDB( row );
+	}
+
+	protected setRelation( type: CONTENTS_TYPE, relation: Content ): void {
+		if ( type === 'claim' ) {
+			this.claims.push( relation as Claim );
+		}
 	}
 }

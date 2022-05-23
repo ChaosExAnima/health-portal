@@ -5,6 +5,7 @@ import {
 	CLAIM_TYPES,
 	CLAIM_TYPES_TYPE,
 	CLAIM_TYPE_OTHER,
+	CONTENTS_TYPE,
 } from 'lib/constants';
 import { slugify } from 'lib/strings';
 
@@ -13,6 +14,8 @@ import Content from './content';
 import Payment from './payment';
 
 import type { ClaimInput } from '../types';
+import type Appeal from './appeal';
+import type Call from './call';
 import type { ContentDB, MetaDB } from 'lib/db/types';
 
 export default class Claim extends Content {
@@ -22,6 +25,8 @@ export default class Claim extends Content {
 	public cost?: number;
 	public paid = 0;
 	public payments: Payment[] = [];
+	public appeals: Appeal[] = [];
+	public calls: Call[] = [];
 
 	public get number(): string {
 		return String( this.slug );
@@ -64,5 +69,14 @@ export default class Claim extends Content {
 				this.payments.push( new Payment( meta ) );
 				break;
 		}
+	}
+
+	protected setRelation( type: CONTENTS_TYPE, relation: Content ): void {
+		if ( type === 'appeal' ) {
+			this.appeals.push( relation as Appeal );
+		} else if ( type === 'call' ) {
+			this.calls.push( relation as Call );
+		}
+		super.setRelation( type, relation );
 	}
 }

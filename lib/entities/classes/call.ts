@@ -2,6 +2,7 @@ import Content from './content';
 
 import type { CallInput } from '../types';
 import type Claim from './claim';
+import type { CONTENTS_TYPE } from 'lib/constants';
 import type { ContentDB } from 'lib/db/types';
 
 export default class Call extends Content {
@@ -37,5 +38,12 @@ export default class Call extends Content {
 		} else if ( key === 'reference' ) {
 			this.reference = value ?? '';
 		}
+	}
+
+	protected setRelation( type: CONTENTS_TYPE, relation: Content ): void {
+		if ( type === 'claim' ) {
+			this.claims.push( relation as Claim );
+		}
+		super.setRelation( type, relation );
 	}
 }
