@@ -10,7 +10,7 @@ export default class Provider extends Entity {
 	public email?: string;
 	public website?: string;
 
-	public claims?: Claim[];
+	public claims: Claim[] = [];
 
 	public loadFromDB( row: ProviderDB ): this {
 		Object.assign( this, row );

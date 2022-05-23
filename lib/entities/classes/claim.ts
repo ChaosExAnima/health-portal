@@ -21,7 +21,6 @@ export default class Claim extends Content {
 	public billed?: number;
 	public cost?: number;
 	public paid = 0;
-	public provider: never;
 	public payments: Payment[] = [];
 
 	public get number(): string {

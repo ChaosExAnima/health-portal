@@ -5,7 +5,7 @@ import type { ContentDB } from 'lib/db/types';
 export default class Note extends Content {
 	public description: string;
 	public due?: Date;
-	public resolved?: boolean;
+	public resolved: boolean;
 
 	public get isOverdue(): boolean {
 		return !! this.due && this.due >= new Date();

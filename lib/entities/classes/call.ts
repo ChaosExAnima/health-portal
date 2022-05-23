@@ -1,13 +1,15 @@
 import Content from './content';
 
 import type { CallInput } from '../types';
-import type { ContentDB, MetaDB } from 'lib/db/types';
+import type Claim from './claim';
+import type { ContentDB } from 'lib/db/types';
 
 export default class Call extends Content {
 	public reps: string[] = [];
 	public reason: string;
 	public result: string;
 	public reference?: string;
+	public claims: Claim[] = [];
 
 	public loadFromForm( {
 		reps,

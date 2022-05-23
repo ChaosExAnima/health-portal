@@ -9,13 +9,13 @@ import { inReadonlyArray } from '../utils';
 import Content from './content';
 
 import type { AppealInput } from '../types';
+import type Claim from './claim';
 import type { ContentDB } from 'lib/db/types';
 
 export default class Appeal extends Content {
-	protected name: string;
-	protected status: APPEAL_STATUSES_TYPE;
-	protected claims?: never;
-	protected provider?: never;
+	public name: string;
+	public status: APPEAL_STATUSES_TYPE;
+	public claims?: Claim[];
 
 	public loadFromForm( { name, status, ...rest }: AppealInput ) {
 		this.name = name;
