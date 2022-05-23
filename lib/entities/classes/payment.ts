@@ -8,19 +8,20 @@ import { formatCurrency } from 'lib/strings';
 
 import { inReadonlyArray } from '../utils';
 
-export default class Payment {
+export default class Payment extends String {
 	protected id: number;
 	public date: Date;
 	public amount: number;
 	public source: PAYMENT_SOURCE_TYPE;
 	protected claimId: number;
 
-	public constructor( row: MetaDB ) {
+	public constructor( row: MetaDB< { source: string } > ) {
+		super( row.value ?? '0' );
 		this.id = row.id;
 		this.date = row.created;
 		this.amount = Number.parseFloat( row.value ?? '0' );
 		this.source = inReadonlyArray(
-			row.meta?.row,
+			row.meta?.source,
 			PAYMENT_SOURCES,
 			PAYMENT_SOURCE_UNKNOWN
 		);

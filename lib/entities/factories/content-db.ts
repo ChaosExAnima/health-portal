@@ -1,26 +1,34 @@
+import { queryMeta } from 'lib/db/helpers';
+
 import Appeal from '../classes/appeal';
 import Call from '../classes/call';
 import Claim from '../classes/claim';
 import Content from '../classes/content';
 import SavedFile from '../classes/file';
 import Note from '../classes/notes';
-import Factory from './factory';
+import DBFactory from './factory-db';
 
-import type { Knex } from 'knex';
 import type { ContentDB } from 'lib/db/types';
 
-export default class ContentDBFactory extends Factory {
-	protected entities: Content[];
-	protected query: Knex.QueryBuilder< ContentDB, ContentDB[] >;
+export default class ContentDBFactory extends DBFactory {
+	protected entities: Map< number, Content >;
 
-	public constructor( query: Knex.QueryBuilder< ContentDB > ) {
-		super();
-		this.query = query;
-	}
-
-	public async load() {
-		const results = await this.query;
-		this.entities = results.map( this.newEntity );
+	/**
+	 * Loads meta for all items;
+	 * @returns this
+	 */
+	public async loadMeta(): Promise< this > {
+		if ( ! this.length ) {
+			return this;
+		}
+		const meta = await queryMeta( this.ids );
+		for ( const row of meta ) {
+			const updatedEntity = this.entities.get( row.contentId );
+			if ( updatedEntity ) {
+				updatedEntity.setMeta( row.key, row.value, row );
+				this.entities.set( updatedEntity.id, updatedEntity );
+			}
+		}
 		return this;
 	}
 

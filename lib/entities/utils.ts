@@ -13,7 +13,7 @@ import type {
 	Id,
 	Slug,
 } from './types';
-import type { ContentDB, MetaDB } from 'lib/db/types';
+import type { ContentDB } from 'lib/db/types';
 
 export function isValidId( id: number ): id is Id {
 	return isSafeInteger( id ) && id > 0;
@@ -25,22 +25,6 @@ export function isSlug( slug: string ): slug is Slug {
 
 export function dateToString( date?: Date ): DateString {
 	return ( date || new Date() ).toJSON() as DateString;
-}
-
-export function getMeta( key: string, rows: MetaDB[] ): string | null {
-	const meta = rows.find( ( row ) => row.key === key );
-	if ( ! meta ) {
-		return null;
-	}
-	return meta.value;
-}
-
-export function getNumericMeta(
-	key: string,
-	rows: MetaDB[]
-): number | undefined {
-	const value = getMeta( key, rows );
-	return value ? Number.parseFloat( value ) : undefined;
 }
 
 export function relatedOfType< R extends ContentDB >(
@@ -56,17 +40,19 @@ export function isEntity( input: unknown ): input is Entity {
 	return isObjectWithKeys( input, [ 'id', 'slug' ] );
 }
 
+/* eslint-disable no-unused-vars */
 export function inReadonlyArray< T extends readonly string[] >(
-	input: string,
+	input: string | undefined,
 	types: T
 ): T[ number ] | false;
 export function inReadonlyArray< T extends readonly string[] >(
-	input: string,
+	input: string | undefined,
 	types: T,
 	fallback: T[ number ]
 ): T[ number ];
+/* eslint-enable */
 export function inReadonlyArray< T extends readonly string[] >(
-	input: string,
+	input = '',
 	types: T,
 	fallback?: T[ number ]
 ): T[ number ] | false {

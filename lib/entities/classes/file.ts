@@ -12,4 +12,10 @@ export default class SavedFile extends Content {
 		this.source = String( row.status );
 		return super.loadFromDB( row );
 	}
+
+	public setMeta( key: string, value?: string ): void {
+		if ( key === 'mimeType' && value ) {
+			this.mimeType = value;
+		}
+	}
 }

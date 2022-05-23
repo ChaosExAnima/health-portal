@@ -51,7 +51,7 @@ export default class Claim extends Content {
 		return super.loadFromDB( row );
 	}
 
-	protected setFromMeta( key: string, value?: string, meta?: MetaDB ): void {
+	public setMeta( key: string, value?: string, meta?: MetaDB ): void {
 		if ( ! value || ! meta ) {
 			return;
 		}

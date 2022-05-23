@@ -1,4 +1,3 @@
-import { Nullable } from 'global-types';
 import {
 	CONTENTS_TYPE,
 	TABLE_CONTENT,
@@ -12,8 +11,8 @@ interface DBCommonFields {
 	id: number;
 	created: Date;
 }
-interface DBMetaField {
-	meta: Record< string, any >;
+interface DBMetaField< MetaFields extends Record< string, any > > {
+	meta: Partial< MetaFields >;
 }
 
 interface ContentDB extends DBCommonFields {
@@ -24,7 +23,9 @@ interface ContentDB extends DBCommonFields {
 	providerId?: ProviderDB[ 'id' ];
 }
 
-interface MetaDB extends DBCommonFields, DBMetaField {
+interface MetaDB< MetaFields = Record< string, any > >
+	extends DBCommonFields,
+		DBMetaField< MetaFields > {
 	contentId: ContentDB[ 'id' ];
 	key: string;
 	value?: string;
@@ -53,6 +54,7 @@ interface ImportDB extends DBCommonFields {
 }
 
 declare module 'knex/types/tables' {
+	// eslint-disable-next-line no-unused-vars
 	interface Tables {
 		[ TABLE_CONTENT ]: ContentDB;
 		[ TABLE_META ]: MetaDB;
