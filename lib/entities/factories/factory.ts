@@ -1,13 +1,14 @@
 import type Entity from '../classes/entity';
 
-export default abstract class Factory implements Iterable< Entity > {
-	protected entities = new Map< number, Entity >();
+export default abstract class Factory< E extends Entity >
+	implements Iterable< E > {
+	protected entities = new Map< number, E >();
 
 	/**
 	 * Gets the first entity.
 	 * @returns Entity | undefined
 	 */
-	public first(): Entity | undefined {
+	public first(): E | undefined {
 		const [ firstKey ] = this.entities.keys();
 		return this.entities.get( firstKey );
 	}
@@ -24,7 +25,7 @@ export default abstract class Factory implements Iterable< Entity > {
 	 * Utility to array function.
 	 * @returns Entity[]
 	 */
-	public toArray(): Entity[] {
+	public toArray(): E[] {
 		return Array.from( this.entities.values() );
 	}
 
@@ -38,7 +39,7 @@ export default abstract class Factory implements Iterable< Entity > {
 	 * Transforms raw data into the expected entity.
 	 * @param raw Raw entity.
 	 */
-	protected abstract newEntity( raw: any ): Entity; // eslint-disable-line no-unused-vars
+	protected abstract newEntity( raw: any ): E; // eslint-disable-line no-unused-vars
 
 	/**
 	 * Getters

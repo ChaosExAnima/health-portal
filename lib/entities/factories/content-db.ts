@@ -8,10 +8,17 @@ import SavedFile from '../classes/file';
 import Note from '../classes/notes';
 import DBFactory from './factory-db';
 
+import type { Knex } from 'knex';
 import type { ContentDB } from 'lib/db/types';
 
-export default class ContentDBFactory extends DBFactory {
-	protected entities: Map< number, Content >;
+export default class ContentDBFactory<
+	E extends Content
+> extends DBFactory< E > {
+	protected entities: Map< number, E >;
+
+	public constructor( query: Knex.QueryBuilder< ContentDB > ) {
+		super( query );
+	}
 
 	/**
 	 * Loads meta for all items;
@@ -32,7 +39,7 @@ export default class ContentDBFactory extends DBFactory {
 		return this;
 	}
 
-	protected newEntity( row: ContentDB ): Content {
+	protected newEntity( row: ContentDB ): E {
 		let instance: Content;
 		switch ( row.type ) {
 			case 'appeal':
@@ -53,6 +60,6 @@ export default class ContentDBFactory extends DBFactory {
 			default:
 				throw new Error( `Unknown type: ${ row.type }` );
 		}
-		return instance.loadFromDB( row );
+		return instance.loadFromDB( row ) as E;
 	}
 }
