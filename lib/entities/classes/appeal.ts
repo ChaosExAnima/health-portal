@@ -15,7 +15,7 @@ import type { ContentDB } from 'lib/db/types';
 export default class Appeal extends Content {
 	public name: string;
 	public status: APPEAL_STATUSES_TYPE;
-	public claims?: Claim[];
+	public claims: Claim[] = [];
 
 	public loadFromForm( { name, status, ...rest }: AppealInput ) {
 		this.name = name;
