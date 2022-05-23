@@ -1,10 +1,12 @@
 import { queryNotes } from 'lib/db/helpers';
-import { ProviderDB } from 'lib/db/types';
+import { slugify } from 'lib/strings';
 
 import ContentDBFactory from '../factories/content-db';
-import Claim from './claim';
 import Entity from './entity';
-import Note from './notes';
+
+import type Claim from './claim';
+import type Note from './notes';
+import type { ProviderDB } from 'lib/db/types';
 
 export default class Provider extends Entity {
 	public name: string;
@@ -19,6 +21,10 @@ export default class Provider extends Entity {
 	public loadFromDB( row: ProviderDB ): this {
 		Object.assign( this, row );
 		return super.loadFromDB( row );
+	}
+
+	public toDB(): ProviderDB {
+		return { ...this, slug: slugify( this.name ) };
 	}
 
 	public async loadNotes(): Promise< this > {

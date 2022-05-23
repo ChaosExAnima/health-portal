@@ -31,11 +31,19 @@ interface MetaDB< MetaFields = Record< string, any > >
 	value?: string;
 }
 
+// eslint-disable-next-line no-unused-vars
+interface NewMetaDB< MetaFields = Record< string, any > >
+	extends MetaDB< MetaFields > {
+	id: 0;
+	created: undefined;
+}
+
 interface RelationDB extends DBCommonFields, DBMetaField {
 	from: ContentDB[ 'id' ];
 	to: ContentDB[ 'id' ];
 }
 
+// eslint-disable-next-line no-unused-vars
 interface LoadedRelationDB extends RelationDB, ContentDB {}
 
 interface ProviderDB extends DBCommonFields {

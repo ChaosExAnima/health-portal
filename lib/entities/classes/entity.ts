@@ -17,6 +17,10 @@ export default abstract class Entity {
 		return this;
 	}
 
+	public toDB(): DBCommonFields {
+		return { ...this };
+	}
+
 	protected getOrThrow( key: keyof this ): any {
 		if ( this[ key ] === undefined ) {
 			throw new Error( 'Tried to access undefined property' );

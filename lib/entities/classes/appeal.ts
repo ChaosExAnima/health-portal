@@ -35,6 +35,13 @@ export default class Appeal extends Content {
 		return super.loadFromDB( row );
 	}
 
+	public toDB(): ContentDB {
+		const row = super.toDB();
+		row.status = this.status;
+		row.identifier = this.name;
+		return row;
+	}
+
 	protected setRelation( type: CONTENTS_TYPE, relation: Content ): void {
 		if ( type === 'claim' ) {
 			this.claims.push( relation as Claim );

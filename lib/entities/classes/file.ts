@@ -1,6 +1,6 @@
 import Content from './content';
 
-import type { ContentDB } from 'lib/db/types';
+import type { ContentDB, NewMetaDB } from 'lib/db/types';
 
 export default class SavedFile extends Content {
 	public url: string;
@@ -13,9 +13,20 @@ export default class SavedFile extends Content {
 		return super.loadFromDB( row );
 	}
 
+	public toDB(): ContentDB {
+		const row = super.toDB();
+		row.info = this.url;
+		row.status = this.source;
+		return row;
+	}
+
 	public setMeta( key: string, value?: string ): void {
 		if ( key === 'mimeType' && value ) {
 			this.mimeType = value;
 		}
+	}
+
+	public toMeta(): NewMetaDB[] {
+		return [ this.fillMeta( 'mimeType', this.mimeType ) ];
 	}
 }

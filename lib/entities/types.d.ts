@@ -182,6 +182,10 @@ interface NoteInput extends EntityInput, WithLinksInput {
 	resolved?: boolean;
 }
 
+interface PaymentMeta {
+	source: string;
+}
+
 // Input utils
 type MaybeNewEntity = { id?: Id };
 type WithMaybeNewId< Input > = MaybeNewEntity & Except< Input, 'id' >;

@@ -3,7 +3,7 @@ import Content from './content';
 import type { CallInput } from '../types';
 import type Claim from './claim';
 import type { CONTENTS_TYPE } from 'lib/constants';
-import type { ContentDB } from 'lib/db/types';
+import type { ContentDB, NewMetaDB } from 'lib/db/types';
 
 export default class Call extends Content {
 	public reps: string[] = [];
@@ -30,6 +30,11 @@ export default class Call extends Content {
 		this.reason = row.info || '';
 		this.result = row.status;
 		return super.loadFromDB( row );
+	}
+
+	public toMeta(): NewMetaDB[] {
+		const reps = this.reps.map( ( rep ) => this.fillMeta( 'reps', rep ) );
+		return [ this.fillMeta( 'reference', this.reference ), ...reps ];
 	}
 
 	public setMeta( key: string, value?: string ): void {

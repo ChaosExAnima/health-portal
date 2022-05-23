@@ -13,10 +13,10 @@ import { inReadonlyArray } from '../utils';
 import Content from './content';
 import Payment from './payment';
 
-import type { ClaimInput } from '../types';
+import type { ClaimInput, PaymentMeta } from '../types';
 import type Appeal from './appeal';
 import type Call from './call';
-import type { ContentDB, MetaDB } from 'lib/db/types';
+import type { ContentDB, MetaDB, NewMetaDB } from 'lib/db/types';
 
 export default class Claim extends Content {
 	public type: CLAIM_TYPES_TYPE;
@@ -55,7 +55,22 @@ export default class Claim extends Content {
 		return super.loadFromDB( row );
 	}
 
-	public setMeta( key: string, value?: string, meta?: MetaDB ): void {
+	public toMeta(): NewMetaDB[] {
+		return [
+			...( [ 'billed', 'cost', 'paid' ] as const ).map( ( key ) =>
+				this.fillMeta( key, <any>this[ key ] )
+			),
+			...this.payments.map( ( payment ) =>
+				this.fillMeta( 'payments', undefined, payment )
+			),
+		];
+	}
+
+	public setMeta(
+		key: string,
+		value?: string,
+		meta?: MetaDB< PaymentMeta >
+	): void {
 		if ( ! value || ! meta ) {
 			return;
 		}
