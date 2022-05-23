@@ -19,6 +19,10 @@ export default abstract class Content extends Entity {
 	// eslint-disable-next-line no-unused-vars
 	public setMeta( key: string, value?: string, meta?: MetaDB ) {}
 
+	// eslint-disable-next-line no-unused-vars
+	public setRelations( relations: Content[] ): this {
+		return this;
+	}
 	public async loadProvider(): Promise< this > {
 		if ( this.providerId ) {
 			const providers = await new ProviderDBFactory(

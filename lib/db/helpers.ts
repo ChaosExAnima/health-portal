@@ -55,8 +55,6 @@ export const queryClaims: queryFunction = () =>
 	queryContentType( constants.CONTENT_CLAIM );
 export const queryFiles: queryFunction = () =>
 	queryContentType( constants.CONTENT_FILE );
-export const queryPayments: queryFunction = () =>
-	queryContentType( constants.CONTENT_PAYMENT );
 export const queryNotes: queryFunction = () =>
 	queryContentType( constants.CONTENT_NOTE );
 

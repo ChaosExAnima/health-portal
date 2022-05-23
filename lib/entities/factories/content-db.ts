@@ -7,18 +7,15 @@ import Content from '../classes/content';
 import SavedFile from '../classes/file';
 import Note from '../classes/notes';
 import DBFactory from './factory-db';
+import RelationDBFactory from './relation-db';
 
-import type { Knex } from 'knex';
 import type { ContentDB } from 'lib/db/types';
 
 export default class ContentDBFactory<
-	E extends Content
-> extends DBFactory< E > {
+	E extends Content,
+	Q = ContentDB
+> extends DBFactory< E, Q > {
 	protected entities: Map< number, E >;
-
-	public constructor( query: Knex.QueryBuilder< ContentDB > ) {
-		super( query );
-	}
 
 	/**
 	 * Loads meta for all items;
@@ -30,10 +27,25 @@ export default class ContentDBFactory<
 		}
 		const meta = await queryMeta( this.ids );
 		for ( const row of meta ) {
-			const updatedEntity = this.entities.get( row.contentId );
-			if ( updatedEntity ) {
-				updatedEntity.setMeta( row.key, row.value, row );
-				this.entities.set( updatedEntity.id, updatedEntity );
+			const entity = this.entities.get( row.contentId );
+			if ( entity ) {
+				entity.setMeta( row.key, row.value, row );
+				this.entities.set( entity.id, entity );
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Loads all relations into entities.
+	 * @returns Promise< this >
+	 */
+	public async loadRelations(): Promise< this > {
+		const relations = await new RelationDBFactory( this.ids ).load();
+		for ( const [ id, contents ] of relations.entries() ) {
+			const entity = this.entities.get( id )?.setRelations( contents );
+			if ( entity ) {
+				this.entities.set( id, entity );
 			}
 		}
 		return this;

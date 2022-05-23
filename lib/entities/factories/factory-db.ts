@@ -5,11 +5,12 @@ import type { Knex } from 'knex';
 import type { DBCommonFields } from 'lib/db/types';
 
 export default abstract class DBFactory<
-	E extends Entity
+	E extends Entity,
+	F = DBCommonFields
 > extends Factory< E > {
-	protected query: Knex.QueryBuilder< DBCommonFields, DBCommonFields[] >;
+	protected query: Knex.QueryBuilder< F >;
 
-	public constructor( query: Knex.QueryBuilder< DBCommonFields > ) {
+	public constructor( query: Knex.QueryBuilder< F > ) {
 		super();
 		this.query = query;
 	}

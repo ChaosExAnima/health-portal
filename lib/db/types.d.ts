@@ -36,6 +36,8 @@ interface RelationDB extends DBCommonFields, DBMetaField {
 	to: ContentDB[ 'id' ];
 }
 
+interface LoadedRelationDB extends RelationDB, ContentDB {}
+
 interface ProviderDB extends DBCommonFields {
 	slug: string;
 	name: string;
