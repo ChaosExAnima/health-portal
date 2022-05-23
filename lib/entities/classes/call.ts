@@ -29,14 +29,11 @@ export default class Call extends Content {
 		return super.loadFromDB( row );
 	}
 
-	public loadMeta( meta: MetaDB[] ) {
-		for ( const { key, value } of meta ) {
-			if ( key === 'reps' ) {
-				this.reps = value?.split( ',' ) ?? [];
-			} else if ( key === 'reference' ) {
-				this.reference = value ?? '';
-			}
+	public setMeta( key: string, value?: string ): void {
+		if ( key === 'reps' && value ) {
+			this.reps.push( value );
+		} else if ( key === 'reference' ) {
+			this.reference = value ?? '';
 		}
-		return super.loadMeta( meta );
 	}
 }
